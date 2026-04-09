@@ -38,55 +38,95 @@
 html{touch-action:manipulation}
 select,select option,select optgroup{font-family:'Inter',sans-serif!important;font-size:10px!important;font-weight:500!important;color:#1f2937!important}
 :root{--mint:#c81e3b;--mint-light:#fde2e8;--coral:#f87171;--blue:#1a1a1a;--purple:#a78bfa;--amber:#fbbf24;--bg:#f5f0f0;--ruby:#c81e3b;--ruby-light:#e8384f;--dark:#1a1a1a;--white:#ffffff;}
-html,body{height:100%;overflow:hidden}
-body{font-family:'Inter',sans-serif;color:#1f2937;background:var(--bg);display:flex;justify-content:center;align-items:flex-start;padding-top:10px}
+/* ── FULLY RESPONSIVE LAYOUT: iPhone / iPad / Desktop ──────── */
+html,body{
+  height:100%;
+  height:100dvh;
+  overflow:hidden;
+  margin:0;
+  padding:0;
+  background:var(--bg);
+}
+body{
+  font-family:'Inter',sans-serif;
+  color:#1f2937;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  background:var(--bg);
+}
 
-/* Phone frame — desktop mockup */
-.phone{width:390px;height:844px;background:linear-gradient(160deg,#fff5f5 0%,#fff 30%,#fdf2f4 60%,#f9fafb 100%);border-radius:40px;overflow:hidden;position:relative;box-shadow:0 25px 60px rgba(0,0,0,0.15),0 0 0 1px rgba(200,30,59,0.08);transform:scale(0.56);transform-origin:top center}
+/* ── Phone frame: full screen on real devices, centered card on big screens ── */
+.phone{
+  /* Real device: fill entire screen */
+  width:100vw;
+  height:100dvh;
+  min-height:-webkit-fill-available;
+  background:linear-gradient(160deg,#fff5f5 0%,#fff 30%,#fdf2f4 60%,#f9fafb 100%);
+  border-radius:0;
+  overflow:hidden;
+  position:relative;
+  box-sizing:border-box;
+  /* Safe area for iPhone notch + home bar */
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right);
+}
 
-/* ── MOBILE: fill the real iPhone screen ───────────────────── */
-@media (max-width:500px){
-  html,body{
-    height:100dvh;
-    overflow:hidden;
-    background:#fff5f5;
-    padding:0;
-  }
-  body{
-    padding-top:0;
-    align-items:stretch;
-  }
+/* ── Desktop (>900px): show centered card with shadow ───────── */
+@media(min-width:900px){
+  body{ padding-top:20px; background:#e8e0e0; align-items:flex-start; }
   .phone{
-    width:100vw !important;
-    height:100dvh !important;
-    min-height:-webkit-fill-available;
-    transform:none !important;
-    transform-origin:unset !important;
-    border-radius:0 !important;
-    box-shadow:none !important;
-    padding-top:env(safe-area-inset-top) !important;
-    padding-bottom:env(safe-area-inset-bottom) !important;
-    padding-left:env(safe-area-inset-left) !important;
-    padding-right:env(safe-area-inset-right) !important;
-    box-sizing:border-box;
+    width:390px;
+    height:calc(100dvh - 40px);
+    max-height:860px;
+    border-radius:36px;
+    box-shadow:0 25px 60px rgba(0,0,0,0.18),0 0 0 1px rgba(200,30,59,0.1);
+    padding-top:0;
+    padding-bottom:0;
   }
-  /* Scrollable content area fills remaining height */
+}
+
+/* ── iPad (600-900px): wider card ───────────────────────────── */
+@media(min-width:600px) and (max-width:899px){
+  body{ padding-top:0; }
+  .phone{
+    width:100vw;
+    height:100dvh;
+    border-radius:0;
+    box-shadow:none;
+  }
+  /* Wider layout for iPad */
+  .map-container{ max-width:480px !important; }
+  .smart-ai-input-row{ max-width:520px; margin:0 auto; }
+}
+
+/* ── iPhone / small phones (<600px) ─────────────────────────── */
+@media(max-width:599px){
+  body{ padding-top:0; align-items:stretch; }
+  .phone{
+    width:100vw;
+    height:100dvh;
+    border-radius:0;
+    box-shadow:none;
+  }
   .phone-shell{
-    height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow-y:auto;
     -webkit-overflow-scrolling:touch;
   }
-  /* Bigger tap targets on mobile */
+  /* Prevent iOS zoom on input focus */
+  .smart-ai-input{ font-size:16px !important; }
+  .filter-input{ font-size:16px !important; }
+  /* Bigger tap targets */
   .tab-item{ padding:10px 0 !important; }
   .tab-icon{ font-size:22px !important; }
   .tab-label{ font-size:10px !important; }
-  /* Larger text inputs */
-  .smart-ai-input{ font-size:16px !important; } /* prevents iOS zoom on focus */
-  .filter-input{ font-size:16px !important; }
   /* Full width map */
   .map-container{ max-width:100% !important; }
-  /* Add padding so content isn't under notch */
-  .topbar{ padding-top:max(16px, env(safe-area-inset-top)) !important; }
+  /* Notch padding for topbar */
+  .topbar{ padding-top:max(14px,env(safe-area-inset-top)) !important; }
 }
 
 /* Top bar */
