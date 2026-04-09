@@ -360,6 +360,8 @@ body{font-family:'Inter',sans-serif;color:#1f2937;background:var(--bg);display:f
 .robot-picker{position:relative;flex-shrink:0}
 .robot-btn{display:flex;align-items:center;justify-content:center;border:none;border-radius:50%;width:36px;height:36px;padding:0;cursor:pointer;font-size:10px;font-weight:700;color:#fff;font-family:inherit;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.25);position:relative;overflow:visible}
 .lang-toggle-btn{border:none;background:rgba(255,255,255,0.9);border-radius:20px;padding:3px 7px;font-size:14px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.15);margin-left:4px;transition:all 0.2s;border:1.5px solid rgba(0,0,0,0.08);line-height:1}
+.add-basket-btn{display:inline-block;margin-top:8px;padding:7px 14px;background:linear-gradient(135deg,#c81e3b,#e53e3e);color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(200,30,59,0.3);transition:all 0.18s;font-family:inherit}
+.add-basket-btn:active{transform:scale(0.94);box-shadow:0 1px 4px rgba(200,30,59,0.2)}
 .lang-toggle-btn:active{transform:scale(0.92)}
 .lang-toggle-btn.zh{background:rgba(220,30,30,0.1);border-color:rgba(220,30,30,0.3)}
 .robot-btn:active{transform:scale(0.93)}
@@ -1843,6 +1845,29 @@ function getDemoReply(msg) {
   let m = normalizeQuery(fixVoiceTranscript(translateChinese(msg))).toLowerCase();
   // Phonetic fuzzy fix — catch anything the voice map missed
   for (const [pat, fix] of PHONETIC_MAP) m = m.replace(pat, fix);
+
+  // ── 🛒 Basket ADD intent — "add X to basket/cart/list" ──────────────
+  const addIntent = /\b(add|put|include|basket|cart|buy|order|get|want|need)\b/i.test(m)
+                 && /\b(basket|cart|list|shopping|order|买|加入|要买)\b/i.test(m);
+  const addIntentSimple = /^(add|put|buy|get|order|want)\s+/i.test(m.trim());
+  if (addIntent || addIntentSimple) {
+    // Strip the action words to get product name
+    let product = msg
+      .replace(/小白菜/g,'xiao bai cai').replace(/鸡蛋/g,'eggs').replace(/牛奶/g,'milk')
+      .replace(/豆腐/g,'tofu').replace(/芥兰/g,'kai lan').replace(/菜心/g,'chye sim')
+      .replace(/\b(please|add|put|include|in(to)?|to|the|my|shopping|basket|cart|list|buy|order|get|want|need|a|an|some)\b/gi,'')
+      .trim();
+    if (product.length > 1) {
+      // Add to shoppingList directly
+      const productLower = product.toLowerCase();
+      if (!shoppingList.includes(productLower)) {
+        shoppingList.push(productLower);
+        renderTags();
+      }
+      return `✅ **${product}** added to your shopping list!\n\nYou have **${shoppingList.length} item${shoppingList.length>1?'s':''}** in your list.\n\n💡 Tap **Compare All Stores** to find the cheapest store for everything!`;
+    }
+  }
+
   // Detect "list all / show all / all items related to X" intent
   const wantAll = /\b(list|all|every|full list|complete|show me all|what.*have|related|more brands?|more options?|more items?|more products?)\b/i.test(m);
 
@@ -2669,30 +2694,48 @@ async function sendToAgent(message) {
 }
 
 function formatReply(text) {
-  return text
-    // Bold → blue (like terminal values)
+  // Extract product name from first bold in reply for basket button
+  const productMatch = text.match(/\*\*([^*\n(]{2,40})\*\*/);
+  const productName = productMatch ? productMatch[1].trim() : '';
+
+  let html = text
     .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
     .replace(/\*(.+?)\*/g, '<i>$1</i>')
-    // Newlines
     .replace(/\n/g, '<br>')
-    // Prices — green
     .replace(/\$(\d+[\.,]\d+)/g, '<span class="p-green">$$$1</span>')
-    // "save $X" / "saves X" — orange
     .replace(/(saves?\s[^<\n]{1,25})/gi, '<span class="p-save">$1</span>')
-    // "→" arrows — dim
     .replace(/→/g, '<span class="p-dim">→</span>')
-    // Store names — brand colors
     .replace(/\bFairPrice\b/g, '<span class="p-store p-fp">FairPrice</span>')
     .replace(/\bSheng Siong\b/g, '<span class="p-store p-ss">Sheng Siong</span>')
     .replace(/\bCold Storage\b/g, '<span class="p-store p-cs">Cold Storage</span>')
     .replace(/\bRedMart\b/g, '<span class="p-store p-rm">RedMart</span>')
-    // ✅ cheapest / best
+    .replace(/\bWatsons\b/g, '<span class="p-store" style="color:#0072bc">Watsons</span>')
+    .replace(/\bGuardian\b/g, '<span class="p-store" style="color:#00a651">Guardian</span>')
+    .replace(/\bGiant\b/g, '<span class="p-store" style="color:#f6821f">Giant</span>')
+    .replace(/\bMustafa\b/g, '<span class="p-store" style="color:#6b46c1">Mustafa</span>')
+    .replace(/\bDon Don Donki\b/g, '<span class="p-store" style="color:#c41e3a">Don Don Donki</span>')
     .replace(/✅\s*(cheapest|best)/gi, '<span class="p-best">✅ $1</span>')
     .replace(/🏆\s*Best:/g, '<span class="p-best">🏆 Best:</span>')
-    // 💰 Total lines — amber
     .replace(/(💰[^\n<]+)/g, '<span class="p-save">$1</span>')
-    // ⚠️ warnings — red
     .replace(/(⚠[^\n<]+)/g, '<span class="p-warn">$1</span>');
+
+  // Add "🛒 Add to Basket" button if reply contains prices and a product name
+  if (productName && /\$\d/.test(text) && !/added to your shopping/.test(text)) {
+    const safeName = productName.replace(/'/g, "\\'");
+    html += `<br><button class="add-basket-btn" onclick="addToBasketFromChat('${safeName}')">🛒 Add <b>${productName}</b> to Basket</button>`;
+  }
+  return html;
+}
+
+function addToBasketFromChat(productName) {
+  const lower = productName.toLowerCase();
+  if (!shoppingList.includes(lower)) {
+    shoppingList.push(lower);
+    renderTags();
+  }
+  // Show confirmation in chat
+  addChat('ai', `✅ <b>${productName}</b> added to your shopping list! You now have <b>${shoppingList.length}</b> item${shoppingList.length>1?'s':''}. Tap <b>Compare All Stores</b> to find cheapest prices.`);
+  document.getElementById('chatBox').scrollTop = 99999;
 }
 
 function addChat(type, msg, id) {
