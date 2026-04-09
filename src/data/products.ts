@@ -1,0 +1,183 @@
+// Product database extracted from the GrocerSnap web app
+// Each product has prices across all 7 Singapore stores
+
+const FP = 'https://media.nedigital.sg/fairprice/fpol/media/images/product/XL/';
+
+interface RawProduct {
+  name: string;
+  img?: string;
+  prices: Record<string, number>;
+  unit: string;
+}
+
+export const PRODUCTS: Record<string, RawProduct[]> = {
+  milk: [
+    { name: 'Meiji Fresh Milk 1L', img: FP+'10238055_XL1_20260120.jpg', prices: { fairprice:3.95, shengsiong:3.65, coldstorage:4.15, redmart:3.85, dondonki:3.75, giant:3.70, mustafa:3.60 }, unit: '1L' },
+    { name: "F&N Magnolia Fresh Milk 1L", img: FP+'10458293_XL1_20251022.jpg', prices: { fairprice:3.55, shengsiong:3.30, coldstorage:3.70, redmart:3.50, dondonki:3.40, giant:3.35, mustafa:3.25 }, unit: '1L' },
+    { name: 'Marigold HL Milk 1L', img: FP+'131467_XL1_20250911.jpg', prices: { fairprice:3.25, shengsiong:3.00, coldstorage:3.45, redmart:3.20, dondonki:3.10, giant:3.05, mustafa:3.00 }, unit: '1L' },
+    { name: 'Farm Fresh Full Cream Milk 1L', img: FP+'13086897_XL1_20221229.jpg', prices: { fairprice:4.20, shengsiong:3.90, coldstorage:4.50, redmart:4.10, dondonki:4.00, giant:3.95, mustafa:3.80 }, unit: '1L' },
+    { name: 'Marigold Fresh Milk 2L', prices: { fairprice:5.90, shengsiong:5.50, coldstorage:6.20, redmart:5.80, dondonki:5.70, giant:5.60, mustafa:5.40 }, unit: '2L' },
+    { name: 'Meiji Low Fat Milk 1L', img: FP+'13282313_XL1_20260210.jpg', prices: { fairprice:3.85, shengsiong:3.55, coldstorage:4.05, redmart:3.75, dondonki:3.65, giant:3.60, mustafa:3.50 }, unit: '1L' },
+    { name: 'Yotsuba Hokkaido Fresh Milk 1L', img: FP+'13174592_XL1_20231027.jpg', prices: { fairprice:6.90, shengsiong:6.50, coldstorage:7.20, redmart:6.80, dondonki:5.90, giant:6.60, mustafa:6.30 }, unit: '1L' },
+    { name: 'Oatly Barista Oat Drink 1L', img: FP+'13201062_XL1_20250911.jpg', prices: { fairprice:4.50, shengsiong:4.20, coldstorage:4.80, redmart:4.40, dondonki:4.30, giant:4.25, mustafa:4.10 }, unit: '1L' },
+  ],
+  eggs: [
+    { name: 'Seng Choon Fresh Eggs 10s', img: FP+'157869_XL1_20250801.jpg', prices: { fairprice:2.85, shengsiong:2.60, coldstorage:3.00, redmart:2.75, dondonki:2.70, giant:2.65, mustafa:2.55 }, unit: '10 pcs' },
+    { name: "Chew's Farm Fresh Eggs 10s", img: FP+'283672_XL1_20250801.jpg', prices: { fairprice:2.90, shengsiong:2.70, coldstorage:3.10, redmart:2.85, dondonki:2.80, giant:2.75, mustafa:2.65 }, unit: '10 pcs' },
+    { name: 'Holland Free Range Eggs 10s', img: FP+'13245146_XL1_20250801.jpg', prices: { fairprice:4.95, shengsiong:4.80, coldstorage:5.20, redmart:4.90, dondonki:5.50, giant:4.85, mustafa:4.70 }, unit: '10 pcs' },
+    { name: 'Super Grade A Eggs 10s', img: FP+'13000176_XL1_20250801.jpg', prices: { fairprice:2.50, shengsiong:2.30, coldstorage:2.65, redmart:2.45, dondonki:2.55, giant:2.40, mustafa:2.30 }, unit: '10 pcs' },
+    { name: 'Seng Choon Eggs 30s', img: FP+'13104178_XL1_20250801.jpg', prices: { fairprice:7.50, shengsiong:7.00, coldstorage:7.90, redmart:7.30, dondonki:7.50, giant:7.10, mustafa:6.90 }, unit: '30 pcs' },
+    { name: 'Omega-3 Eggs 10s', img: FP+'495350_XL1_20250801.jpg', prices: { fairprice:3.90, shengsiong:3.65, coldstorage:4.20, redmart:3.80, dondonki:4.10, giant:3.75, mustafa:3.55 }, unit: '10 pcs' },
+  ],
+  chicken: [
+    { name: 'Whole Chicken (per kg)', img: FP+'13097674_XL1_20220318.jpg', prices: { fairprice:6.50, shengsiong:5.90, coldstorage:7.20, redmart:6.30, dondonki:6.80, giant:6.20, mustafa:5.80 }, unit: 'per kg' },
+    { name: 'Chicken Breast Boneless 500g', img: FP+'13097675_XL1_20230519.jpg', prices: { fairprice:5.95, shengsiong:5.50, coldstorage:6.50, redmart:5.80, dondonki:6.20, giant:5.70, mustafa:5.40 }, unit: '500g' },
+    { name: 'Chicken Drumsticks 500g', prices: { fairprice:4.80, shengsiong:4.40, coldstorage:5.10, redmart:4.70, dondonki:4.90, giant:4.50, mustafa:4.20 }, unit: '500g' },
+    { name: 'Kampong Chicken ~1.2kg', prices: { fairprice:9.90, shengsiong:9.20, coldstorage:10.50, redmart:9.80, dondonki:10.80, giant:9.50, mustafa:9.00 }, unit: '~1.2kg' },
+    { name: 'Chicken Wings 500g', img: FP+'13097629_XL1_20230519.jpg', prices: { fairprice:4.50, shengsiong:4.10, coldstorage:4.80, redmart:4.40, dondonki:4.60, giant:4.20, mustafa:3.90 }, unit: '500g' },
+    { name: 'Chicken Thigh Boneless 500g', img: FP+'13097679_XL1_20230221.jpg', prices: { fairprice:5.50, shengsiong:5.10, coldstorage:6.00, redmart:5.40, dondonki:5.70, giant:5.20, mustafa:4.90 }, unit: '500g' },
+  ],
+  rice: [
+    { name: 'Jasmine White Rice 5kg', img: FP+'13271712_XL1_20260112.jpg', prices: { fairprice:11.90, shengsiong:10.80, coldstorage:13.00, redmart:11.50, dondonki:12.50, giant:11.20, mustafa:10.50 }, unit: '5kg' },
+    { name: 'Sunwhite Calrose Rice 5kg', prices: { fairprice:13.50, shengsiong:12.90, coldstorage:14.50, redmart:13.20, dondonki:14.80, giant:13.00, mustafa:12.50 }, unit: '5kg' },
+    { name: 'Golden Phoenix Jasmine 5kg', img: FP+'13081513_XL1_20220411.jpg', prices: { fairprice:10.50, shengsiong:9.80, coldstorage:11.50, redmart:10.20, dondonki:11.80, giant:10.00, mustafa:9.50 }, unit: '5kg' },
+    { name: 'Basmati Rice 5kg', prices: { fairprice:14.90, shengsiong:14.20, coldstorage:16.00, redmart:14.50, dondonki:15.50, giant:14.00, mustafa:13.20 }, unit: '5kg' },
+    { name: 'Thai Fragrant Rice 10kg', img: FP+'13271712_XL1_20260112.jpg', prices: { fairprice:22.50, shengsiong:20.80, coldstorage:24.00, redmart:21.90, dondonki:23.50, giant:21.50, mustafa:19.90 }, unit: '10kg' },
+    { name: 'Brown Rice 2kg', img: FP+'13049984_XL1_20260304.jpg', prices: { fairprice:6.50, shengsiong:5.90, coldstorage:7.20, redmart:6.30, dondonki:6.80, giant:6.10, mustafa:5.70 }, unit: '2kg' },
+  ],
+  bread: [
+    { name: 'Gardenia Original Classic 600g', img: FP+'10099606_XL1_20250616.jpg', prices: { fairprice:2.50, shengsiong:2.30, coldstorage:2.65, redmart:2.45, dondonki:2.60, giant:2.35, mustafa:2.30 }, unit: '600g' },
+    { name: 'Sunshine Wholemeal Bread 400g', img: FP+'13110179_XL1_20230731.jpg', prices: { fairprice:3.15, shengsiong:2.90, coldstorage:3.40, redmart:3.05, dondonki:3.20, giant:2.95, mustafa:2.85 }, unit: '400g' },
+    { name: 'Gardenia Wholemeal Extra Soft 400g', img: FP+'13074362_XL1_20250801.jpg', prices: { fairprice:2.80, shengsiong:2.60, coldstorage:2.95, redmart:2.75, dondonki:2.85, giant:2.65, mustafa:2.55 }, unit: '400g' },
+    { name: 'FairPrice Wholemeal Bread 500g', img: FP+'13200668_XL1_20210810.jpg', prices: { fairprice:2.50, shengsiong:2.30, coldstorage:2.70, redmart:2.45, dondonki:2.60, giant:2.35, mustafa:2.20 }, unit: '500g' },
+    { name: 'Gardenia Enriched Bread 400g', img: FP+'93964_XL1_20240418.jpg', prices: { fairprice:2.20, shengsiong:2.00, coldstorage:2.35, redmart:2.15, dondonki:2.25, giant:2.05, mustafa:1.95 }, unit: '400g' },
+    { name: 'Sunshine Jumbo Enriched White 550g', img: FP+'13045385_XL1_20210903.jpg', prices: { fairprice:2.65, shengsiong:2.45, coldstorage:2.80, redmart:2.60, dondonki:2.70, giant:2.50, mustafa:2.40 }, unit: '550g' },
+  ],
+  butter: [
+    { name: 'Anchor Salted Butter 250g', img: FP+'12511529_XL1_20220427.jpg', prices: { fairprice:5.60, shengsiong:5.20, coldstorage:5.90, redmart:5.50, dondonki:5.80, giant:5.30, mustafa:5.10 }, unit: '250g' },
+    { name: 'President Unsalted Butter 250g', img: FP+'13228537_XL1_20240912.jpg', prices: { fairprice:6.90, shengsiong:6.50, coldstorage:7.30, redmart:6.80, dondonki:7.10, giant:6.60, mustafa:6.30 }, unit: '250g' },
+    { name: 'SCS Salted Butter 250g', img: FP+'11252369_XL1_20230914.jpg', prices: { fairprice:5.20, shengsiong:4.90, coldstorage:5.50, redmart:5.10, dondonki:5.40, giant:4.95, mustafa:4.80 }, unit: '250g' },
+    { name: 'Lurpak Slightly Salted 200g', img: FP+'493502_XL1_20240912.jpg', prices: { fairprice:7.50, shengsiong:7.10, coldstorage:7.90, redmart:7.40, dondonki:8.20, giant:7.20, mustafa:6.90 }, unit: '200g' },
+    { name: 'Anchor Unsalted Butter 250g', img: FP+'12511529_XL1_20220427.jpg', prices: { fairprice:5.70, shengsiong:5.30, coldstorage:6.00, redmart:5.60, dondonki:5.90, giant:5.40, mustafa:5.20 }, unit: '250g' },
+  ],
+  sugar: [
+    { name: 'Thai White Sugar 1kg', img: FP+'13108806_XL1_20210510.jpg', prices: { fairprice:2.10, shengsiong:1.90, coldstorage:2.25, redmart:2.05, dondonki:2.15, giant:1.95, mustafa:1.80 }, unit: '1kg' },
+    { name: 'Brown Sugar 500g', img: FP+'13023525_XL1_20210609.jpg', prices: { fairprice:1.95, shengsiong:1.75, coldstorage:2.10, redmart:1.90, dondonki:2.00, giant:1.80, mustafa:1.70 }, unit: '500g' },
+    { name: 'Demerara Sugar 500g', img: FP+'13023525_XL1_20210609.jpg', prices: { fairprice:2.90, shengsiong:2.65, coldstorage:3.10, redmart:2.80, dondonki:3.00, giant:2.70, mustafa:2.55 }, unit: '500g' },
+    { name: 'Icing Sugar 500g', img: FP+'13247942_XL1_20240418.jpg', prices: { fairprice:1.80, shengsiong:1.60, coldstorage:1.95, redmart:1.75, dondonki:1.85, giant:1.65, mustafa:1.55 }, unit: '500g' },
+    { name: 'FairPrice Pure Cane Sugar 2kg', img: FP+'13179116_XL1_20210824.jpg', prices: { fairprice:3.80, shengsiong:3.50, coldstorage:4.10, redmart:3.75, dondonki:3.90, giant:3.55, mustafa:3.30 }, unit: '2kg' },
+  ],
+  water: [
+    { name: 'Evian Spring Water 1.5L', img: FP+'12713395_XL1_20251209.jpg', prices: { fairprice:2.30, shengsiong:2.10, coldstorage:2.50, redmart:2.25, dondonki:2.20, giant:2.15, mustafa:2.00 }, unit: '1.5L' },
+    { name: 'Perrier Sparkling 750ml', img: FP+'12706211_XL1_20230327.jpg', prices: { fairprice:2.80, shengsiong:2.60, coldstorage:3.00, redmart:2.75, dondonki:2.90, giant:2.65, mustafa:2.50 }, unit: '750ml' },
+    { name: 'Dasani Purified Water 1.5L', img: FP+'12453883_XL1_20230327.jpg', prices: { fairprice:1.50, shengsiong:1.30, coldstorage:1.65, redmart:1.45, dondonki:1.55, giant:1.35, mustafa:1.20 }, unit: '1.5L' },
+    { name: 'Ice Mountain Mineral 1.5L', img: FP+'12710240_XL1_20251022.jpg', prices: { fairprice:1.25, shengsiong:1.10, coldstorage:1.40, redmart:1.20, dondonki:1.30, giant:1.15, mustafa:1.05 }, unit: '1.5L' },
+    { name: 'Spritzer Mineral Water 1.5L', img: FP+'12712891_XL1_20230830.jpg', prices: { fairprice:1.15, shengsiong:1.00, coldstorage:1.30, redmart:1.10, dondonki:1.20, giant:1.05, mustafa:0.95 }, unit: '1.5L' },
+    { name: 'San Pellegrino Sparkling 750ml', img: FP+'12706539_XL1_20240627.jpg', prices: { fairprice:3.20, shengsiong:2.95, coldstorage:3.50, redmart:3.10, dondonki:3.30, giant:3.00, mustafa:2.85 }, unit: '750ml' },
+  ],
+  milo: [
+    { name: 'Milo Activ-Go Powder 1kg', img: FP+'11838626_XL1_20250213.jpg', prices: { fairprice:11.50, shengsiong:10.80, coldstorage:12.20, redmart:11.20, dondonki:11.80, giant:10.90, mustafa:10.50 }, unit: '1kg' },
+    { name: 'Milo Activ-Go Powder 400g', img: FP+'13039613_XL1_20240319.jpg', prices: { fairprice:5.90, shengsiong:5.50, coldstorage:6.20, redmart:5.75, dondonki:6.00, giant:5.60, mustafa:5.30 }, unit: '400g' },
+    { name: 'Milo UHT Packet 200ml x24', img: FP+'12700043_XL1_20251009.jpg', prices: { fairprice:14.50, shengsiong:13.80, coldstorage:15.50, redmart:14.20, dondonki:14.80, giant:13.90, mustafa:13.50 }, unit: '24x200ml' },
+    { name: 'Milo Cereal 330g', img: FP+'10613679_XL1_20251216.jpg', prices: { fairprice:6.20, shengsiong:5.80, coldstorage:6.60, redmart:6.10, dondonki:6.40, giant:5.90, mustafa:5.60 }, unit: '330g' },
+    { name: 'Milo Can 240ml', img: FP+'13007044_XL1_20250911.jpg', prices: { fairprice:1.50, shengsiong:1.35, coldstorage:1.65, redmart:1.45, dondonki:1.55, giant:1.40, mustafa:1.30 }, unit: '240ml' },
+  ],
+  noodles: [
+    { name: 'Prima Taste Instant Noodles x5', img: FP+'13259121_XL1_20241120.jpg', prices: { fairprice:3.50, shengsiong:3.20, coldstorage:3.75, redmart:3.40, dondonki:3.30, giant:3.25, mustafa:3.10 }, unit: '5 packs' },
+    { name: 'Nissin Cup Noodles 75g', img: FP+'17873_XL1_20251218.jpg', prices: { fairprice:1.35, shengsiong:1.20, coldstorage:1.50, redmart:1.30, dondonki:1.25, giant:1.20, mustafa:1.10 }, unit: '75g' },
+    { name: 'Maggi Curry Noodles x5', img: FP+'13254559_XL1_20240729.jpg', prices: { fairprice:2.95, shengsiong:2.70, coldstorage:3.15, redmart:2.85, dondonki:2.80, giant:2.75, mustafa:2.60 }, unit: '5 packs' },
+    { name: 'Myojo Mee Pok 400g', img: FP+'54388_XL1_20260326.jpg', prices: { fairprice:2.20, shengsiong:2.00, coldstorage:2.40, redmart:2.15, dondonki:2.10, giant:2.05, mustafa:1.95 }, unit: '400g' },
+    { name: 'Indomie Goreng x5', img: FP+'13057731_XL1_20250806.jpg', prices: { fairprice:2.80, shengsiong:2.55, coldstorage:3.00, redmart:2.70, dondonki:2.65, giant:2.60, mustafa:2.45 }, unit: '5 packs' },
+    { name: 'Koka Instant Noodles x5', img: FP+'10505301_XL1_20210222.jpg', prices: { fairprice:3.20, shengsiong:2.95, coldstorage:3.45, redmart:3.10, dondonki:3.05, giant:3.00, mustafa:2.85 }, unit: '5 packs' },
+  ],
+  oil: [
+    { name: 'Knife Vegetable Oil 2L', img: FP+'10451032_XL1_20250801.jpg', prices: { fairprice:5.90, shengsiong:5.50, coldstorage:6.20, redmart:5.75, dondonki:5.80, giant:5.60, mustafa:5.20 }, unit: '2L' },
+    { name: 'FairPrice Sunflower Oil 2L', img: FP+'12635003_XL1_20211201.jpg', prices: { fairprice:5.20, shengsiong:4.90, coldstorage:5.50, redmart:5.10, dondonki:5.30, giant:4.95, mustafa:4.80 }, unit: '2L' },
+    { name: 'Naturel Olive Oil 500ml', img: FP+'12202849_XL1_20250731.jpg', prices: { fairprice:8.90, shengsiong:8.50, coldstorage:9.50, redmart:8.75, dondonki:9.20, giant:8.60, mustafa:8.20 }, unit: '500ml' },
+    { name: 'Coconut Oil 500ml', prices: { fairprice:10.50, shengsiong:9.90, coldstorage:11.20, redmart:10.20, dondonki:10.80, giant:9.80, mustafa:9.50 }, unit: '500ml' },
+    { name: 'Canola Oil 2L', img: FP+'13241561_XL1_20251021.jpg', prices: { fairprice:6.80, shengsiong:6.30, coldstorage:7.20, redmart:6.60, dondonki:6.90, giant:6.40, mustafa:6.10 }, unit: '2L' },
+    { name: 'Sesame Oil 250ml', prices: { fairprice:4.50, shengsiong:4.10, coldstorage:4.80, redmart:4.40, dondonki:4.60, giant:4.20, mustafa:3.90 }, unit: '250ml' },
+  ],
+  yogurt: [
+    { name: 'Meiji Bulgaria Yogurt 500g', img: FP+'13066315_XL1_20250911.jpg', prices: { fairprice:4.20, shengsiong:3.90, coldstorage:4.50, redmart:4.10, dondonki:4.30, giant:3.95, mustafa:3.75 }, unit: '500g' },
+    { name: 'Emmi Swiss Yogurt 150g', img: FP+'11216229_XL1_20220624.jpg', prices: { fairprice:2.10, shengsiong:1.95, coldstorage:2.30, redmart:2.05, dondonki:2.40, giant:2.00, mustafa:1.90 }, unit: '150g' },
+    { name: 'Yoplait Strawberry 500g', img: FP+'13086452_XL1_20240305.jpg', prices: { fairprice:3.95, shengsiong:3.65, coldstorage:4.20, redmart:3.85, dondonki:4.10, giant:3.70, mustafa:3.50 }, unit: '500g' },
+    { name: 'Chobani Greek Yogurt 150g', img: FP+'13050057_XL1_20260317.jpg', prices: { fairprice:2.80, shengsiong:2.60, coldstorage:3.00, redmart:2.75, dondonki:3.10, giant:2.65, mustafa:2.50 }, unit: '150g' },
+    { name: 'Farmers Union Greek Yogurt 500g', img: FP+'13129007_XL1_20250909.jpg', prices: { fairprice:4.80, shengsiong:4.50, coldstorage:5.10, redmart:4.70, dondonki:5.00, giant:4.60, mustafa:4.30 }, unit: '500g' },
+    { name: 'Marigold Low Fat Yogurt 135g', img: FP+'13097780_XL1_20240912.jpg', prices: { fairprice:1.50, shengsiong:1.35, coldstorage:1.65, redmart:1.45, dondonki:1.55, giant:1.40, mustafa:1.30 }, unit: '135g' },
+  ],
+  toothpaste: [
+    { name: 'Colgate Total Toothpaste 150g', img: FP+'13197740_XL1_20250704.jpg', prices: { fairprice:5.90, shengsiong:5.50, coldstorage:6.20, redmart:5.80, dondonki:5.70, giant:5.60, mustafa:5.30 }, unit: '150g' },
+    { name: 'Darlie Double Action 225g', img: FP+'13206087_XL1_20260114.jpg', prices: { fairprice:4.50, shengsiong:4.20, coldstorage:4.80, redmart:4.40, dondonki:4.30, giant:4.25, mustafa:4.00 }, unit: '225g' },
+    { name: 'Sensodyne Fresh Mint 100g', prices: { fairprice:6.50, shengsiong:6.10, coldstorage:6.90, redmart:6.40, dondonki:6.80, giant:6.20, mustafa:5.90 }, unit: '100g' },
+    { name: 'Oral-B Toothbrush Medium', prices: { fairprice:3.50, shengsiong:3.20, coldstorage:3.80, redmart:3.40, dondonki:3.60, giant:3.30, mustafa:3.10 }, unit: '1 pc' },
+    { name: 'Listerine Mouthwash 750ml', prices: { fairprice:7.90, shengsiong:7.50, coldstorage:8.30, redmart:7.80, dondonki:8.10, giant:7.60, mustafa:7.20 }, unit: '750ml' },
+  ],
+  detergent: [
+    { name: 'Dynamo Power Gel 2.4kg', prices: { fairprice:10.90, shengsiong:10.20, coldstorage:11.50, redmart:10.70, dondonki:11.20, giant:10.40, mustafa:9.80 }, unit: '2.4kg' },
+    { name: 'Top Liquid Detergent 1.8kg', prices: { fairprice:8.50, shengsiong:7.90, coldstorage:9.00, redmart:8.30, dondonki:8.80, giant:8.10, mustafa:7.60 }, unit: '1.8kg' },
+    { name: 'Breeze Detergent Liquid 1.8kg', prices: { fairprice:9.20, shengsiong:8.60, coldstorage:9.70, redmart:9.00, dondonki:9.50, giant:8.80, mustafa:8.30 }, unit: '1.8kg' },
+    { name: 'Downy Fabric Softener 1.5L', prices: { fairprice:6.90, shengsiong:6.40, coldstorage:7.30, redmart:6.70, dondonki:7.00, giant:6.50, mustafa:6.20 }, unit: '1.5L' },
+  ],
+  sauces: [
+    { name: 'Lee Kum Kee Soy Sauce 500ml', prices: { fairprice:3.80, shengsiong:3.50, coldstorage:4.10, redmart:3.70, dondonki:3.90, giant:3.60, mustafa:3.30 }, unit: '500ml' },
+    { name: 'Lee Kum Kee Oyster Sauce 510g', prices: { fairprice:4.50, shengsiong:4.10, coldstorage:4.80, redmart:4.40, dondonki:4.60, giant:4.20, mustafa:3.90 }, unit: '510g' },
+    { name: 'Kikkoman Soy Sauce 600ml', prices: { fairprice:5.50, shengsiong:5.10, coldstorage:5.90, redmart:5.40, dondonki:5.20, giant:5.20, mustafa:4.90 }, unit: '600ml' },
+    { name: 'Heinz Tomato Ketchup 397g', prices: { fairprice:4.20, shengsiong:3.90, coldstorage:4.50, redmart:4.10, dondonki:4.30, giant:3.95, mustafa:3.75 }, unit: '397g' },
+    { name: 'Cooking Wine (Hua Tiao) 640ml', prices: { fairprice:3.50, shengsiong:3.20, coldstorage:3.80, redmart:3.40, dondonki:3.60, giant:3.30, mustafa:3.10 }, unit: '640ml' },
+    { name: 'Maggi Chicken Stock Cubes', prices: { fairprice:1.80, shengsiong:1.60, coldstorage:1.95, redmart:1.75, dondonki:1.85, giant:1.65, mustafa:1.50 }, unit: '1 box' },
+  ],
+  drinks: [
+    { name: 'Pokka Jasmine Green Tea 1.5L', prices: { fairprice:2.20, shengsiong:2.00, coldstorage:2.40, redmart:2.15, dondonki:2.10, giant:2.05, mustafa:1.90 }, unit: '1.5L' },
+    { name: '100 Plus Isotonic 1.5L', prices: { fairprice:2.10, shengsiong:1.90, coldstorage:2.30, redmart:2.05, dondonki:2.00, giant:1.95, mustafa:1.85 }, unit: '1.5L' },
+    { name: 'Coca-Cola Classic 1.5L', prices: { fairprice:2.50, shengsiong:2.30, coldstorage:2.70, redmart:2.45, dondonki:2.40, giant:2.35, mustafa:2.20 }, unit: '1.5L' },
+    { name: 'Sprite 1.5L', prices: { fairprice:2.50, shengsiong:2.30, coldstorage:2.70, redmart:2.45, dondonki:2.40, giant:2.35, mustafa:2.20 }, unit: '1.5L' },
+    { name: 'F&N Orange 1.5L', prices: { fairprice:2.20, shengsiong:2.00, coldstorage:2.40, redmart:2.15, dondonki:2.10, giant:2.05, mustafa:1.90 }, unit: '1.5L' },
+    { name: 'Ribena Blackcurrant 1L', prices: { fairprice:5.50, shengsiong:5.10, coldstorage:5.90, redmart:5.40, dondonki:5.60, giant:5.20, mustafa:4.90 }, unit: '1L' },
+    { name: "Yeo's Soy Bean Drink 1L", prices: { fairprice:2.80, shengsiong:2.55, coldstorage:3.00, redmart:2.70, dondonki:2.65, giant:2.60, mustafa:2.45 }, unit: '1L' },
+    { name: 'Tiger Beer Can 330ml x6', prices: { fairprice:14.90, shengsiong:13.80, coldstorage:15.50, redmart:14.50, dondonki:14.20, giant:13.90, mustafa:13.50 }, unit: '6x330ml' },
+  ],
+  snacks: [
+    { name: 'Pringles Original 107g', prices: { fairprice:3.20, shengsiong:2.95, coldstorage:3.50, redmart:3.10, dondonki:2.90, giant:3.00, mustafa:2.80 }, unit: '107g' },
+    { name: 'Twisties Cheese 160g', prices: { fairprice:2.50, shengsiong:2.30, coldstorage:2.70, redmart:2.45, dondonki:2.40, giant:2.35, mustafa:2.20 }, unit: '160g' },
+    { name: 'Oreo Original Cookies 266g', prices: { fairprice:3.50, shengsiong:3.20, coldstorage:3.80, redmart:3.40, dondonki:3.30, giant:3.25, mustafa:3.10 }, unit: '266g' },
+    { name: "Jack 'n Jill Potato Chips 75g", prices: { fairprice:1.80, shengsiong:1.60, coldstorage:1.95, redmart:1.75, dondonki:1.70, giant:1.65, mustafa:1.55 }, unit: '75g' },
+    { name: 'Mamee Monster Snack 8x25g', prices: { fairprice:2.90, shengsiong:2.65, coldstorage:3.10, redmart:2.80, dondonki:2.75, giant:2.70, mustafa:2.55 }, unit: '8x25g' },
+    { name: 'Pocky Chocolate Sticks 47g', prices: { fairprice:2.20, shengsiong:2.00, coldstorage:2.40, redmart:2.15, dondonki:1.90, giant:2.05, mustafa:1.95 }, unit: '47g' },
+    { name: 'KitKat Chocolate Bar 4F 35g', prices: { fairprice:1.50, shengsiong:1.35, coldstorage:1.65, redmart:1.45, dondonki:1.40, giant:1.40, mustafa:1.30 }, unit: '35g' },
+    { name: 'Cadbury Dairy Milk 160g', prices: { fairprice:4.50, shengsiong:4.20, coldstorage:4.80, redmart:4.40, dondonki:4.30, giant:4.25, mustafa:4.00 }, unit: '160g' },
+  ],
+  coffee: [
+    { name: 'Nescafe Gold Instant 200g', prices: { fairprice:12.90, shengsiong:12.20, coldstorage:13.50, redmart:12.70, dondonki:13.00, giant:12.30, mustafa:11.80 }, unit: '200g' },
+    { name: 'Owl Kopitiam Roast 20x17g', prices: { fairprice:5.90, shengsiong:5.50, coldstorage:6.20, redmart:5.80, dondonki:5.70, giant:5.60, mustafa:5.30 }, unit: '20x17g' },
+    { name: 'Nescafe 3in1 Coffee Original 30x16.5g', prices: { fairprice:8.50, shengsiong:7.90, coldstorage:9.00, redmart:8.30, dondonki:8.60, giant:8.10, mustafa:7.60 }, unit: '30x16.5g' },
+    { name: 'Lipton Tea Bags 100s', prices: { fairprice:5.50, shengsiong:5.10, coldstorage:5.90, redmart:5.40, dondonki:5.60, giant:5.20, mustafa:4.90 }, unit: '100 bags' },
+    { name: 'Twinings English Breakfast 25s', prices: { fairprice:5.90, shengsiong:5.50, coldstorage:6.30, redmart:5.80, dondonki:6.00, giant:5.60, mustafa:5.30 }, unit: '25 bags' },
+    { name: 'BOH Cameron Tea Bags 100s', prices: { fairprice:4.80, shengsiong:4.50, coldstorage:5.10, redmart:4.70, dondonki:4.90, giant:4.60, mustafa:4.30 }, unit: '100 bags' },
+  ],
+  canned: [
+    { name: 'Ayam Brand Tuna Chunks 185g', prices: { fairprice:3.50, shengsiong:3.20, coldstorage:3.80, redmart:3.40, dondonki:3.60, giant:3.30, mustafa:3.10 }, unit: '185g' },
+    { name: 'Maling Luncheon Meat 397g', prices: { fairprice:4.90, shengsiong:4.50, coldstorage:5.20, redmart:4.80, dondonki:4.70, giant:4.60, mustafa:4.30 }, unit: '397g' },
+    { name: "Campbell's Mushroom Soup 305g", prices: { fairprice:2.50, shengsiong:2.30, coldstorage:2.70, redmart:2.45, dondonki:2.60, giant:2.35, mustafa:2.20 }, unit: '305g' },
+  ],
+  frozen: [
+    { name: 'Frozen Dumplings 700g', prices: { fairprice:8.50, shengsiong:7.90, coldstorage:9.00, redmart:8.30, dondonki:7.50, giant:8.10, mustafa:7.60 }, unit: '700g' },
+    { name: 'Frozen Prawns 500g', prices: { fairprice:9.90, shengsiong:9.20, coldstorage:10.50, redmart:9.70, dondonki:10.00, giant:9.40, mustafa:8.80 }, unit: '500g' },
+  ],
+  household: [
+    { name: 'Kleenex Bath Tissue 10x200s', prices: { fairprice:7.50, shengsiong:6.90, coldstorage:8.00, redmart:7.30, dondonki:7.20, giant:7.10, mustafa:6.70 }, unit: '10 rolls' },
+    { name: 'Glad Cling Wrap 30m', prices: { fairprice:3.50, shengsiong:3.20, coldstorage:3.80, redmart:3.40, dondonki:3.60, giant:3.30, mustafa:3.10 }, unit: '30m' },
+    { name: 'Ziploc Storage Bags', prices: { fairprice:4.90, shengsiong:4.50, coldstorage:5.20, redmart:4.80, dondonki:5.00, giant:4.60, mustafa:4.30 }, unit: '1 box' },
+  ],
+  bodycare: [
+    { name: 'Pantene Anti Hair Fall 680ml', prices: { fairprice:10.90, shengsiong:10.20, coldstorage:11.50, redmart:10.70, dondonki:11.00, giant:10.40, mustafa:9.80 }, unit: '680ml' },
+    { name: 'Head & Shoulders Shampoo 680ml', prices: { fairprice:10.50, shengsiong:9.80, coldstorage:11.00, redmart:10.30, dondonki:10.80, giant:10.00, mustafa:9.50 }, unit: '680ml' },
+    { name: 'Dove Body Wash 1L', prices: { fairprice:9.90, shengsiong:9.20, coldstorage:10.50, redmart:9.70, dondonki:10.00, giant:9.40, mustafa:8.80 }, unit: '1L' },
+    { name: 'Dettol Soap Bar 105g x4', prices: { fairprice:4.50, shengsiong:4.10, coldstorage:4.80, redmart:4.40, dondonki:4.60, giant:4.20, mustafa:3.90 }, unit: '4 bars' },
+    { name: 'Lifebuoy Body Wash 950ml', prices: { fairprice:7.90, shengsiong:7.30, coldstorage:8.40, redmart:7.70, dondonki:8.00, giant:7.50, mustafa:7.10 }, unit: '950ml' },
+    { name: 'Kotex Pads Ultra Thin', prices: { fairprice:5.90, shengsiong:5.50, coldstorage:6.30, redmart:5.80, dondonki:6.00, giant:5.60, mustafa:5.20 }, unit: '1 pack' },
+  ],
+  baby: [
+    { name: 'Huggies Diapers Pack', prices: { fairprice:29.90, shengsiong:28.50, coldstorage:31.00, redmart:29.50, dondonki:30.50, giant:28.90, mustafa:27.50 }, unit: '1 pack' },
+  ],
+};
