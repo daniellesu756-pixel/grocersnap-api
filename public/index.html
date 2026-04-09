@@ -1835,11 +1835,12 @@ async function sendInlineAI(fromVoice = false) {
         renderTags();
       }
     } else {
-      thinkBubble.remove();
-      inlineThinking = false;
-      aiBubble.textContent = '⚠️ ' + (data.error || 'Unknown error');
-      thread.appendChild(aiBubble);
-      textEl.textContent = 'Ask me anything…';
+      // No API key or server error — fall back to built-in demo mode
+      setAiThinking(false);
+      const reply = getDemoReply(message);
+      inlineHistory.push({ role: 'user', content: message });
+      inlineHistory.push({ role: 'assistant', content: reply });
+      showAiReply(reply);
     }
   } catch (e) {
     setAiThinking(false);
@@ -2741,8 +2742,12 @@ async function sendToAgent(message) {
     const thinkEl = document.getElementById(thinkId);
     if (thinkEl) thinkEl.remove();
 
-    if (data.error) {
-      addChat('ai', '⚠️ ' + data.error);
+    if (data.error || !data.reply) {
+      // No API key — fall back to built-in demo mode
+      const reply = getDemoReply(message);
+      chatHistory.push({ role: 'user', content: message });
+      chatHistory.push({ role: 'assistant', content: reply });
+      addChat('ai', formatReply(reply));
     } else {
       // Add to conversation history
       chatHistory.push({ role: 'user', content: message });
