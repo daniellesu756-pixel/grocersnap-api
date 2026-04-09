@@ -832,10 +832,8 @@ body{
               <!-- Soft ground shadow -->
               <ellipse cx="76" cy="115" rx="52" ry="4" fill="rgba(255,255,255,0.08)"/>
 
-              <!-- ══ BASKET — single clean path, rounded joins ══
-                   Traces: top-rail → right-side → bottom-rail → left-bottom → front-slope → back to top
-              -->
-              <path d="M18,18 L132,18 L125,68 L26,68 L5,54 L18,18"
+              <!-- ══ BASKET — clean 4-sided trapezoid, no triangle ══ -->
+              <path d="M18,18 L132,18 L125,68 L26,68 Z"
                 fill="rgba(255,255,255,0.05)"
                 stroke="white" stroke-width="7.5"
                 stroke-linejoin="round" stroke-linecap="round"
@@ -846,9 +844,9 @@ body{
               <line x1="76"  y1="18" x2="76"  y2="68" stroke="white" stroke-width="5.5" stroke-linecap="round" filter="url(#wh)"/>
               <line x1="103" y1="18" x2="107" y2="68" stroke="white" stroke-width="5.5" stroke-linecap="round" filter="url(#wh)"/>
 
-              <!-- ══ WIRE GRID — 2 horizontal bars ══ -->
-              <line x1="14"  y1="35" x2="130" y2="35" stroke="white" stroke-width="5.5" stroke-linecap="round" filter="url(#wh)"/>
-              <line x1="11"  y1="52" x2="128" y2="52" stroke="white" stroke-width="5.5" stroke-linecap="round" filter="url(#wh)"/>
+              <!-- ══ WIRE GRID — 2 horizontal bars (trimmed to trapezoid width) ══ -->
+              <line x1="21"  y1="35" x2="130" y2="35" stroke="white" stroke-width="5.5" stroke-linecap="round" filter="url(#wh)"/>
+              <line x1="24"  y1="52" x2="128" y2="52" stroke="white" stroke-width="5.5" stroke-linecap="round" filter="url(#wh)"/>
 
               <!-- ══ HANDLE ══
                    Arm curves smoothly up-right from top-right corner,
