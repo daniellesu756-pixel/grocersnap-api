@@ -2616,10 +2616,13 @@ function toggleVoice() {
   let pendingVoicePrefix = ''; // carry-over text from an incomplete sentence restart
 
   // ── Language toggle ──────────────────────────────────────────
-  let voiceLang = 'en-SG'; // default English (Singapore)
+  // iOS Safari supports: en-US, en-GB, en-AU, zh-CN, zh-TW (NOT en-SG)
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  let voiceLang = isIOS ? 'en-US' : 'en-SG';
+
   window.toggleVoiceLang = function() {
     const btn = document.getElementById('langToggleBtn');
-    if (voiceLang === 'en-SG') {
+    if (voiceLang === 'en-US' || voiceLang === 'en-SG') {
       voiceLang = 'zh-CN';
       btn.textContent = '🇨🇳';
       btn.classList.add('zh');
@@ -2627,10 +2630,10 @@ function toggleVoice() {
       document.getElementById('inlineAiInput').placeholder = '说中文或拼音，例如：小白菜、鸡蛋…';
       document.getElementById('inlineAiText').textContent = '请说中文或拼音 🎤';
     } else {
-      voiceLang = 'en-SG';
+      voiceLang = isIOS ? 'en-US' : 'en-SG';
       btn.textContent = '🇬🇧';
       btn.classList.remove('zh');
-      btn.title = 'English (SG) — tap to switch to Chinese';
+      btn.title = 'English — tap to switch to Chinese';
       document.getElementById('inlineAiInput').placeholder = 'Ask, snap or attach a grocery list…';
       document.getElementById('inlineAiText').textContent = 'What do you need today?';
     }
@@ -2639,8 +2642,10 @@ function toggleVoice() {
   function startVoiceListening() {
     voiceRecognition = new SpeechRecognition();
     voiceRecognition.lang = voiceLang;
-    voiceRecognition.interimResults = true;
+    // iOS Safari: interimResults must be false, continuous must be false
+    voiceRecognition.interimResults = !isIOS;
     voiceRecognition.continuous = false;
+    voiceRecognition.maxAlternatives = 1;
 
     voiceRecognition.onstart = () => {
       voiceListening = true;
@@ -2654,9 +2659,32 @@ function toggleVoice() {
       const raw = Array.from(e.results).map(r => r[0].transcript).join('');
       const combined = pendingVoicePrefix + raw;
       const fixed = fixVoiceTranscript(combined);
-      voiceRecognition._lastRaw = combined; // store raw for "Did you mean?" check
+      voiceRecognition._lastRaw = combined;
       document.getElementById('inlineAiInput').value = fixed;
       textEl.textContent = '🎤 ' + fixed;
+    };
+
+    // ── Handle errors clearly so user knows what to do ──────
+    voiceRecognition.onerror = (e) => {
+      voiceListening = false;
+      robotBtn.classList.remove('listening');
+      stopMicVisualizer();
+      voiceAutoMode = false;
+      const msgs = {
+        'not-allowed':    '🎤 Mic blocked — tap the 🔒 icon in Safari address bar → allow Microphone',
+        'no-speech':      '🎤 No speech heard — please speak louder and try again',
+        'network':        '🎤 Network error — check your internet connection',
+        'aborted':        '',  // user stopped intentionally — no message
+        'audio-capture':  '🎤 No microphone found on this device',
+        'service-not-available': '🎤 Voice service unavailable — try again in a moment',
+        'language-not-supported': '🎤 Language not supported — switching to English',
+      };
+      const msg = msgs[e.error] || ('🎤 Voice error: ' + e.error);
+      if (msg) textEl.textContent = msg;
+      if (e.error === 'language-not-supported') {
+        voiceLang = 'en-US';
+        textEl.textContent = '🎤 Switched to English — tap mic to try again';
+      }
     };
 
     voiceRecognition.onend = () => {
@@ -3131,6 +3159,16 @@ fetch('/api/products/search?q=milk&limit=5').then(r=>r.json()).catch(()=>null);
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
+
+    // On iOS: show a mic hint so user knows to allow permission when they first tap mic
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      const hint = document.getElementById('inlineAiText');
+      if (hint) hint.textContent = 'Tap 🎤 to speak — allow mic when Safari asks';
+      setTimeout(() => {
+        if (hint && hint.textContent.includes('allow mic'))
+          hint.textContent = 'What do you need today?';
+      }, 4000);
+    }
   });
 }
 </script>
