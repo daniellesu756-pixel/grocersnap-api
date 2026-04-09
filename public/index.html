@@ -654,10 +654,15 @@ body{
 @keyframes tag-pop{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
 .item-count{font-size:10px;color:#6b7280;margin-bottom:6px;text-align:center}
 /* AI Chat box */
-.chat-box{max-height:180px;overflow-y:auto;margin-bottom:8px;padding:4px 0;scroll-behavior:smooth;display:flex;flex-direction:column;gap:4px}
+.chat-box{max-height:180px;overflow-y:auto;margin-bottom:8px;padding:4px 0;scroll-behavior:smooth;display:flex;flex-direction:column;gap:4px;position:relative}
 .chat-box::-webkit-scrollbar{width:3px}
 .chat-box::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px}
 .chat-box:empty{display:none}
+/* Floating mini robot — sticks to bottom-right of chat when scrolled */
+.float-robot{position:absolute;bottom:6px;right:4px;z-index:10;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#c81e3b,#e53e3e);border:2px solid #fff;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(200,30,59,0.5);opacity:0;pointer-events:none;transition:opacity 0.2s,transform 0.2s;transform:scale(0.7)}
+.float-robot.show{opacity:1;pointer-events:auto;transform:scale(1)}
+.float-robot:active{transform:scale(0.88)}
+.float-robot.listening{animation:mic-pulse 0.8s ease-in-out infinite}
 .chat-msg{padding:7px 11px;border-radius:10px;margin-bottom:0;font-size:10.5px;line-height:1.7;animation:msg-in 0.3s ease;max-width:92%;font-family:'SF Mono','Fira Code','Consolas',monospace}
 .chat-user{background:linear-gradient(135deg,#c81e3b,#e8384f);color:#fff;align-self:flex-end;margin-left:auto;font-weight:500;border-bottom-right-radius:3px;font-family:inherit}
 .chat-ai{background:#0d1117;border:1px solid #30363d;color:#c9d1d9;align-self:flex-start;border-bottom-left-radius:3px;white-space:pre-line}
@@ -1093,7 +1098,10 @@ body{
           <button class="filter-side-btn mic" title="Speak">&#x1F3A4;</button>
         </div>
         <!-- AI Chat responses -->
-        <div class="chat-box" id="chatBox"></div>
+        <div class="chat-box" id="chatBox">
+          <!-- Floating mini robot — always visible at bottom-right when scrolled -->
+          <button class="float-robot" id="floatRobot" onclick="toggleVoice()" title="Tap to speak">🤖</button>
+        </div>
         <!-- Shopping list tags -->
         <div class="item-tags" id="itemTags"></div>
         <div class="item-count" id="itemCount"></div>
@@ -2765,6 +2773,7 @@ function toggleVoice() {
       document.getElementById('robotBtnName').textContent = '●';
       if (!pendingVoicePrefix) textEl.textContent = 'Listening…';
       startMicVisualizer();
+      updateFloatRobot();
     };
 
     voiceRecognition.onresult = (e) => {
@@ -2803,6 +2812,7 @@ function toggleVoice() {
       voiceListening = false;
       robotBtn.classList.remove('listening');
       stopMicVisualizer();
+      updateFloatRobot();
       const val = document.getElementById('inlineAiInput').value.trim();
 
       // ── Incomplete sentence guard ──────────────────────────
@@ -2981,8 +2991,35 @@ function addChat(type, msg, id) {
   div.className = 'chat-msg chat-' + type;
   div.innerHTML = msg;
   if (id) div.id = id;
-  box.appendChild(div);
+  // Insert before the float robot button so it stays at bottom
+  const floatBtn = document.getElementById('floatRobot');
+  if (floatBtn) box.insertBefore(div, floatBtn);
+  else box.appendChild(div);
   box.scrollTop = box.scrollHeight;
+  updateFloatRobot();
+}
+
+// Show floating robot when chat has content, hide when at top (robot visible)
+function updateFloatRobot() {
+  const box = document.getElementById('chatBox');
+  const btn = document.getElementById('floatRobot');
+  if (!btn || !box) return;
+  // Show if there are any chat messages
+  const msgs = box.querySelectorAll('.chat-msg');
+  if (msgs.length > 0) {
+    btn.classList.add('show');
+  } else {
+    btn.classList.remove('show');
+  }
+  // Sync listening state
+  const mainRobot = document.getElementById('robotBtn');
+  if (mainRobot && mainRobot.classList.contains('listening')) {
+    btn.classList.add('listening');
+    btn.textContent = '🎤';
+  } else {
+    btn.classList.remove('listening');
+    btn.textContent = '🤖';
+  }
 }
 
 function removeLastChat() {
