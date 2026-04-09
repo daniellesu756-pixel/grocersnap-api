@@ -1946,6 +1946,30 @@ function getDemoReply(msg) {
   // Phonetic fuzzy fix — catch anything the voice map missed
   for (const [pat, fix] of PHONETIC_MAP) m = m.replace(pat, fix);
 
+  // ── 🏪 Login / auto-cart to a specific store ─────────────────────────
+  const loginIntent = /\b(login|log in|log into|open|go to|auto.?cart|auto.?add|send to|checkout|place order)\b/i.test(m)
+                   && /\b(fairprice|sheng\s*siong|cold\s*storage|redmart|watsons|guardian|donki)\b/i.test(m);
+  if (loginIntent) {
+    const isFP  = /fairprice/i.test(m);
+    const isSS  = /sheng\s*siong/i.test(m);
+    const isCS  = /cold\s*storage/i.test(m);
+    const isRM  = /redmart/i.test(m);
+    const isWat = /watsons/i.test(m);
+    const storeLabel = isFP?'FairPrice':isSS?'Sheng Siong':isCS?'Cold Storage':isRM?'RedMart':isWat?'Watsons':'the store';
+    const listSummary = shoppingList.length > 0
+      ? `Your current list (${shoppingList.length} items): **${shoppingList.slice(0,5).join(', ')}${shoppingList.length>5?' +more':''}**`
+      : 'Your list is empty — add items first by typing or speaking!';
+    const q = encodeURIComponent(shoppingList[0] || 'groceries');
+    const storeUrl = isFP  ? `https://www.fairprice.com.sg/search?query=${q}&gs_auto=1`
+                   : isSS  ? `https://shengsiong.com.sg/search/${q}?gs_auto=1`
+                   : isCS  ? `https://www.coldstorage.com.sg/search?q=${q}&gs_auto=1`
+                   : isRM  ? `https://www.lazada.sg/catalog/?q=${q}&m=redmart&gs_auto=1`
+                   : isWat ? `https://www.watsons.com.sg/search?text=${q}&gs_auto=1`
+                   : `https://www.fairprice.com.sg/search?query=${q}&gs_auto=1`;
+    syncBasketToApi();
+    return `🛒 Opening **${storeLabel}** with your shopping list!\n\n${listSummary}\n\n**How it works:**\n1️⃣ Tap the button below — ${storeLabel} opens in a new tab\n2️⃣ Log in to ${storeLabel} if asked\n3️⃣ **Chrome extension auto-adds all items to cart!** ✅\n\n⚠️ Need the extension? Tap **Stores** tab → Install GrocerSnap Extension\n\n<a class="store-cart-btn ${isFP?'fp':isSS?'ss':isCS?'cs':isRM?'rm':'wat'}" href="${storeUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:20px;color:#fff;text-decoration:none;font-weight:700;font-size:14px;margin-top:8px">🛒 Open ${storeLabel} → Auto-Cart</a>`;
+  }
+
   // ── 🛒 Basket ADD intent — "add X to basket/cart/list" ──────────────
   const addIntent = /\b(add|put|include|basket|cart|buy|order|get|want|need)\b/i.test(m)
                  && /\b(basket|cart|list|shopping|order|买|加入|要买)\b/i.test(m);
@@ -2932,13 +2956,14 @@ function formatReply(text) {
   // Add per-store direct cart buttons if reply contains prices
   if (productName && /\$\d/.test(text) && !/added to your shopping/.test(text)) {
     const q = encodeURIComponent(productName);
+    // ?gs_auto=1 triggers Chrome extension to auto-add the full basket to cart
     html += `<div class="store-cart-btns">
-<span style="font-size:11px;color:#888;width:100%">🛒 Shop directly:</span>
-<a class="store-cart-btn fp" href="https://www.fairprice.com.sg/search?query=${q}" target="_blank" rel="noopener">🟥 FairPrice</a>
-<a class="store-cart-btn ss" href="https://shengsiong.com.sg/search/${q}" target="_blank" rel="noopener">🔵 Sheng Siong</a>
-<a class="store-cart-btn cs" href="https://www.coldstorage.com.sg/search?q=${q}" target="_blank" rel="noopener">🟢 Cold Storage</a>
-<a class="store-cart-btn rm" href="https://www.lazada.sg/catalog/?q=${q}&m=redmart" target="_blank" rel="noopener">🟠 RedMart</a>
-<a class="store-cart-btn wat" href="https://www.watsons.com.sg/search?text=${q}" target="_blank" rel="noopener">💊 Watsons</a>
+<span style="font-size:11px;color:#aaa;width:100%;margin-bottom:2px">🛒 Tap to auto-add your basket:</span>
+<a class="store-cart-btn fp" href="https://www.fairprice.com.sg/search?query=${q}&gs_auto=1" target="_blank" rel="noopener" onclick="syncBasketToApi()">🟥 FairPrice</a>
+<a class="store-cart-btn ss" href="https://shengsiong.com.sg/search/${q}?gs_auto=1" target="_blank" rel="noopener" onclick="syncBasketToApi()">🔵 Sheng Siong</a>
+<a class="store-cart-btn cs" href="https://www.coldstorage.com.sg/search?q=${q}&gs_auto=1" target="_blank" rel="noopener" onclick="syncBasketToApi()">🟢 Cold Storage</a>
+<a class="store-cart-btn rm" href="https://www.lazada.sg/catalog/?q=${q}&m=redmart&gs_auto=1" target="_blank" rel="noopener" onclick="syncBasketToApi()">🟠 RedMart</a>
+<a class="store-cart-btn wat" href="https://www.watsons.com.sg/search?text=${q}&gs_auto=1" target="_blank" rel="noopener" onclick="syncBasketToApi()">💊 Watsons</a>
 </div>`;
   }
   return html;
