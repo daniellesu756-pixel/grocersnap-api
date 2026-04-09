@@ -2770,6 +2770,16 @@ function renderTags() {
     ? shoppingList.length + ' item' + (shoppingList.length > 1 ? 's' : '') + ' in your list'
     : '';
   badge.textContent = shoppingList.length;
+  // Sync list to API so Chrome extension can read it
+  syncBasketToApi();
+}
+
+function syncBasketToApi() {
+  fetch('/api/basket/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items: shoppingList })
+  }).catch(() => {}); // silent fail — extension works without this too
 }
 
 function compareAll() {

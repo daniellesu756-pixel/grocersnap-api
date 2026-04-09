@@ -63,6 +63,22 @@ app.post('/api/basket/optimize', (req, res) => {
   res.json(result);
 });
 
+// Shared basket store (in-memory, synced from frontend)
+let sharedBasket: string[] = [];
+
+// Chrome extension reads this to get the shopping list
+app.get('/api/basket/list', (_req, res) => {
+  res.json({ items: sharedBasket, count: sharedBasket.length });
+});
+
+// Frontend posts the list here whenever it changes
+app.post('/api/basket/sync', (req, res) => {
+  const { items } = req.body;
+  if (!Array.isArray(items)) return res.status(400).json({ error: 'items array required' });
+  sharedBasket = items.map(String);
+  res.json({ ok: true, count: sharedBasket.length });
+});
+
 // ── Country map paths ──────────────────────────────────────
 app.get('/api/country-paths', (_req, res) => {
   try {
