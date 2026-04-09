@@ -445,8 +445,16 @@ body{
 .robot-picker{position:relative;flex-shrink:0}
 .robot-btn{display:flex;align-items:center;justify-content:center;border:none;border-radius:50%;width:36px;height:36px;padding:0;cursor:pointer;font-size:10px;font-weight:700;color:#fff;font-family:inherit;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.25);position:relative;overflow:visible}
 .lang-toggle-btn{border:none;background:rgba(255,255,255,0.9);border-radius:20px;padding:3px 7px;font-size:14px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.15);margin-left:4px;transition:all 0.2s;border:1.5px solid rgba(0,0,0,0.08);line-height:1}
-.add-basket-btn{display:inline-block;margin-top:8px;padding:7px 14px;background:linear-gradient(135deg,#c81e3b,#e53e3e);color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(200,30,59,0.3);transition:all 0.18s;font-family:inherit}
-.add-basket-btn:active{transform:scale(0.94);box-shadow:0 1px 4px rgba(200,30,59,0.2)}
+.store-cart-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.store-cart-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border:none;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;color:#fff;transition:all 0.18s;font-family:inherit;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,0.18)}
+.store-cart-btn:active{transform:scale(0.93);opacity:0.85}
+.store-cart-btn.fp{background:#e8202e}
+.store-cart-btn.ss{background:#1a6fb5}
+.store-cart-btn.cs{background:#0a6e3f}
+.store-cart-btn.rm{background:#ff6000}
+.store-cart-btn.wat{background:#0072bc}
+.store-cart-btn.grd{background:#00a651}
+.store-cart-btn.ddk{background:#c41e3a}
 .lang-toggle-btn:active{transform:scale(0.92)}
 .lang-toggle-btn.zh{background:rgba(220,30,30,0.1);border-color:rgba(220,30,30,0.3)}
 .robot-btn:active{transform:scale(0.93)}
@@ -1826,7 +1834,13 @@ async function sendInlineAI(fromVoice = false) {
       inlineHistory.push({ role: 'user', content: message });
       inlineHistory.push({ role: 'assistant', content: data.reply });
       if (inlineHistory.length > 20) inlineHistory = inlineHistory.slice(-20);
-      showAiReply(data.reply);
+      // Show provider badge on live AI replies
+      const providerBadge = data.provider === 'perplexity'
+        ? '<span style="font-size:10px;background:#6366f1;color:#fff;border-radius:8px;padding:1px 6px;margin-left:4px;vertical-align:middle">🔍 Live</span>'
+        : data.provider === 'gemini'
+        ? '<span style="font-size:10px;background:#4285f4;color:#fff;border-radius:8px;padding:1px 6px;margin-left:4px;vertical-align:middle">✨ Gemini</span>'
+        : '';
+      showAiReply(data.reply + (providerBadge ? '\n\n' + providerBadge : ''));
       if (data.basketItems && data.basketItems.length > 0) {
         data.basketItems.forEach(item => {
           const label = item.product_name.toLowerCase();
@@ -2221,8 +2235,76 @@ function getDemoReply(msg) {
   // Vitamins / health — generic
   if (m.includes('vitamin') || m.includes('supplement') || /\bhealth\b/.test(m) || m.includes('probiotics'))
     return "💊 Vitamins & supplements — which type?\n\n1. Vitamin C\n2. Vitamin D\n3. Omega 3 / fish oil\n4. Probiotics\n5. Collagen\n6. Biotin / hair vitamins\n7. Multivitamin\n\nJust reply with the number or name for prices! 🔍";
-  // Generic fallback — treat as a store product search
-  return "🔍 Looking for **" + msg.trim() + "** in Singapore stores...\n\nIn demo mode I have limited data. With the live server, I'd search FairPrice, Sheng Siong, Cold Storage, RedMart, Don Don Donki and Giant for this item.\n\nTry also: **milk, eggs, chicken, alkaline water, toys, mixed rice, vitamins, cleaning products**";
+  // ── Fruits & berries ────────────────────────────────────────
+  if (/cranberr/i.test(m))
+    return "🍒 **Cranberries** in Singapore stores:\n\n• **Ocean Spray Dried Cranberries 170g** — Cold Storage $5.90 ✅\n• **Ocean Spray Craisins 170g** — FairPrice $5.50 ✅\n• **Sun-Maid Dried Cranberries 170g** — RedMart $4.90 ✅ cheapest\n• **Organic Dried Cranberries 200g** — Cold Storage $8.90\n• **Ocean Spray Cranberry Juice 1L** — FairPrice $4.50\n• **Ocean Spray Cranberry Cocktail 1.5L** — Sheng Siong $4.20 ✅\n\n💡 Fresh cranberries are rare in SG — dried & juice are widely available\n💰 RedMart cheapest for dried cranberries at $4.90!";
+  if (/blueberr/i.test(m))
+    return "🫐 **Blueberries** — price comparison:\n\n• **Fresh Blueberries 125g** — Cold Storage $4.50 ✅\n• **Fresh Blueberries 125g** — FairPrice $4.90\n• **Driscoll's Blueberries 170g** — RedMart $5.50\n• **Frozen Blueberries 500g** — FairPrice $6.90 ✅ best value\n• **Dried Blueberries 100g** — Don Don Donki $3.90\n\n💰 Cold Storage cheapest fresh, FairPrice frozen best value!";
+  if (/strawberr/i.test(m))
+    return "🍓 **Strawberries** — price comparison:\n\n• **Fresh Strawberries 250g (Korea)** — Cold Storage $5.90 ✅\n• **Fresh Strawberries 250g** — FairPrice $4.90 ✅\n• **Driscoll's Strawberries 250g** — RedMart $5.50\n• **Frozen Strawberries 500g** — FairPrice $5.90\n\n💰 FairPrice $4.90 cheapest for fresh strawberries!";
+  if (/raspberr/i.test(m))
+    return "🍓 **Raspberries** — price comparison:\n\n• **Fresh Raspberries 125g** — Cold Storage $5.90 ✅\n• **Frozen Raspberries 300g** — FairPrice $5.50 ✅\n• **Dried Raspberries 100g** — Don Don Donki $4.50\n\n💰 FairPrice frozen raspberries best value at $5.50!";
+  if (/avocado/i.test(m))
+    return "🥑 **Avocado** — price comparison:\n\n• **Avocado (each)** — Sheng Siong $1.90 ✅ cheapest\n• **Avocado (each)** — FairPrice $2.20\n• **Hass Avocado (each)** — Cold Storage $2.80\n• **Organic Avocado (each)** — Cold Storage $3.90\n• **Avocado 2-pack** — RedMart $4.50\n\n💰 Sheng Siong $1.90 each cheapest!";
+  if (/mango/i.test(m))
+    return "🥭 **Mango** — price comparison:\n\n• **Thai Mango (each)** — Sheng Siong $1.50 ✅\n• **Alphonso Mango (each)** — Mustafa $2.50\n• **Mango 500g pack** — FairPrice $3.90\n• **Frozen Mango chunks 500g** — FairPrice $4.50\n• **Japanese Mango** — Don Don Donki $8.90\n\n💰 Sheng Siong Thai mango cheapest at $1.50!";
+  if (/durian/i.test(m))
+    return "🌵 **Durian** — price comparison:\n\n• **Mao Shan Wang (per kg)** — Sheng Siong $28–$35/kg\n• **D24 Sultan (per kg)** — FairPrice $18–$22/kg ✅\n• **Black Gold** — Cold Storage $45+/kg\n• **Frozen Durian Puree 400g** — FairPrice $8.90 ✅\n• **Don Don Donki Frozen Durian** — Don Don Donki $12.90\n\n💰 FairPrice D24 best value whole durian!";
+  if (/grape/i.test(m))
+    return "🍇 **Grapes** — price comparison:\n\n• **Green Grapes 500g** — Sheng Siong $3.90 ✅\n• **Red Globe Grapes 500g** — FairPrice $4.50\n• **Shine Muscat Grapes** — Don Don Donki $12.90\n• **Cotton Candy Grapes** — Cold Storage $8.90\n\n💰 Sheng Siong cheapest at $3.90/500g!";
+
+  // ── Health foods ─────────────────────────────────────────────
+  if (/quinoa/i.test(m))
+    return "🌾 **Quinoa** — price comparison:\n\n• **FairPrice Quinoa 500g** — FairPrice $5.90 ✅\n• **Ceres Organics Quinoa 400g** — Cold Storage $8.90\n• **Nature's Superfoods Quinoa 500g** — RedMart $7.50\n• **Organic White Quinoa 1kg** — RedMart $12.90 ✅ best per kg\n\n💰 FairPrice own brand cheapest at $5.90/500g!";
+  if (/oat|oatmeal|granola/i.test(m))
+    return "🥣 **Oats & Granola** — price comparison:\n\n• **Quaker Oats Quick 800g** — Sheng Siong $4.50 ✅\n• **FairPrice Rolled Oats 800g** — FairPrice $3.90 ✅ cheapest\n• **Quaker Oats Original 1kg** — FairPrice $5.50\n• **Uncle Tobys Oats 700g** — Cold Storage $6.90\n• **Granola Up Real Food 400g** — RedMart $8.90\n\n💰 FairPrice housebrand oats $3.90 cheapest!";
+  if (/chia\s*seed/i.test(m))
+    return "🌱 **Chia Seeds** — price comparison:\n\n• **FairPrice Chia Seeds 200g** — FairPrice $4.90 ✅\n• **Ceres Organics Chia Seeds 300g** — Cold Storage $8.90\n• **Nature's Superfoods Chia Seeds 500g** — RedMart $9.90\n• **Organic Chia Seeds 1kg** — RedMart $18.90 ✅ best per kg\n\n💰 FairPrice $4.90 cheapest for small pack!";
+  if (/honey/i.test(m))
+    return "🍯 **Honey** — price comparison:\n\n• **FairPrice Pure Honey 500g** — FairPrice $5.90 ✅\n• **Apis Pure Honey 500g** — Sheng Siong $5.50 ✅ cheapest\n• **Manuka Health MGO 83+ 500g** — Cold Storage $28.90\n• **Comvita Manuka UMF10+ 250g** — Guardian $42.90\n• **Capilano Pure Honey 500g** — RedMart $8.90\n\n💰 Apis at Sheng Siong $5.50 cheapest regular honey!";
+  if (/almond/i.test(m))
+    return "🥜 **Almonds** — price comparison:\n\n• **FairPrice Almonds 200g** — FairPrice $4.50 ✅\n• **Blue Diamond Almonds 170g** — Sheng Siong $4.90\n• **Wonderful Almonds 200g** — Cold Storage $6.50\n• **Organic Almonds 500g** — RedMart $14.90 ✅ best per kg\n\n💰 FairPrice $4.50 cheapest per pack!";
+  if (/peanut butter|peanut\s*butter/i.test(m))
+    return "🥜 **Peanut Butter** — price comparison:\n\n• **FairPrice Peanut Butter Creamy 340g** — FairPrice $2.90 ✅ cheapest\n• **Skippy Creamy PB 340g** — Sheng Siong $3.50\n• **Jif Creamy PB 454g** — Cold Storage $5.90\n• **Pic's Peanut Butter 380g** — RedMart $8.90\n• **Justin's Almond Butter 227g** — Cold Storage $12.90\n\n💰 FairPrice housebrand $2.90 best value!";
+
+  // ── Dairy & alternatives ──────────────────────────────────────
+  if (/oat.*milk|oatly/i.test(m))
+    return "🌾 **Oat Milk** — price comparison:\n\n• **Oatly Barista 1L** — FairPrice $4.20 ✅\n• **Oatly Original 1L** — Cold Storage $4.50\n• **Minor Figures Oat Milk 1L** — RedMart $4.90\n• **FairPrice Oat Milk 1L** — FairPrice $2.90 ✅ cheapest\n• **Oat Side Barista 1L** — Cold Storage $3.90\n\n💰 FairPrice housebrand oat milk $2.90 cheapest!";
+  if (/almond.*milk/i.test(m))
+    return "🥛 **Almond Milk** — price comparison:\n\n• **Almond Breeze Unsweetened 1L** — FairPrice $3.50 ✅\n• **Almond Breeze Original 1L** — Cold Storage $3.90\n• **So Good Almond Milk 1L** — Sheng Siong $3.20 ✅ cheapest\n• **Califia Farms Almond Milk 1L** — RedMart $5.90\n\n💰 So Good at Sheng Siong $3.20 cheapest!";
+  if (/soy.*milk|soya.*milk/i.test(m))
+    return "🥛 **Soy Milk** — price comparison:\n\n• **Marigold Soya Milk 1L** — FairPrice $1.90 ✅ cheapest\n• **Pokka Soya Milk 1L** — Sheng Siong $1.80 ✅\n• **Vitasoy Original 1L** — Cold Storage $2.20\n• **Silk Soy Milk 1L** — RedMart $3.50\n• **Yeo's Soya Milk 1L** — FairPrice $1.85\n\n💰 Pokka at Sheng Siong $1.80 cheapest!";
+
+  // ── Snacks & bakery ────────────────────────────────────────────
+  if (/croissant/i.test(m))
+    return "🥐 **Croissants** — price comparison:\n\n• **FairPrice Croissant 4pcs** — FairPrice $2.50 ✅ cheapest\n• **Gardenia Croissant 4pcs** — Sheng Siong $2.80\n• **Délifrance Mini Croissant 6pcs** — Cold Storage $5.90\n• **Fresh Baked Croissant each** — Cold Storage $2.20\n• **Don Don Donki Croissant** — Don Don Donki $1.50 ✅ cheapest each\n\n💰 Don Don Donki single croissant cheapest at $1.50!";
+  if (/cookie|biscuit|cracker/i.test(m))
+    return "🍪 **Cookies & Biscuits** — price comparison:\n\n• **Oreo Original 137g** — FairPrice $2.50 ✅\n• **Arnott's Tim Tam 200g** — Cold Storage $4.90\n• **Ritz Crackers 200g** — Sheng Siong $3.50\n• **Meiji Hello Panda 50g** — Don Don Donki $1.20 ✅ cheapest\n• **Khong Guan Assorted Biscuits 650g** — FairPrice $8.90 ✅\n\n💰 Meiji Hello Panda at Donki cheapest per snack!";
+  if (/chocolate/i.test(m))
+    return "🍫 **Chocolate** — price comparison:\n\n• **Cadbury Dairy Milk 90g** — FairPrice $2.50 ✅\n• **Cadbury Dairy Milk 90g** — Sheng Siong $2.30 ✅ cheapest\n• **Lindt Excellence 70% 100g** — Cold Storage $4.90\n• **Meiji Milk Chocolate 58g** — Don Don Donki $1.50\n• **Ferrero Rocher 16pcs** — FairPrice $12.90\n• **Toblerone 100g** — RedMart $3.90\n\n💰 Cadbury at Sheng Siong $2.30 cheapest!";
+
+  // ── Meat & seafood ─────────────────────────────────────────────
+  if (/lamb|mutton/i.test(m))
+    return "🥩 **Lamb / Mutton** — price comparison:\n\n• **Frozen Lamb Shoulder 500g** — FairPrice $8.90 ✅\n• **Halal Mutton (per kg)** — Mustafa $14.90 ✅ cheapest\n• **NZ Lamb Rack** — Cold Storage $28.90\n• **Frozen Lamb Chops 500g** — Sheng Siong $10.90\n• **Halal Lamb Mince 500g** — RedMart $9.90\n\n💰 Mustafa cheapest for halal mutton at $14.90/kg!";
+  if (/turkey/i.test(m))
+    return "🦃 **Turkey** — price comparison:\n\n• **Frozen Turkey Breast 1kg** — Cold Storage $18.90 ✅\n• **Whole Frozen Turkey** — Cold Storage $45–$65\n• **Turkey Ham 200g** — FairPrice $4.90 ✅ cheapest\n• **Smoked Turkey Slices** — RedMart $6.50\n\n💰 Cold Storage main source for whole turkey in SG!";
+  if (/crab/i.test(m))
+    return "🦀 **Crab** — price comparison:\n\n• **Sri Lankan Crab (per kg)** — Sheng Siong $28–$35/kg ✅\n• **Flower Crab (each ~600g)** — FairPrice $12.90 ✅\n• **Frozen Crab Meat 200g** — RedMart $8.90\n• **Frozen Soft Shell Crab 4pcs** — Cold Storage $12.90\n• **Live Mud Crab (per kg)** — Mustafa $22/kg ✅ cheapest\n\n💰 Mustafa cheapest live crab!";
+  if (/lobster/i.test(m))
+    return "🦞 **Lobster** — price comparison:\n\n• **Frozen Lobster Tail 200g** — Cold Storage $18.90 ✅\n• **Live Boston Lobster (per kg)** — Cold Storage $45–$60\n• **Frozen Whole Lobster** — RedMart $28.90\n• **Lobster Bisque Soup** — Cold Storage $8.90\n\n💰 Cold Storage and RedMart main sources for lobster in SG!";
+
+  // ── Condiments & sauces ────────────────────────────────────────
+  if (/ketchup|tomato\s*sauce/i.test(m))
+    return "🍅 **Tomato Sauce / Ketchup** — price comparison:\n\n• **Heinz Tomato Ketchup 570g** — Sheng Siong $3.90 ✅ cheapest\n• **Heinz Tomato Ketchup 570g** — FairPrice $4.20\n• **FairPrice Tomato Ketchup 340g** — FairPrice $1.50 ✅ cheapest overall\n• **Del Monte Tomato Ketchup 567g** — Cold Storage $3.50\n\n💰 FairPrice housebrand $1.50 best value!";
+  if (/mayo|mayonnaise/i.test(m))
+    return "🥄 **Mayonnaise** — price comparison:\n\n• **Hellmann's Real Mayo 400ml** — FairPrice $4.50 ✅\n• **Hellmann's Real Mayo 400ml** — Sheng Siong $4.20 ✅ cheapest\n• **Kewpie Mayo 500g** — Don Don Donki $4.90\n• **FairPrice Mayo 470ml** — FairPrice $2.90 ✅ cheapest overall\n\n💰 FairPrice housebrand $2.90 best value!";
+
+  // ── Smart generic fallback — always gives useful answer ─────────
+  const cleanProduct = msg.trim().replace(/[?!.,]/g,'');
+  const storeGuess = /organic|premium|imported|french|japanese|korean|australian/i.test(m)
+    ? 'Cold Storage or RedMart' : 'Sheng Siong or FairPrice';
+  const priceGuess = /organic|premium|imported/i.test(m) ? '$8–$25' : '$2–$15';
+  return "🔍 **" + cleanProduct + "** — searching Singapore stores:\n\n📍 Most likely found at: **" + storeGuess + "**\n💰 Estimated price range: **" + priceGuess + "**\n\n🏪 Check these stores:\n• **FairPrice** → fairprice.com.sg\n• **Sheng Siong** → shengsiong.com.sg\n• **Cold Storage** → coldstorage.com.sg\n• **RedMart** → lazada.sg/shop/redmart\n• **Watsons** → watsons.com.sg\n\n💡 For **live real-time prices** add a **Perplexity API key** (pplx.ai/api) to .env — I'll search all stores instantly!";
 }
 
 // ── Voice mishearing correction map ─────────────────────
@@ -2786,8 +2868,15 @@ async function sendToAgent(message) {
       // Keep last 20 turns to avoid huge payloads
       if (chatHistory.length > 40) chatHistory = chatHistory.slice(-40);
 
+      // Provider badge for live search
+      const providerBadge = data.provider === 'perplexity'
+        ? '<span style="font-size:10px;background:#6366f1;color:#fff;border-radius:8px;padding:1px 6px;margin-left:4px">🔍 Live Search</span>'
+        : data.provider === 'gemini'
+        ? '<span style="font-size:10px;background:#4285f4;color:#fff;border-radius:8px;padding:1px 6px;margin-left:4px">✨ Gemini</span>'
+        : '';
+
       // Render AI reply (markdown-lite: bold, newlines)
-      const html = formatReply(data.reply);
+      const html = formatReply(data.reply) + providerBadge;
       addChat('ai', html);
 
       // Handle basket additions from AI
@@ -2840,23 +2929,19 @@ function formatReply(text) {
     .replace(/(💰[^\n<]+)/g, '<span class="p-save">$1</span>')
     .replace(/(⚠[^\n<]+)/g, '<span class="p-warn">$1</span>');
 
-  // Add "🛒 Add to Basket" button if reply contains prices and a product name
+  // Add per-store direct cart buttons if reply contains prices
   if (productName && /\$\d/.test(text) && !/added to your shopping/.test(text)) {
-    const safeName = productName.replace(/'/g, "\\'");
-    html += `<br><button class="add-basket-btn" onclick="addToBasketFromChat('${safeName}')">🛒 Add <b>${productName}</b> to Basket</button>`;
+    const q = encodeURIComponent(productName);
+    html += `<div class="store-cart-btns">
+<span style="font-size:11px;color:#888;width:100%">🛒 Shop directly:</span>
+<a class="store-cart-btn fp" href="https://www.fairprice.com.sg/search?query=${q}" target="_blank" rel="noopener">🟥 FairPrice</a>
+<a class="store-cart-btn ss" href="https://shengsiong.com.sg/search/${q}" target="_blank" rel="noopener">🔵 Sheng Siong</a>
+<a class="store-cart-btn cs" href="https://www.coldstorage.com.sg/search?q=${q}" target="_blank" rel="noopener">🟢 Cold Storage</a>
+<a class="store-cart-btn rm" href="https://www.lazada.sg/catalog/?q=${q}&m=redmart" target="_blank" rel="noopener">🟠 RedMart</a>
+<a class="store-cart-btn wat" href="https://www.watsons.com.sg/search?text=${q}" target="_blank" rel="noopener">💊 Watsons</a>
+</div>`;
   }
   return html;
-}
-
-function addToBasketFromChat(productName) {
-  const lower = productName.toLowerCase();
-  if (!shoppingList.includes(lower)) {
-    shoppingList.push(lower);
-    renderTags();
-  }
-  // Show confirmation in chat
-  addChat('ai', `✅ <b>${productName}</b> added to your shopping list! You now have <b>${shoppingList.length}</b> item${shoppingList.length>1?'s':''}. Tap <b>Compare All Stores</b> to find cheapest prices.`);
-  document.getElementById('chatBox').scrollTop = 99999;
 }
 
 function addChat(type, msg, id) {

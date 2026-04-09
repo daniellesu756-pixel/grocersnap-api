@@ -8,6 +8,7 @@ import { CATEGORIES } from './models/product';
 import { searchProducts, getProductsByCategory, getProductById, optimizeBasket } from './services/product-service';
 import { chat } from './services/ai-agent';
 import { geminiChat, geminiVision, GeminiMessage } from './services/gemini-agent';
+import { perplexitySearch, perplexityGrocerySearch } from './services/perplexity-agent';
 
 dotenv.config();
 
@@ -96,16 +97,28 @@ app.get('/api/country-paths', (_req, res) => {
   } catch { res.json({}); }
 });
 
-// ── AI Agent chat — tries Gemini (free) first, then Claude ────
+// ── AI Agent chat — Perplexity (live search) → Gemini (free) → Claude ────
+// Priority: Perplexity sonar (real-time web) > Gemini (fast, free) > Claude
 app.post('/api/ai/chat', async (req, res) => {
   try {
     const { message, history, connectedStores, country } = req.body;
     if (!message) return res.status(400).json({ error: 'message is required' });
 
+    const perplexityKey = process.env.PERPLEXITY_API_KEY;
     const geminiKey = process.env.GEMINI_API_KEY;
     const claudeKey = process.env.ANTHROPIC_API_KEY;
 
-    // Prefer Gemini (free), fall back to Claude if available
+    // 1. Perplexity Sonar — real-time web search for live grocery prices
+    if (perplexityKey) {
+      const perplexityHistory = (history || []).map((h: any) => ({
+        role: h.role === 'assistant' ? 'assistant' : 'user' as 'user' | 'assistant',
+        content: h.content,
+      }));
+      const result = await perplexitySearch(message, perplexityHistory, perplexityKey);
+      return res.json({ reply: result.reply, provider: 'perplexity', citations: result.citations });
+    }
+
+    // 2. Gemini Flash — fast, free, good for general grocery questions
     if (geminiKey) {
       const geminiHistory: GeminiMessage[] = (history || []).map((h: any) => ({
         role: h.role === 'assistant' ? 'model' : 'user',
@@ -115,16 +128,52 @@ app.post('/api/ai/chat', async (req, res) => {
       return res.json({ reply: result.reply, provider: 'gemini' });
     }
 
+    // 3. Claude — most capable, requires paid key
     if (claudeKey) {
       const result = await chat({ message, history: history || [], connectedStores, country });
       return res.json({ ...result, provider: 'claude' });
     }
 
-    return res.status(503).json({ error: 'No AI key configured. Add GEMINI_API_KEY to .env file.' });
+    return res.status(503).json({ error: 'No AI key configured. Add PERPLEXITY_API_KEY or GEMINI_API_KEY to .env file.' });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Unknown error';
     console.error('AI chat error:', msg);
     res.status(500).json({ error: 'AI error: ' + msg });
+  }
+});
+
+// ── Live grocery search via Perplexity ────────────────────────────────────
+// Fast real-time price lookup for one or more items
+app.post('/api/search/live', async (req, res) => {
+  try {
+    const { query, items } = req.body;
+    const perplexityKey = process.env.PERPLEXITY_API_KEY;
+
+    if (!perplexityKey) {
+      return res.status(503).json({ error: 'PERPLEXITY_API_KEY not configured', fallback: true });
+    }
+
+    if (items && Array.isArray(items)) {
+      // Batch search for multiple items (basket mode)
+      const result = await perplexityGrocerySearch(items, perplexityKey);
+      return res.json({ results: result.results, provider: 'perplexity' });
+    }
+
+    if (query) {
+      // Single item search
+      const result = await perplexitySearch(
+        `Current price of "${query}" at Singapore grocery stores FairPrice, Sheng Siong, Cold Storage, RedMart. Show cheapest.`,
+        [],
+        perplexityKey
+      );
+      return res.json({ reply: result.reply, citations: result.citations, provider: 'perplexity' });
+    }
+
+    return res.status(400).json({ error: 'Provide query or items array' });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    console.error('Live search error:', msg);
+    res.status(500).json({ error: 'Search error: ' + msg });
   }
 });
 
@@ -184,7 +233,10 @@ app.post('/api/ai/vision', async (req, res) => {
 // ── Health check ───────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
   const hasAI = !!process.env.ANTHROPIC_API_KEY;
-  res.json({ status: 'ok', version: '1.0.0', stores: STORES.length, categories: CATEGORIES.length, ai: hasAI });
+  const hasGemini = !!process.env.GEMINI_API_KEY;
+  const hasPerplexity = !!process.env.PERPLEXITY_API_KEY;
+  const aiProvider = hasPerplexity ? 'perplexity' : hasGemini ? 'gemini' : hasAI ? 'claude' : 'demo';
+  res.json({ status: 'ok', version: '1.1.0', stores: STORES.length, categories: CATEGORIES.length, ai: hasAI || hasGemini || hasPerplexity, aiProvider });
 });
 
 app.listen(PORT, () => {
