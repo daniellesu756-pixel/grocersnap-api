@@ -359,6 +359,9 @@ body{font-family:'Inter',sans-serif;color:#1f2937;background:var(--bg);display:f
 /* ── Robot voice picker button ─────────────────────────── */
 .robot-picker{position:relative;flex-shrink:0}
 .robot-btn{display:flex;align-items:center;justify-content:center;border:none;border-radius:50%;width:36px;height:36px;padding:0;cursor:pointer;font-size:10px;font-weight:700;color:#fff;font-family:inherit;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.25);position:relative;overflow:visible}
+.lang-toggle-btn{border:none;background:rgba(255,255,255,0.9);border-radius:20px;padding:3px 7px;font-size:14px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.15);margin-left:4px;transition:all 0.2s;border:1.5px solid rgba(0,0,0,0.08);line-height:1}
+.lang-toggle-btn:active{transform:scale(0.92)}
+.lang-toggle-btn.zh{background:rgba(220,30,30,0.1);border-color:rgba(220,30,30,0.3)}
 .robot-btn:active{transform:scale(0.93)}
 .robot-btn.listening{animation:mic-pulse 0.8s ease-in-out infinite}
 .robot-avatar{font-size:18px;line-height:1;position:relative;z-index:1}
@@ -920,6 +923,7 @@ body{font-family:'Inter',sans-serif;color:#1f2937;background:var(--bg);display:f
             <button class="robot-chevron" id="robotChevron" onpointerdown="toggleRobotMenu(event)" title="Change character">▾</button>
             <div class="robot-menu" id="robotMenu"></div>
           </div>
+          <button class="lang-toggle-btn" id="langToggleBtn" onpointerdown="toggleVoiceLang()" title="Switch voice language">🇬🇧</button>
         </div>
         <!-- Input row — ABOVE chat thread -->
         <div class="smart-ai-input-row">
@@ -1808,9 +1812,35 @@ const PHONETIC_MAP = [
   [/\brice\s*bag\b/i,   'rice'],
 ];
 
+// ── Chinese character → English grocery map ──────────────────
+const CHINESE_MAP = [
+  [/小白菜/g,'xiao bai cai'],[/白菜/g,'bai cai cabbage'],[/芥兰/g,'kai lan'],
+  [/菜心/g,'chye sim'],[/空心菜/g,'kangkong'],[/豆芽/g,'tau ge bean sprouts'],
+  [/豆干/g,'tau kwa tofu'],[/豆卜/g,'tau pok tofu puff'],[/豆腐/g,'tofu'],
+  [/腊肠/g,'lup cheong sausage'],[/肉干/g,'bak kwa'],[/叉烧/g,'char siew'],
+  [/年糕/g,'nian gao'],[/鸡蛋/g,'eggs'],[/蛋/g,'eggs'],[/鸡肉/g,'chicken'],
+  [/猪肉/g,'pork'],[/牛肉/g,'beef'],[/羊肉/g,'mutton'],[/鱼/g,'fish'],
+  [/虾/g,'prawns'],[/米/g,'rice'],[/面/g,'noodles'],[/面条/g,'noodles'],
+  [/牛奶/g,'milk'],[/面包/g,'bread'],[/糖/g,'sugar'],[/盐/g,'salt'],
+  [/油/g,'cooking oil'],[/酱油/g,'soy sauce'],[/蚝油/g,'oyster sauce'],
+  [/辣椒酱/g,'chilli sauce'],[/番茄酱/g,'tomato sauce ketchup'],
+  [/洗发水/g,'shampoo'],[/洗洁精/g,'dishwashing liquid'],[/厕纸/g,'toilet paper'],
+  [/卫生纸/g,'toilet paper'],[/洗衣粉/g,'laundry detergent'],
+  [/苹果/g,'apple'],[/香蕉/g,'banana'],[/橙/g,'orange'],[/西瓜/g,'watermelon'],
+  [/榴莲/g,'durian'],[/芒果/g,'mango'],[/草莓/g,'strawberry'],
+  [/咖啡/g,'coffee'],[/茶/g,'tea'],[/果汁/g,'juice'],[/水/g,'water'],
+  [/多少钱/g,'price how much'],[/便宜/g,'cheap cheapest'],
+  [/比较/g,'compare'],[/最便宜/g,'cheapest'],[/在哪里/g,'where to buy'],
+  [/有没有/g,'do you have'],[/我要/g,'i want'],[/给我/g,'give me'],
+];
+function translateChinese(s) {
+  for (const [pat, eng] of CHINESE_MAP) s = s.replace(pat, eng);
+  return s;
+}
+
 function getDemoReply(msg) {
-  // Apply voice fixes first, then normalise
-  let m = normalizeQuery(fixVoiceTranscript(msg)).toLowerCase();
+  // Translate Chinese characters first, then apply voice fixes + normalise
+  let m = normalizeQuery(fixVoiceTranscript(translateChinese(msg))).toLowerCase();
   // Phonetic fuzzy fix — catch anything the voice map missed
   for (const [pat, fix] of PHONETIC_MAP) m = m.replace(pat, fix);
   // Detect "list all / show all / all items related to X" intent
@@ -2471,9 +2501,30 @@ function toggleVoice() {
 
   let pendingVoicePrefix = ''; // carry-over text from an incomplete sentence restart
 
+  // ── Language toggle ──────────────────────────────────────────
+  let voiceLang = 'en-SG'; // default English (Singapore)
+  window.toggleVoiceLang = function() {
+    const btn = document.getElementById('langToggleBtn');
+    if (voiceLang === 'en-SG') {
+      voiceLang = 'zh-CN';
+      btn.textContent = '🇨🇳';
+      btn.classList.add('zh');
+      btn.title = '普通话 — tap to switch to English';
+      document.getElementById('inlineAiInput').placeholder = '说中文或拼音，例如：小白菜、鸡蛋…';
+      document.getElementById('inlineAiText').textContent = '请说中文或拼音 🎤';
+    } else {
+      voiceLang = 'en-SG';
+      btn.textContent = '🇬🇧';
+      btn.classList.remove('zh');
+      btn.title = 'English (SG) — tap to switch to Chinese';
+      document.getElementById('inlineAiInput').placeholder = 'Ask, snap or attach a grocery list…';
+      document.getElementById('inlineAiText').textContent = 'What do you need today?';
+    }
+  };
+
   function startVoiceListening() {
     voiceRecognition = new SpeechRecognition();
-    voiceRecognition.lang = 'en-SG';
+    voiceRecognition.lang = voiceLang;
     voiceRecognition.interimResults = true;
     voiceRecognition.continuous = false;
 
