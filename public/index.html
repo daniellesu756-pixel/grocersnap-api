@@ -797,6 +797,16 @@ body{font-family:'Inter',sans-serif;color:#1f2937;background:var(--bg);display:f
               <text x="222" y="92" text-anchor="middle" font-size="12">&#x1F6D2;</text>
               <text x="222" y="84" text-anchor="middle" fill="#000" font-size="6.5" font-weight="800" stroke="#fff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">Mustafa</text>
             </g>
+            <!-- Watsons - Orchard Road HQ -->
+            <g class="map-pin" data-store="watsons">
+              <text x="163" y="103" text-anchor="middle" font-size="12">&#x1F48A;</text>
+              <text x="163" y="95" text-anchor="middle" fill="#0072bc" font-size="6.5" font-weight="800" stroke="#fff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">Watsons</text>
+            </g>
+            <!-- Guardian - Dairy Farm / Bukit Timah HQ -->
+            <g class="map-pin" data-store="guardian">
+              <text x="122" y="88" text-anchor="middle" font-size="12">&#x1F48A;</text>
+              <text x="122" y="80" text-anchor="middle" fill="#00a651" font-size="6.5" font-weight="800" stroke="#fff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">Guardian</text>
+            </g>
           </g>
 
           <!-- GS badge -->
@@ -1251,7 +1261,7 @@ storeOrbs.forEach(s => {
     this.classList.add('jumping');
     this.classList.add('selected');
     const name = this.dataset.store;
-    const labels = {fairprice:'FairPrice',shengsiong:'Sheng Siong',coldstorage:'Cold Storage',redmart:'RedMart',dondonki:'Don Don Donki',giant:'Giant',mustafa:'Mustafa'};
+    const labels = {fairprice:'FairPrice',shengsiong:'Sheng Siong',coldstorage:'Cold Storage',redmart:'RedMart',dondonki:'Don Don Donki',giant:'Giant',mustafa:'Mustafa',watsons:'Watsons',guardian:'Guardian'};
     orbStatus.textContent = labels[name] + ' selected — ready to shop!';
     // Make all others jump too in a wave
     storeOrbs.forEach((x, i) => {
