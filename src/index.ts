@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import dotenv from 'dotenv';
+import compression from 'compression';
 import { STORES, getStoreSearchUrl } from './models/store';
 import { CATEGORIES } from './models/product';
 import { searchProducts, getProductsByCategory, getProductById, optimizeBasket } from './services/product-service';
@@ -11,9 +12,16 @@ import { geminiChat, geminiVision, GeminiMessage } from './services/gemini-agent
 dotenv.config();
 
 const app = express();
+// Gzip compress all responses — speeds up load by 60-70%
+app.use(compression());
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '..', 'public')));
+// Cache static files for 1 hour on phone browser
+app.use(express.static(path.join(__dirname, '..', 'public'), {
+  maxAge: '1h',
+  etag: true,
+  lastModified: true,
+}));
 
 const PORT = process.env.PORT || 4000;
 

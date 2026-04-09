@@ -33,10 +33,10 @@
   }
 </style>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* System fonts — no external request, loads instantly */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{touch-action:manipulation}
-select,select option,select optgroup{font-family:'Inter',sans-serif!important;font-size:10px!important;font-weight:500!important;color:#1f2937!important}
+select,select option,select optgroup{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif!important;font-size:10px!important;font-weight:500!important;color:#1f2937!important}
 :root{--mint:#c81e3b;--mint-light:#fde2e8;--coral:#f87171;--blue:#1a1a1a;--purple:#a78bfa;--amber:#fbbf24;--bg:#f5f0f0;--ruby:#c81e3b;--ruby-light:#e8384f;--dark:#1a1a1a;--white:#ffffff;}
 /* ── FULLY RESPONSIVE LAYOUT: iPhone / iPad / Desktop ──────── */
 html,body{
@@ -48,7 +48,7 @@ html,body{
   background:var(--bg);
 }
 body{
-  font-family:'Inter',sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
   color:#1f2937;
   display:flex;
   justify-content:center;
@@ -294,12 +294,12 @@ body{
 
 .greeting-area{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0 4px;width:100%}
 .eq-theme-select{padding:3px 8px;border:1.5px solid rgba(200,30,59,0.2);border-radius:10px;font-size:10px;font-family:inherit;background:rgba(255,255,255,0.85);color:#374151;cursor:pointer;outline:none;backdrop-filter:blur(8px)}
-.eq-custom-select{position:relative;font-size:10px;font-family:'Inter',sans-serif;user-select:none}
+.eq-custom-select{position:relative;font-size:10px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;user-select:none}
 .eq-sel-val{padding:3px 8px;border:1.5px solid rgba(200,30,59,0.2);border-radius:10px;background:rgba(255,255,255,0.85);color:#374151;cursor:pointer;font-size:10px;font-weight:500;display:flex;align-items:center;gap:4px;white-space:nowrap;backdrop-filter:blur(8px)}
 .eq-sel-arrow{font-size:8px;opacity:0.6}
 .eq-sel-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.14);z-index:999;overflow:hidden;min-width:100px}
 .eq-sel-menu.open{display:block}
-.eq-sel-opt{padding:6px 12px;font-size:10px;font-family:'Inter',sans-serif;color:#1f2937;cursor:pointer;font-weight:500;white-space:nowrap}
+.eq-sel-opt{padding:6px 12px;font-size:10px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;color:#1f2937;cursor:pointer;font-weight:500;white-space:nowrap}
 .eq-sel-opt:hover{background:#f5f0f0;color:#c81e3b}
 .greeting{font-size:22px;font-weight:700;color:#111827;letter-spacing:-0.5px;text-align:center;transition:opacity 0.3s}
 .greeting-sub{font-size:13px;color:#6b7280;margin-top:4px;text-align:center}
@@ -998,7 +998,7 @@ body{
           </div>
           <span class="smart-ai-status" id="inlineAiText">What do you need today?</span>
           <div class="robot-picker" id="robotPicker">
-            <button class="robot-btn" id="robotBtn" onpointerdown="toggleVoice()" title="Tap to speak / change voice">
+            <button class="robot-btn" id="robotBtn" onclick="toggleVoice()" title="Tap to speak / change voice">
               <span class="robot-bubble"></span>
               <span class="robot-bubble"></span>
               <span class="robot-bubble"></span>
@@ -1007,26 +1007,26 @@ body{
               <span class="robot-avatar">🤖</span>
               <span id="robotBtnName">ARIA</span>
             </button>
-            <button class="robot-chevron" id="robotChevron" onpointerdown="toggleRobotMenu(event)" title="Change character">▾</button>
+            <button class="robot-chevron" id="robotChevron" onclick="toggleRobotMenu(event)" title="Change character">▾</button>
             <div class="robot-menu" id="robotMenu"></div>
           </div>
-          <button class="lang-toggle-btn" id="langToggleBtn" onpointerdown="toggleVoiceLang()" title="Switch voice language">🇬🇧</button>
+          <button class="lang-toggle-btn" id="langToggleBtn" onclick="toggleVoiceLang()" title="Switch voice language">🇬🇧</button>
         </div>
         <!-- Input row — ABOVE chat thread -->
         <div class="smart-ai-input-row">
           <!-- Camera button — opens phone camera directly -->
-          <button class="input-icon-btn" id="cameraBtn" onpointerdown="triggerCamera()" title="Take photo of grocery list or receipt">
+          <button class="input-icon-btn" id="cameraBtn" onclick="triggerCamera()" title="Take photo of grocery list or receipt">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </button>
           <!-- Attachment button — pick from gallery or files -->
-          <button class="input-icon-btn" id="attachBtn" onpointerdown="triggerAttach()" title="Attach grocery list image or receipt PDF">
+          <button class="input-icon-btn" id="attachBtn" onclick="triggerAttach()" title="Attach grocery list image or receipt PDF">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
           </button>
           <!-- Hidden file inputs -->
           <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleImageScan(this,'camera')"/>
           <input type="file" id="attachInput" accept="image/*,application/pdf,.jpg,.jpeg,.png,.heic" style="display:none" onchange="handleImageScan(this,'attach')"/>
           <input id="inlineAiInput" class="smart-ai-input" type="text" placeholder="Ask, snap or attach a grocery list…" onkeydown="if(event.key==='Enter')sendInlineAI()" oninput="document.getElementById('voiceSuggestBar').style.display='none'" />
-          <button class="smart-ai-send" onpointerdown="sendInlineAI()">&#x27A4;</button>
+          <button class="smart-ai-send" onclick="sendInlineAI()">&#x27A4;</button>
         </div>
         <!-- Image scan preview bar -->
         <div id="scanPreviewBar" style="display:none;align-items:center;gap:8px;padding:6px 4px;background:#0d1117;border-radius:8px;border:1px solid #30363d;margin-top:4px">
@@ -1035,17 +1035,17 @@ body{
             <div id="scanStatus" style="font-size:10px;color:#3fb950;font-family:monospace">📷 Scanning image…</div>
             <div id="scanFound" style="font-size:9.5px;color:#8b949e;font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
           </div>
-          <button onpointerdown="clearScan()" style="background:none;border:none;color:#ff7b72;font-size:14px;cursor:pointer;padding:2px 6px">✕</button>
+          <button onclick="clearScan()" style="background:none;border:none;color:#ff7b72;font-size:14px;cursor:pointer;padding:2px 6px">✕</button>
         </div>
         <!-- "Did you mean?" voice correction bar -->
         <div class="voice-suggest-bar" id="voiceSuggestBar" style="display:none"></div>
         <!-- Quick suggestion chips -->
         <div class="smart-chips" id="smartChips">
-          <button class="smart-chip" onpointerdown="chipSend('cheapest milk')">🥛 Cheapest milk</button>
-          <button class="smart-chip" onpointerdown="chipSend('eggs today')">🥚 Eggs today</button>
-          <button class="smart-chip" onpointerdown="chipSend('chicken deals')">🍗 Chicken deals</button>
-          <button class="smart-chip" onpointerdown="chipSend('what can I cook this week?')">🍳 Meal ideas</button>
-          <button class="smart-chip" onpointerdown="chipSend('rice best price')">🍚 Rice price</button>
+          <button class="smart-chip" onclick="chipSend('cheapest milk')">🥛 Cheapest milk</button>
+          <button class="smart-chip" onclick="chipSend('eggs today')">🥚 Eggs today</button>
+          <button class="smart-chip" onclick="chipSend('chicken deals')">🍗 Chicken deals</button>
+          <button class="smart-chip" onclick="chipSend('what can I cook this week?')">🍳 Meal ideas</button>
+          <button class="smart-chip" onclick="chipSend('rice best price')">🍚 Rice price</button>
         </div>
         <!-- Conversation thread — BELOW input -->
         <div class="inline-chat-thread" id="inlineChatThread"></div>
@@ -2546,7 +2546,7 @@ function showVoiceConfirm(rawHeard, correctedTo) {
 
   // Build HTML
   const btnHtml = suggestions.map(s =>
-    `<button class="vsb-btn" onpointerdown="confirmVoiceChoice('${s.replace(/'/g,"\\'")}')">🔍 ${s}</button>`
+    `<button class="vsb-btn" onclick="confirmVoiceChoice('${s.replace(/'/g,"\\'")}')">🔍 ${s}</button>`
   ).join('');
 
   bar.innerHTML = `
@@ -2554,7 +2554,7 @@ function showVoiceConfirm(rawHeard, correctedTo) {
     <div class="vsb-label">Did you mean one of these? Tap to search:</div>
     <div class="vsb-btns">
       ${btnHtml}
-      <button class="vsb-btn-no" onpointerdown="dismissVoiceConfirm()">✏️ Let me type</button>
+      <button class="vsb-btn-no" onclick="dismissVoiceConfirm()">✏️ Let me type</button>
     </div>`;
   bar.style.display = 'flex';
 
@@ -2578,7 +2578,10 @@ function dismissVoiceConfirm() {
 
 function toggleVoice() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) { alert('Voice not supported in this browser. Try Chrome.'); return; }
+  if (!SpeechRecognition) {
+    alert('Voice not supported. On iPhone use Safari. On Android use Chrome.');
+    return;
+  }
 
   const robotBtn = document.getElementById('robotBtn');
   const textEl = document.getElementById('inlineAiText');
