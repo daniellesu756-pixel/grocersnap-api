@@ -80,18 +80,48 @@ body{
   padding-right:env(safe-area-inset-right);
 }
 
-/* ── Desktop (>900px): show centered card with shadow ───────── */
+/* ── Desktop (>900px): full-width web app ───────────────────── */
 @media(min-width:900px){
-  body{ padding-top:20px; background:#e8e0e0; align-items:flex-start; }
-  .phone{
-    width:390px;
-    height:calc(100dvh - 40px);
-    max-height:860px;
-    border-radius:36px;
-    box-shadow:0 25px 60px rgba(0,0,0,0.18),0 0 0 1px rgba(200,30,59,0.1);
-    padding-top:0;
-    padding-bottom:0;
+  html,body{ overflow:auto; height:auto; min-height:100vh; }
+  body{
+    display:block;
+    background:#f0f2f5;
+    padding:0;
   }
+  .phone{
+    width:100% !important;
+    max-width:100% !important;
+    height:auto !important;
+    min-height:100vh;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    overflow:visible !important;
+    background:#f0f2f5 !important;
+    padding:0 !important;
+  }
+  .phone-shell{
+    max-width:860px;
+    margin:0 auto;
+    padding:0 32px 100px;
+    box-sizing:border-box;
+    height:auto;
+    overflow:visible;
+  }
+  .nav-bar{
+    position:fixed;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:860px;
+    border-radius:0;
+    box-shadow:0 -2px 20px rgba(0,0,0,0.08);
+    z-index:1000;
+  }
+  .top-bar{ max-width:860px; margin:0 auto; padding:12px 0; }
+  .smart-ai-card{ max-width:100%; }
+  .map-container{ max-width:500px !important; margin:0 auto; }
+  .compare-grid{ grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); }
 }
 
 /* ── iPad (600-900px): wider card ───────────────────────────── */
@@ -168,35 +198,68 @@ body{
 .city-name{font-size:10px;color:rgba(255,255,255,0.25);font-weight:600;letter-spacing:1px;flex-shrink:0}
 .city-name.active{color:rgba(255,255,255,0.6)}
 @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .login-logo-area{text-align:center;padding:40px 20px 30px;position:relative}
 /* ── Premium Shopping Cart Animation ── */
-.cart-scene{position:relative;width:100%;height:120px;overflow:hidden;margin-bottom:4px}
-/* Cart + trail race together left→right; cart flipped to face left via scaleX(-1) */
-.cart-racer{position:absolute;top:50%;animation:cart-race 1.9s linear infinite;will-change:left;transform:translateY(-50%) scaleX(-1)}
+.cart-scene{position:relative;width:100%;height:130px;overflow:hidden;margin-bottom:4px}
+/* Single unit: words LEFT (enter first = appear before cart) + cart RIGHT, race together */
+.cart-unit{position:absolute;top:50%;display:flex;align-items:center;gap:16px;animation:cart-race 2.3s linear infinite;will-change:left;transform:translateY(-50%);white-space:nowrap}
 @keyframes cart-race{
-  0%   {left:-130px}
-  100% {left:calc(100% + 20px)}
+  0%   {left:-520px}
+  100% {left:calc(100% + 30px)}
 }
+/* Lead words — left side of flex so they appear on screen BEFORE the cart */
+.lead-words{display:flex;align-items:center;gap:14px;pointer-events:none}
+.lw{display:inline-block;font-weight:900;letter-spacing:2px;font-size:11px}
 /* Wheel spin */
 .cart-wheel{animation:wheel-spin 0.28s linear infinite;transform-box:fill-box;transform-origin:center}
 @keyframes wheel-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-/* Trail words sit BEHIND cart (to its left = visually right side since cart faces left) */
-/* We use a separate element that races at same speed but offset to start earlier */
-.cart-trail{position:absolute;top:50%;white-space:nowrap;animation:trail-race 1.9s linear infinite;pointer-events:none;transform:translateY(-50%)}
-@keyframes trail-race{
-  0%  {left:-320px}
-  100%{left:calc(100% - 120px)}
+/* Item bounce — used via SVG animateTransform inline, no extra CSS needed */
+/* ── Cute Green Coconut — drops on SNAP, rolls LEFT ── */
+/* left:20% ≈ where "SNAP" passes (GROCER prefix ~65px, then SNAP follows) */
+.coco-drop{position:absolute;left:20%;top:0;z-index:9;pointer-events:none;animation:coco-anim 2.3s linear infinite;animation-delay:0.8s}
+@keyframes coco-anim{
+  0%   {transform:translateY(-68px) rotate(0deg);   opacity:1}
+  22%  {transform:translateY(70px)  rotate(305deg);  opacity:1}  /* THUD on SNAP */
+  27%  {transform:translateY(45px)  rotate(325deg);  opacity:1}  /* big bounce */
+  32%  {transform:translateY(68px)  rotate(342deg);  opacity:1}  /* back down */
+  36%  {transform:translateY(56px)  rotate(354deg);  opacity:1}  /* small bounce */
+  40%  {transform:translateY(68px)  rotate(363deg);  opacity:1}  /* settle */
+  83%  {transform:translateY(68px) translateX(-200px) rotate(930deg);opacity:1}
+  91%  {transform:translateY(68px) translateX(-260px) rotate(990deg);opacity:0}
+  100% {transform:translateY(-68px) translateX(0px)   rotate(0deg); opacity:0}
 }
-.tw{display:inline-block;font-weight:900;letter-spacing:2px;margin-right:20px;animation:tw-fade 1.9s linear infinite}
-@keyframes tw-fade{
-  0%  {opacity:0}
-  10% {opacity:1}
-  60% {opacity:0.8}
-  90% {opacity:0;transform:scaleX(0.5)}
-  100%{opacity:0}
+/* Impact dust puff */
+.coco-dust{position:absolute;left:calc(20% + 4px);top:90px;z-index:7;pointer-events:none;animation:dust-anim 2.3s linear infinite;animation-delay:0.8s}
+@keyframes dust-anim{
+  0%,20%{opacity:0;transform:scale(0)}
+  23%  {opacity:0.9;transform:scale(1)}
+  33%  {opacity:0;transform:scale(2.5)}
+  100% {opacity:0;transform:scale(0)}
+}
+/* GROCER shakes on coconut impact */
+.grocer-word{display:inline-block;animation:grocer-shake 2.3s linear infinite}
+@keyframes grocer-shake{
+  0%,54%{transform:translateX(0) translateY(0)}
+  56%   {transform:translateX(-4px) translateY(-2px)}
+  58%   {transform:translateX(3px) translateY(1px)}
+  60%   {transform:translateX(-2px) translateY(0)}
+  62%   {transform:translateX(0) translateY(0)}
+  100%  {transform:translateX(0) translateY(0)}
+}
+/* SNAP breaks away and flies off after being smashed */
+.snap-word{display:inline-block;transform-origin:left center;animation:snap-break 2.3s linear infinite}
+@keyframes snap-break{
+  0%,54%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}
+  56%   {transform:translateY(-6px) rotate(5deg) scale(1.15);opacity:1}  /* jolts UP on impact */
+  61%   {transform:translateY(12px) rotate(-12deg);opacity:1}             /* drops */
+  71%   {transform:translateY(38px) rotate(-24deg);opacity:0.4}           /* flying away */
+  78%   {transform:translateY(56px) rotate(-34deg);opacity:0}             /* gone */
+  78.1%,96%{transform:translateY(0) rotate(0deg) scale(1);opacity:0}     /* invisible reset */
+  100%  {transform:translateY(0) rotate(0deg) scale(1);opacity:1}         /* reappear */
 }
 /* Speed lines */
-.sp-line{position:absolute;border-radius:3px;animation:sp-line-anim 2s linear infinite}
+.sp-line{position:absolute;border-radius:3px;animation:sp-line-anim 2.3s linear infinite}
 @keyframes sp-line-anim{
   0%  {left:-220px;opacity:0;width:0}
   15% {opacity:1}
@@ -204,7 +267,7 @@ body{
   100%{left:calc(100% + 30px);opacity:0}
 }
 /* Sparkle stars */
-.sparkle{position:absolute;animation:sparkle-anim 2s linear infinite;font-size:12px}
+.sparkle{position:absolute;animation:sparkle-anim 2.3s linear infinite;font-size:12px}
 @keyframes sparkle-anim{
   0%  {opacity:0;transform:scale(0) rotate(0deg)}
   20% {opacity:1;transform:scale(1) rotate(45deg)}
@@ -236,16 +299,16 @@ body{
 .add-panel-inner{background:rgba(255,255,255,0.9);backdrop-filter:blur(12px);border-radius:14px;padding:14px;border:1.5px solid rgba(200,30,59,0.1)}
 .add-panel-title{font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
 .add-panel-close{background:none;border:none;font-size:14px;color:#9ca3af;cursor:pointer}
-.add-store-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.add-store-item{display:flex;align-items:center;gap:8px;padding:10px;background:rgba(255,255,255,0.8);border-radius:10px;border:1.5px solid rgba(0,0,0,0.06);cursor:pointer;transition:all 0.2s}
-.add-store-item:hover{border-color:var(--ruby);background:rgba(200,30,59,0.03)}
-.add-store-item.connected{border-color:#059669;background:rgba(16,185,129,0.05)}
-.add-store-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
-.add-store-info{flex:1;min-width:0}
-.add-store-name{font-size:11px;font-weight:600;color:#1a1a1a}
-.add-store-status{font-size:9px;color:#9ca3af;margin-top:1px}
+.add-store-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px}
+.add-store-item{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;padding:7px 3px 6px;background:rgba(255,255,255,0.85);border-radius:10px;border:1.5px solid rgba(0,0,0,0.07);cursor:pointer;transition:all 0.18s;position:relative}
+.add-store-item:hover{border-color:var(--ruby);background:rgba(200,30,59,0.04);transform:scale(1.03)}
+.add-store-item.connected{border-color:#059669;background:rgba(16,185,129,0.06)}
+.add-store-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#fff;flex-shrink:0;letter-spacing:0}
+.add-store-info{display:none}
+.add-store-name{font-size:8.5px;font-weight:600;color:#1a1a1a;line-height:1.2;width:100%;padding:0 2px}
+.add-store-status{font-size:7.5px;color:#9ca3af}
 .add-store-status.connected{color:#059669}
-.add-store-check{font-size:14px}
+.add-store-check{position:absolute;top:2px;right:3px;font-size:9px;line-height:1}
 
 /* Login modal */
 .login-overlay{display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);z-index:20;align-items:center;justify-content:center;border-radius:40px}
@@ -331,150 +394,9 @@ body{
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:0.5}50%{transform:scale(1.05);opacity:0.2}}
 
-.greeting-area{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0 4px;width:100%}
-.eq-theme-select{padding:3px 8px;border:1.5px solid rgba(200,30,59,0.2);border-radius:10px;font-size:10px;font-family:inherit;background:rgba(255,255,255,0.85);color:#374151;cursor:pointer;outline:none;backdrop-filter:blur(8px)}
-.eq-custom-select{position:relative;font-size:10px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;user-select:none}
-.eq-sel-val{padding:3px 8px;border:1.5px solid rgba(200,30,59,0.2);border-radius:10px;background:rgba(255,255,255,0.85);color:#374151;cursor:pointer;font-size:10px;font-weight:500;display:flex;align-items:center;gap:4px;white-space:nowrap;backdrop-filter:blur(8px)}
-.eq-sel-arrow{font-size:8px;opacity:0.6}
-.eq-sel-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.14);z-index:999;overflow:hidden;min-width:100px}
-.eq-sel-menu.open{display:block}
-.eq-sel-opt{padding:6px 12px;font-size:10px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;color:#1f2937;cursor:pointer;font-weight:500;white-space:nowrap}
-.eq-sel-opt:hover{background:#f5f0f0;color:#c81e3b}
 .greeting{font-size:22px;font-weight:700;color:#111827;letter-spacing:-0.5px;text-align:center;transition:opacity 0.3s}
 .greeting-sub{font-size:13px;color:#6b7280;margin-top:4px;text-align:center}
 
-/* ══════════════════════════════════════════════════
-   EQUALIZER — 5 Studio Designs
-   ══════════════════════════════════════════════════ */
-
-/* Container — dark hardware panel */
-.voice-eq{
-  display:flex;flex-direction:row;align-items:flex-end;justify-content:space-between;
-  gap:0;width:100%;height:44px;overflow:visible;
-  background:#060a06;
-  border-radius:12px;padding:6px 10px 5px;
-  border:1px solid rgba(255,255,255,0.07);
-  box-shadow:inset 0 2px 8px rgba(0,0,0,0.6),0 3px 12px rgba(0,0,0,0.25);
-  position:relative;overflow:hidden;box-sizing:border-box;
-}
-/* Subtle vertical grid overlay */
-.voice-eq::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(to right,transparent 0px,transparent 8px,rgba(0,0,0,0.12) 8px,rgba(0,0,0,0.12) 9px);pointer-events:none;z-index:1}
-
-/* ── Design 1: Studio LED (default) — thin vertical bars ── */
-.voice-eq span{
-  flex:none;width:3px;height:33px;border-radius:1px 1px 1px 1px;
-  transform-origin:bottom center;position:relative;z-index:2;
-  background:
-    linear-gradient(to top,transparent 78%,#ff8c00 78%,#ffcc00 92%,#fff8c0 100%),
-    repeating-linear-gradient(to top,#00c853 0px,#00c853 4px,#002e0f 4px,#002e0f 6px);
-  box-shadow:0 0 3px rgba(0,200,83,0.4);
-}
-
-/* IDLE — static skyline heights */
-.voice-eq:not(.speaking):not(.ai-talking) span{animation:none}
-.voice-eq span:nth-child(1){transform:scaleY(0.20)}
-.voice-eq span:nth-child(2){transform:scaleY(0.50)}
-.voice-eq span:nth-child(3){transform:scaleY(0.75)}
-.voice-eq span:nth-child(4){transform:scaleY(0.35)}
-.voice-eq span:nth-child(5){transform:scaleY(1.00)}
-.voice-eq span:nth-child(6){transform:scaleY(0.60)}
-.voice-eq span:nth-child(7){transform:scaleY(0.30)}
-.voice-eq span:nth-child(8){transform:scaleY(0.85)}
-.voice-eq span:nth-child(9){transform:scaleY(0.45)}
-.voice-eq span:nth-child(10){transform:scaleY(0.70)}
-.voice-eq span:nth-child(11){transform:scaleY(0.25)}
-.voice-eq span:nth-child(12){transform:scaleY(0.60)}
-.voice-eq span:nth-child(13){transform:scaleY(0.90)}
-.voice-eq span:nth-child(14){transform:scaleY(0.40)}
-.voice-eq span:nth-child(15){transform:scaleY(0.65)}
-.voice-eq span:nth-child(16){transform:scaleY(0.20)}
-.voice-eq span:nth-child(17){transform:scaleY(0.55)}
-.voice-eq span:nth-child(18){transform:scaleY(0.80)}
-.voice-eq span:nth-child(19){transform:scaleY(0.30)}
-.voice-eq span:nth-child(20){transform:scaleY(0.70)}
-.voice-eq span:nth-child(21){transform:scaleY(0.45)}
-.voice-eq span:nth-child(22){transform:scaleY(0.95)}
-.voice-eq span:nth-child(23){transform:scaleY(0.25)}
-.voice-eq span:nth-child(24){transform:scaleY(0.65)}
-.voice-eq span:nth-child(25){transform:scaleY(0.50)}
-.voice-eq span:nth-child(26){transform:scaleY(0.35)}
-.voice-eq span:nth-child(27){transform:scaleY(0.80)}
-.voice-eq span:nth-child(28){transform:scaleY(0.15)}
-.voice-eq span:nth-child(29){transform:scaleY(0.70)}
-.voice-eq span:nth-child(30){transform:scaleY(0.55)}
-.voice-eq span:nth-child(31){transform:scaleY(0.40)}
-.voice-eq span:nth-child(32){transform:scaleY(0.85)}
-
-/* USER speaking — red segments */
-.voice-eq.speaking span{
-  background:
-    linear-gradient(to top,transparent 80%,#fff 80%,#fff 86%,transparent 100%),
-    repeating-linear-gradient(to top,#ff1744 0px,#ff1744 5px,#3a0008 5px,#3a0008 7px);
-  box-shadow:0 0 6px rgba(255,23,68,0.55);
-}
-.voice-eq.speaking span:nth-child(1){animation:veq 0.38s ease-in-out infinite 0.00s}
-.voice-eq.speaking span:nth-child(2){animation:veq 0.34s ease-in-out infinite 0.06s}
-.voice-eq.speaking span:nth-child(3){animation:veq 0.42s ease-in-out infinite 0.12s}
-.voice-eq.speaking span:nth-child(4){animation:veq 0.36s ease-in-out infinite 0.04s}
-.voice-eq.speaking span:nth-child(5){animation:veq 0.40s ease-in-out infinite 0.09s}
-.voice-eq.speaking span:nth-child(6){animation:veq 0.35s ease-in-out infinite 0.02s}
-.voice-eq.speaking span:nth-child(7){animation:veq 0.43s ease-in-out infinite 0.07s}
-.voice-eq.speaking span:nth-child(8){animation:veq 0.37s ease-in-out infinite 0.05s}
-.voice-eq.speaking span:nth-child(9){animation:veq 0.41s ease-in-out infinite 0.11s}
-.voice-eq.speaking span:nth-child(10){animation:veq 0.36s ease-in-out infinite 0.03s}
-.voice-eq.speaking span:nth-child(11){animation:veq 0.39s ease-in-out infinite 0.08s}
-.voice-eq.speaking span:nth-child(12){animation:veq 0.38s ease-in-out infinite 0.10s}
-.voice-eq.speaking span:nth-child(13){animation:veq 0.44s ease-in-out infinite 0.01s}
-.voice-eq.speaking span:nth-child(14){animation:veq 0.35s ease-in-out infinite 0.09s}
-.voice-eq.speaking span:nth-child(15){animation:veq 0.41s ease-in-out infinite 0.06s}
-.voice-eq.speaking span:nth-child(16){animation:veq 0.37s ease-in-out infinite 0.13s}
-
-/* AI replying — cyan segments */
-.voice-eq.ai-talking span{
-  background:
-    linear-gradient(to top,transparent 82%,#e0f7fa 82%,#80deea 90%,#fff 100%),
-    repeating-linear-gradient(to top,#00bcd4 0px,#00bcd4 5px,#001a20 5px,#001a20 7px);
-  box-shadow:0 0 5px rgba(0,188,212,0.5);
-}
-.voice-eq.ai-talking span:nth-child(1){animation:veq 0.62s ease-in-out infinite 0.00s}
-.voice-eq.ai-talking span:nth-child(2){animation:veq 0.70s ease-in-out infinite 0.07s}
-.voice-eq.ai-talking span:nth-child(3){animation:veq 0.52s ease-in-out infinite 0.14s}
-.voice-eq.ai-talking span:nth-child(4){animation:veq 0.66s ease-in-out infinite 0.05s}
-.voice-eq.ai-talking span:nth-child(5){animation:veq 0.56s ease-in-out infinite 0.11s}
-.voice-eq.ai-talking span:nth-child(6){animation:veq 0.74s ease-in-out infinite 0.02s}
-.voice-eq.ai-talking span:nth-child(7){animation:veq 0.60s ease-in-out infinite 0.09s}
-.voice-eq.ai-talking span:nth-child(8){animation:veq 0.58s ease-in-out infinite 0.06s}
-.voice-eq.ai-talking span:nth-child(9){animation:veq 0.68s ease-in-out infinite 0.13s}
-.voice-eq.ai-talking span:nth-child(10){animation:veq 0.54s ease-in-out infinite 0.03s}
-.voice-eq.ai-talking span:nth-child(11){animation:veq 0.72s ease-in-out infinite 0.10s}
-.voice-eq.ai-talking span:nth-child(12){animation:veq 0.64s ease-in-out infinite 0.08s}
-.voice-eq.ai-talking span:nth-child(13){animation:veq 0.58s ease-in-out infinite 0.15s}
-.voice-eq.ai-talking span:nth-child(14){animation:veq 0.76s ease-in-out infinite 0.04s}
-.voice-eq.ai-talking span:nth-child(15){animation:veq 0.62s ease-in-out infinite 0.11s}
-.voice-eq.ai-talking span:nth-child(16){animation:veq 0.70s ease-in-out infinite 0.07s}
-
-@keyframes veq{0%{transform:scaleY(0.08)}50%{transform:scaleY(1.0)}100%{transform:scaleY(0.08)}}
-
-/* ── Design 2: Neon Pulse ── */
-.voice-eq[data-theme="neon"]{background:#08001a;border-color:rgba(139,92,246,0.2);box-shadow:inset 0 2px 10px rgba(0,0,0,0.8),0 0 20px rgba(139,92,246,0.15)}
-.voice-eq[data-theme="neon"] span{background:repeating-linear-gradient(to top,#a855f7 0px,#a855f7 5px,#1a003a 5px,#1a003a 7px);box-shadow:0 0 7px rgba(168,85,247,0.7)}
-.voice-eq[data-theme="neon"] span:nth-child(odd){background:repeating-linear-gradient(to top,#22d3ee 0px,#22d3ee 5px,#001a20 5px,#001a20 7px);box-shadow:0 0 7px rgba(34,211,238,0.7)}
-.voice-eq[data-theme="neon"].speaking span,.voice-eq[data-theme="neon"].ai-talking span{background:repeating-linear-gradient(to top,#f0abfc 0px,#f0abfc 5px,#2d0040 5px,#2d0040 7px);box-shadow:0 0 10px rgba(240,171,252,0.9)}
-
-/* ── Design 3: Fire Storm ── */
-.voice-eq[data-theme="fire"]{background:#0d0200;border-color:rgba(251,146,60,0.2)}
-.voice-eq[data-theme="fire"] span{background:linear-gradient(to top,#7f1d1d 0%,#dc2626 30%,#f97316 65%,#fbbf24 85%,#fef08a 100%);box-shadow:0 0 5px rgba(249,115,22,0.5)}
-.voice-eq[data-theme="fire"].speaking span,.voice-eq[data-theme="fire"].ai-talking span{box-shadow:0 0 10px rgba(251,191,36,0.8)}
-
-/* ── Design 4: Arctic Ice ── */
-.voice-eq[data-theme="arctic"]{background:#020814;border-color:rgba(147,197,253,0.2)}
-.voice-eq[data-theme="arctic"] span{background:linear-gradient(to top,transparent 80%,#fff 80%,#fff 86%,transparent 100%),repeating-linear-gradient(to top,#3b82f6 0px,#3b82f6 5px,#020c20 5px,#020c20 7px);box-shadow:0 0 4px rgba(59,130,246,0.45)}
-.voice-eq[data-theme="arctic"].speaking span,.voice-eq[data-theme="arctic"].ai-talking span{background:repeating-linear-gradient(to top,#bfdbfe 0px,#bfdbfe 5px,#030f2a 5px,#030f2a 7px);box-shadow:0 0 8px rgba(191,219,254,0.8)}
-
-/* ── Design 5: Matrix ── */
-.voice-eq[data-theme="matrix"]{background:#000;border-color:rgba(0,255,65,0.15)}
-.voice-eq[data-theme="matrix"] span{background:repeating-linear-gradient(to top,#00ff41 0px,#00ff41 4px,#000 4px,#000 6px);box-shadow:0 0 5px rgba(0,255,65,0.75),0 0 12px rgba(0,255,65,0.2);border-radius:1px}
-.voice-eq[data-theme="matrix"].speaking span,.voice-eq[data-theme="matrix"].ai-talking span{background:repeating-linear-gradient(to top,#39ff14 0px,#39ff14 4px,#000 4px,#000 6px);box-shadow:0 0 8px rgba(57,255,20,1),0 0 18px rgba(57,255,20,0.4)}
 
 /* Smart AI Card — always open */
 .smart-ai-card{width:calc(100% - 32px);box-sizing:border-box;margin:10px 0 0;background:rgba(255,255,255,0.9);backdrop-filter:blur(16px);border:1.5px solid rgba(200,30,59,0.12);border-radius:20px;padding:12px 14px;box-shadow:0 4px 20px rgba(0,0,0,0.08);display:flex;flex-direction:column;gap:8px}
@@ -515,12 +437,22 @@ body{
   85%{transform:translateY(-3px) scale(1.05)}
 }
 .robot-chevron{background:none;border:none;cursor:pointer;font-size:10px;color:inherit;padding:0 2px;opacity:0.85;position:absolute;right:-14px;top:50%;transform:translateY(-50%)}
-.robot-menu{position:absolute;top:calc(100% + 6px);right:-14px;background:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,0.18);z-index:999;padding:6px;display:none;flex-direction:column;gap:3px;min-width:148px}
-.robot-menu.open{display:flex}
-.robot-menu-item{display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:10px;cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:background 0.12s}
-.robot-menu-item:hover{background:rgba(0,0,0,0.05)}
-.robot-menu-item .rm-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.robot-menu-item .rm-name{font-size:10px;font-weight:700;color:#111}
+.robot-menu{position:absolute;top:calc(100% + 6px);right:-14px;background:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,0.18);z-index:999;padding:12px;display:none;min-width:320px;max-width:90vw}
+.robot-menu.open{display:block}
+.robot-menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.robot-card{border-radius:12px;padding:12px;border:1px solid rgba(0,0,0,0.08);background:linear-gradient(135deg,rgba(255,255,255,0.9),rgba(248,250,252,0.8));cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;text-align:center;position:relative;overflow:hidden}
+.robot-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.15)}
+.robot-card.selected{border-color:#d63384;box-shadow:0 0 0 2px rgba(214,51,132,0.2)}
+.robot-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0}
+.robot-card-aria::before{background:linear-gradient(90deg,#d63384,#f5c6e0)}
+.robot-card-nova::before{background:linear-gradient(90deg,#c0392b,#f4b8b8)}
+.robot-card-echo::before{background:linear-gradient(90deg,#1d6b4a,#b8ddd1)}
+.robot-card-orion::before{background:linear-gradient(90deg,#1565c0,#b8d0f4)}
+.robot-card-luna::before{background:linear-gradient(90deg,#6d4c1f,#e5d5b8)}
+.robot-card-zeus::before{background:linear-gradient(90deg,#bf4f00,#f7d4b8)}
+.robot-avatar-card{font-size:2rem;margin-bottom:6px}
+.robot-name{font-size:0.9rem;font-weight:700;color:#1f2937;margin-bottom:2px}
+.robot-label{font-size:0.7rem;color:#6b7280}
 .smart-ai-reply{display:none}
 .inline-chat-thread{display:flex;flex-direction:column;gap:5px;max-height:260px;overflow-y:auto;padding:6px 0 2px;border-top:1px solid rgba(0,0,0,0.06);scroll-behavior:smooth}
 .inline-chat-thread:empty{display:none}
@@ -586,8 +518,8 @@ body{
 .alert-badge{position:absolute;right:20px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:rgba(248,113,113,0.1);border:1.5px solid rgba(248,113,113,0.2);display:flex;align-items:center;justify-content:center;font-size:18px}
 
 /* AI Filter Panel */
-.filter-panel{max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1),opacity 0.3s;opacity:0;margin-top:4px}
-.filter-panel.open{max-height:300px;opacity:1}
+.filter-panel{max-height:0;overflow:hidden;transition:max-height 0.6s cubic-bezier(0.4,0,0.2,1),opacity 0.3s;opacity:0;margin-top:4px}
+.filter-panel.open{max-height:1800px;overflow:visible;opacity:1}
 .filter-search{display:flex;gap:6px;margin-bottom:10px}
 .filter-input{flex:1;padding:10px 14px;border:1.5px solid rgba(200,30,59,0.2);border-radius:12px;font-size:13px;background:rgba(255,255,255,0.8);backdrop-filter:blur(8px);outline:none;font-family:inherit;transition:border-color 0.2s}
 .filter-input:focus{border-color:var(--ruby)}
@@ -597,7 +529,7 @@ body{
 .filter-btn:hover{background:rgba(200,30,59,0.08);border-color:var(--ruby)}
 .filter-btn:active{transform:scale(0.96)}
 .filter-btn .icon{font-size:16px}
-.filter-go{padding:10px 20px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--ruby),var(--ruby-light));color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(200,30,59,0.3);transition:all 0.2s;width:100%}
+.filter-go{padding:10px 20px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--ruby),var(--ruby-light));color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(200,30,59,0.3);transition:all 0.2s;width:100%;max-width:500px;margin-top:8px}
 .filter-go:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(200,30,59,0.4)}
 .filter-go:active{transform:scale(0.98)}
 .filter-label{font-size:10px;color:#9ca3af;text-align:center;margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:0.5px}
@@ -656,8 +588,8 @@ body{
 .report-recent-item span{font-weight:700;color:#1a1a1a}
 
 /* Comparison results */
-.compare-results{max-height:0;overflow:hidden;transition:max-height 0.5s;opacity:0;margin-bottom:0}
-.compare-results.open{max-height:600px;opacity:1;margin-bottom:12px;transition:max-height 0.5s,opacity 0.3s}
+.compare-results{display:none;width:100%;margin-bottom:0}
+.compare-results.open{display:block;opacity:1;margin-bottom:12px;animation:fadeSlideIn .25s ease}
 .compare-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .compare-title{font-size:12px;font-weight:700;color:#1a1a1a}
 .compare-total{font-size:13px;font-weight:800;color:#059669}
@@ -669,6 +601,20 @@ body{
 .compare-row .cart-icon{font-size:14px}
 .compare-add-all{width:100%;padding:10px;border:none;border-radius:10px;background:#059669;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px}
 .compare-loading{text-align:center;padding:16px;color:#6b7280;font-size:12px}
+/* Store preference chips */
+.store-pref-section{padding:8px 0 4px}
+.store-pref-label{font-size:10px;font-weight:600;color:#6b7280;margin-bottom:6px;letter-spacing:.03em}
+.store-pref-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.store-pref-chip{display:inline-flex;align-items:center;gap:3px;padding:4px 9px;border-radius:20px;font-size:10px;font-weight:700;border:2px solid;cursor:pointer;transition:all .15s;user-select:none;font-family:inherit}
+.store-pref-chip.on{color:#fff;opacity:1}
+.store-pref-chip.off{background:transparent!important;color:#9ca3af!important;border-color:#d1d5db!important;text-decoration:line-through}
+.store-pref-chip .chip-check{font-size:9px}
+/* Per-store cart buttons */
+.cart-by-store{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.cart-store-btn{flex:1;min-width:80px;padding:7px 6px;border:none;border-radius:9px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;color:#fff;display:flex;flex-direction:column;align-items:center;gap:1px;transition:opacity .15s}
+.cart-store-btn:hover{opacity:.85}
+.cart-store-btn .csb-name{font-size:9px;font-weight:600;opacity:.85}
+.cart-store-btn .csb-price{font-size:12px;font-weight:800}
 
 /* Filter dropdown & input row */
 .filter-dropdown-row{margin-bottom:8px}
@@ -687,15 +633,21 @@ body{
 @keyframes tag-pop{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
 .item-count{font-size:10px;color:#6b7280;margin-bottom:6px;text-align:center}
 /* AI Chat box */
-.chat-box{max-height:180px;overflow-y:auto;margin-bottom:8px;padding:4px 0;scroll-behavior:smooth;display:flex;flex-direction:column;gap:4px;position:relative}
+.chat-box-wrap{position:relative;margin-bottom:8px}
+.chat-box{max-height:180px;overflow-y:auto;padding:4px 0;scroll-behavior:smooth;display:flex;flex-direction:column;gap:4px}
 .chat-box::-webkit-scrollbar{width:3px}
 .chat-box::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px}
 .chat-box:empty{display:none}
-/* Floating mini robot — sticks to bottom-right of chat when scrolled */
-.float-robot{position:absolute;bottom:6px;right:4px;z-index:10;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#c81e3b,#e53e3e);border:2px solid #fff;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(200,30,59,0.5);opacity:0;pointer-events:none;transition:opacity 0.2s,transform 0.2s;transform:scale(0.7)}
+/* Floating mini robot — anchored to WRAPPER so it never scrolls away */
+.float-robot{position:absolute;bottom:4px;right:2px;z-index:10;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#c81e3b,#e53e3e);border:2px solid #fff;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(200,30,59,0.5);opacity:0;pointer-events:none;transition:opacity 0.2s,transform 0.2s;transform:scale(0.7)}
 .float-robot.show{opacity:1;pointer-events:auto;transform:scale(1)}
-.float-robot:active{transform:scale(0.88)}
+.float-robot:active{transform:scale(0.88)!important}
 .float-robot.listening{animation:mic-pulse 0.8s ease-in-out infinite}
+/* Follow robot — inline in chat flow, sits right after the last message */
+.follow-robot{align-self:flex-end;flex-shrink:0;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#c81e3b,#e53e3e);border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(200,30,59,0.45);margin-right:2px;margin-top:2px;animation:follow-pop 0.25s cubic-bezier(0.34,1.56,0.64,1);transition:transform 0.15s}
+.follow-robot:active{transform:scale(0.85)}
+.follow-robot.listening{animation:mic-pulse 0.8s ease-in-out infinite}
+@keyframes follow-pop{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
 .chat-msg{padding:7px 11px;border-radius:10px;margin-bottom:0;font-size:10.5px;line-height:1.7;animation:msg-in 0.3s ease;max-width:92%;font-family:'SF Mono','Fira Code','Consolas',monospace}
 .chat-user{background:linear-gradient(135deg,#c81e3b,#e8384f);color:#fff;align-self:flex-end;margin-left:auto;font-weight:500;border-bottom-right-radius:3px;font-family:inherit}
 .chat-ai{background:#0d1117;border:1px solid #30363d;color:#c9d1d9;align-self:flex-start;border-bottom-left-radius:3px;white-space:pre-line}
@@ -747,13 +699,178 @@ body{
 
 /* Cart badge */
 .cart-badge{position:absolute;top:-4px;right:-6px;background:var(--coral);color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+/* ── Scan Modal ─────────────────────────────────────────── */
+.scan-overlay{display:none;position:fixed;inset:0;z-index:12000;background:rgba(0,0,0,0.72);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
+.scan-overlay.open{display:flex}
+.scan-panel{width:100%;max-width:480px;background:#fff;border-radius:22px 22px 0 0;padding:0 0 env(safe-area-inset-bottom,16px);animation:scan-up 0.3s cubic-bezier(0.34,1.2,0.64,1);max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+@keyframes scan-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.scan-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 10px;border-bottom:1px solid #f0f0f0}
+.scan-title{font-size:15px;font-weight:700;color:#1a1a2e}
+.scan-close{width:28px;height:28px;border-radius:50%;background:#f5f5f5;border:none;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.scan-body{flex:1;overflow-y:auto;padding:14px 16px}
+.scan-preview-wrap{position:relative;background:#f8f9fa;border-radius:12px;overflow:hidden;margin-bottom:12px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
+.scan-preview-img{width:100%;height:100%;object-fit:contain;display:none}
+.scan-preview-placeholder{display:flex;flex-direction:column;align-items:center;gap:6px;color:#aaa}
+.scan-preview-placeholder span{font-size:36px}
+.scan-preview-placeholder p{font-size:11px}
+.scan-state-bar{background:#f0f9f4;border:1px solid #bbf7d0;border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.scan-state-bar.scanning{background:#eff6ff;border-color:#bfdbfe}
+.scan-state-bar.error{background:#fff5f5;border-color:#fca5a5}
+.scan-spinner{width:18px;height:18px;border:2.5px solid #ddd;border-top-color:#3b82f6;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.scan-state-text{font-size:12px;color:#374151;font-weight:500}
+.scan-items-label{font-size:11px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.scan-item-row{display:flex;align-items:center;gap:10px;padding:9px 10px;background:#f9fafb;border-radius:10px;margin-bottom:6px;border:1px solid #e5e7eb;cursor:pointer;transition:background 0.15s}
+.scan-item-row.selected{background:#fff7f7;border-color:#fca5a5}
+.scan-item-check{width:18px;height:18px;border-radius:5px;border:1.5px solid #d1d5db;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;transition:all 0.15s}
+.scan-item-row.selected .scan-item-check{background:var(--ruby);border-color:var(--ruby);color:#fff}
+.scan-item-name{flex:1;font-size:13px;font-weight:500;color:#1a1a2e}
+.scan-item-qty{font-size:12px;color:#6b7280;background:#e5e7eb;border-radius:6px;padding:2px 7px}
+.scan-footer{padding:12px 16px;border-top:1px solid #f0f0f0;display:flex;gap:8px}
+.scan-btn-compare{flex:1;background:linear-gradient(135deg,var(--ruby),var(--ruby-light));color:#fff;border:none;border-radius:12px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;transition:opacity 0.2s}
+.scan-btn-add{flex:1;background:#f0fdf4;color:#16a34a;border:1.5px solid #bbf7d0;border-radius:12px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s}
+.scan-btn-compare:active,.scan-btn-add:active{opacity:0.8;transform:scale(0.97)}
+.scan-no-key{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:11.5px;color:#92400e;line-height:1.5}
+.scan-no-key strong{color:#b45309}
+.scan-no-key a{color:#c81e3b;text-decoration:none;font-weight:600}
+
+
+/* ── Auto-Cart Panel ──────────────────────────────────────────── */
+.autocart-overlay{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.45);backdrop-filter:blur(3px)}
+.autocart-overlay.open{display:flex;align-items:flex-end;justify-content:center}
+.autocart-panel{width:100%;max-width:430px;background:#fff;border-radius:24px 24px 0 0;padding:0 0 32px;box-shadow:0 -8px 40px rgba(0,0,0,0.2);max-height:88vh;display:flex;flex-direction:column;animation:ac-slide-up 0.28s cubic-bezier(0.34,1.2,0.64,1)}
+@keyframes ac-slide-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.ac-handle{width:36px;height:4px;background:#e5e7eb;border-radius:2px;margin:10px auto 0}
+.ac-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 8px}
+.ac-title{font-size:16px;font-weight:800;color:#111827}
+.ac-close{background:none;border:none;font-size:20px;color:#9ca3af;cursor:pointer;line-height:1;padding:2px 6px}
+.ac-stores{display:flex;gap:8px;padding:0 18px 12px;overflow-x:auto;scrollbar-width:none}
+.ac-stores::-webkit-scrollbar{display:none}
+.ac-store-btn{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 14px;border:2px solid #e5e7eb;border-radius:14px;background:#fafafa;cursor:pointer;font-family:inherit;transition:all 0.15s;min-width:70px}
+.ac-store-btn:hover{border-color:#c81e3b;background:#fff5f6}
+.ac-store-btn.selected{border-color:#c81e3b;background:linear-gradient(135deg,#fff5f6,#ffe4e8)}
+.ac-store-btn.running{border-color:#2563eb;background:#eff6ff;animation:ac-pulse 1.2s ease-in-out infinite}
+.ac-store-btn.done{border-color:#059669;background:#f0fdf4}
+.ac-store-btn.ac-store-warn{opacity:.65;border-style:dashed}
+.ac-store-btn.ac-store-warn .ac-store-status{color:#d97706;font-size:8px}
+@keyframes ac-pulse{0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,0.3)}50%{box-shadow:0 0 0 6px rgba(37,99,235,0)}}
+.ac-store-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff}
+.ac-store-name{font-size:9px;font-weight:700;color:#374151;text-align:center;line-height:1.2}
+.ac-store-status{font-size:9px;color:#6b7280;text-align:center}
+.ac-launch-bar{padding:0 18px 10px;display:flex;gap:8px}
+.ac-launch-btn{flex:1;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,#c81e3b,#e53e3e);color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:all 0.15s;box-shadow:0 4px 14px rgba(200,30,59,0.35)}
+.ac-launch-btn:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none}
+.ac-launch-btn:active:not(:disabled){transform:scale(0.97)}
+.ac-ext-note{margin:0 18px 10px;padding:8px 12px;background:#fef3c7;border-radius:10px;font-size:11px;color:#92400e;display:none}
+.ac-ext-note.show{display:block}
+.ac-report-header{padding:4px 18px 6px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px}
+.ac-items{flex:1;overflow-y:auto;padding:0 18px;display:flex;flex-direction:column;gap:6px}
+.ac-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#f9fafb;border-radius:12px;border:1.5px solid transparent;transition:all 0.2s}
+.ac-item.added{background:#f0fdf4;border-color:#bbf7d0}
+.ac-item.skipped{background:#fff7ed;border-color:#fed7aa}
+.ac-item.pending{background:#f9fafb;border-color:transparent}
+.ac-item.active{background:#eff6ff;border-color:#bfdbfe;animation:ac-pulse 0.8s ease-in-out infinite}
+.ac-item-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:#e5e7eb}
+.ac-item-name{flex:1;font-size:13px;font-weight:600;color:#111827;text-transform:capitalize}
+.ac-item-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0}
+.ac-item-badge.added{background:#dcfce7;color:#166534}
+.ac-item-badge.skipped{background:#ffedd5;color:#9a3412}
+.ac-item-badge.pending{background:#e5e7eb;color:#6b7280}
+.ac-item-badge.active{background:#dbeafe;color:#1d4ed8}
+.ac-summary{margin:10px 18px 0;padding:12px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-radius:12px;display:none}
+.ac-summary.show{display:block}
+.ac-summary-row{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:#166534}
+/* ── Smart Checkout Panel ─────────────────────────────────────── */
+.sc-overlay{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px)}
+.sc-overlay.open{display:flex;align-items:flex-end;justify-content:center}
+.sc-panel{width:100%;max-width:480px;background:#fff;border-radius:24px 24px 0 0;padding:0 0 max(32px,env(safe-area-inset-bottom));box-shadow:0 -8px 40px rgba(0,0,0,0.25);max-height:92vh;display:flex;flex-direction:column;animation:sc-slide-up 0.3s cubic-bezier(0.34,1.2,0.64,1)}
+@keyframes sc-slide-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sc-handle{width:36px;height:4px;background:#e5e7eb;border-radius:2px;margin:10px auto 0;flex-shrink:0}
+.sc-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px;flex-shrink:0}
+.sc-title{font-size:18px;font-weight:800;color:#111827;display:flex;align-items:center;gap:8px}
+.sc-close{background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer;line-height:1;padding:2px 6px;border-radius:8px}
+.sc-close:active{background:#f3f4f6}
+/* Progress bar */
+.sc-progress-bar{padding:0 20px 14px;flex-shrink:0}
+.sc-progress-track{height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden}
+.sc-progress-fill{height:100%;background:linear-gradient(90deg,#c81e3b,#e53e3e);border-radius:99px;transition:width 0.4s ease}
+.sc-progress-label{font-size:11px;color:#9ca3af;font-weight:600;margin-top:5px;text-align:center}
+/* Steps */
+.sc-steps{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 20px}
+.sc-steps::-webkit-scrollbar{display:none}
+/* Step 1 — Basket Plan */
+.sc-plan-title{font-size:13px;font-weight:700;color:#6b7280;letter-spacing:0.04em;margin-bottom:12px}
+.sc-store-plan{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.sc-store-plan-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:16px;border:2px solid #f3f4f6;background:#fafafa}
+.sc-store-plan-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+.sc-store-plan-info{flex:1;min-width:0}
+.sc-store-plan-name{font-size:14px;font-weight:700;color:#111827}
+.sc-store-plan-detail{font-size:12px;color:#6b7280;margin-top:2px}
+.sc-store-plan-price{font-size:16px;font-weight:800;color:#111827;flex-shrink:0}
+.sc-savings-badge{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #bbf7d0;border-radius:12px;padding:10px 14px;margin-bottom:16px;text-align:center}
+.sc-savings-amount{font-size:18px;font-weight:800;color:#16a34a}
+.sc-savings-label{font-size:12px;color:#166534;margin-top:2px}
+.sc-start-btn{width:100%;padding:16px;border:none;border-radius:16px;background:linear-gradient(135deg,#c81e3b,#e53e3e);color:#fff;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:16px;box-shadow:0 4px 16px rgba(200,30,59,0.35);display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px}
+.sc-start-btn:active{transform:scale(0.97);opacity:0.9}
+/* Step 2 — Per-store guided */
+.sc-store-banner{border-radius:16px;padding:16px;margin-bottom:14px;color:#fff;position:relative;overflow:hidden}
+.sc-store-banner-name{font-size:20px;font-weight:800;letter-spacing:-0.3px}
+.sc-store-banner-detail{font-size:13px;opacity:0.85;margin-top:4px}
+.sc-store-open-btn{width:100%;padding:15px;border:none;border-radius:14px;background:rgba(255,255,255,0.25);color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:12px;border:2px solid rgba(255,255,255,0.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px}
+.sc-store-open-btn:active{opacity:0.8;transform:scale(0.98)}
+.sc-checklist-label{font-size:12px;font-weight:700;color:#6b7280;letter-spacing:0.04em;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.sc-checklist{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.sc-check-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#f9fafb;border-radius:14px;border:2px solid #f3f4f6;cursor:pointer;transition:all 0.15s;min-height:48px}
+.sc-check-item.checked{background:#f0fdf4;border-color:#bbf7d0}
+.sc-check-item:active{transform:scale(0.98)}
+.sc-check-box{width:24px;height:24px;border-radius:8px;border:2px solid #d1d5db;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;transition:all 0.15s}
+.sc-check-item.checked .sc-check-box{background:#16a34a;border-color:#16a34a;color:#fff}
+.sc-check-name{flex:1;font-size:14px;font-weight:600;color:#111827;text-transform:capitalize}
+.sc-check-search{flex-shrink:0;font-size:12px;font-weight:600;color:#3b82f6;text-decoration:none;padding:4px 8px;border-radius:8px;background:#eff6ff;min-height:32px;display:flex;align-items:center}
+.sc-check-search:active{background:#dbeafe}
+.sc-copy-btn{width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:14px;background:#fafafa;color:#374151;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;transition:all 0.15s}
+.sc-copy-btn:active{background:#f3f4f6;transform:scale(0.98)}
+.sc-copy-btn.copied{background:#f0fdf4;border-color:#bbf7d0;color:#16a34a}
+.sc-next-store-btn{width:100%;padding:15px;border:none;border-radius:16px;background:linear-gradient(135deg,#111827,#374151);color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px}
+.sc-next-store-btn:active{transform:scale(0.97);opacity:0.9}
+/* Step 3 — Summary */
+.sc-done-header{text-align:center;padding:16px 0 8px}
+.sc-done-emoji{font-size:48px;display:block;margin-bottom:8px}
+.sc-done-title{font-size:20px;font-weight:800;color:#111827;margin-bottom:4px}
+.sc-done-sub{font-size:13px;color:#6b7280}
+.sc-store-summary{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.sc-sum-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:#f9fafb;border:2px solid #f3f4f6}
+.sc-sum-row.done{background:#f0fdf4;border-color:#bbf7d0}
+.sc-sum-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.sc-sum-name{flex:1;font-size:13px;font-weight:700;color:#111827}
+.sc-sum-status{font-size:12px;font-weight:600}
+.sc-sum-row.done .sc-sum-status{color:#16a34a}
+.sc-sum-row:not(.done) .sc-sum-status{color:#9ca3af}
+.sc-restart-btn{width:100%;padding:14px;border:2px solid #e5e7eb;border-radius:16px;background:#fafafa;color:#374151;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;min-height:50px}
+.sc-restart-btn:active{background:#f3f4f6}
+
+.similar-panel{background:#fff;border-radius:16px;padding:14px;margin:10px 0;box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.similar-title{font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.similar-table{width:100%;border-collapse:collapse;font-size:10.5px}
+.similar-table th{background:#f8f9fa;padding:6px 8px;text-align:left;font-weight:600;color:#6b7280;border-bottom:1px solid #e5e7eb;white-space:nowrap}
+.similar-table td{padding:6px 8px;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+.similar-table tr:hover td{background:#fff7f7}
+.similar-name{font-weight:600;color:#1a1a2e;max-width:160px}
+.similar-brand{font-size:9.5px;color:#9ca3af}
+.similar-price{font-weight:700;color:#c81e3b;white-space:nowrap}
+.similar-price.best{background:#f0fdf4;border-radius:4px;padding:2px 5px;color:#16a34a}
+.similar-unit{font-size:9px;color:#9ca3af}
+.similar-score{font-size:9px;background:#e0f2fe;color:#0369a1;border-radius:4px;padding:1px 5px}
+.similar-store-cols td{text-align:center;font-size:10px}
+.no-similar{text-align:center;padding:20px;color:#9ca3af;font-size:12px}
 </style>
 </head>
 <body>
 <div class="phone">
 
   <!-- LAUNCH / LOGIN SCREEN -->
-  <div class="login-screen" id="loginScreen">
+  <div class="login-screen hidden" id="loginScreen">
     <div class="login-screen-bg">
       <!-- City ticker -->
       <div class="city-ticker">
@@ -797,90 +914,279 @@ body{
         <!-- Premium speeding cart scene -->
         <div class="cart-scene">
 
-          <!-- Speed lines trailing right→left behind the cart -->
-          <div class="sp-line" style="top:42%;height:3px;background:linear-gradient(to right,rgba(56,189,248,0.8),transparent);animation-delay:0s"></div>
-          <div class="sp-line" style="top:50%;height:2px;background:linear-gradient(to right,rgba(255,255,255,0.5),transparent);animation-delay:0.2s"></div>
-          <div class="sp-line" style="top:57%;height:2px;background:linear-gradient(to right,rgba(56,189,248,0.4),transparent);animation-delay:0.45s"></div>
-          <div class="sp-line" style="top:36%;height:1px;background:linear-gradient(to right,rgba(255,255,255,0.25),transparent);animation-delay:0.65s"></div>
-          <div class="sp-line" style="top:63%;height:1px;background:linear-gradient(to right,rgba(99,179,237,0.3),transparent);animation-delay:0.3s"></div>
-
-          <!-- Sparkle stars scattered -->
-          <div class="sparkle" style="top:28%;animation-delay:0.3s">✦</div>
-          <div class="sparkle" style="top:65%;animation-delay:0.9s;font-size:9px">✦</div>
-          <div class="sparkle" style="top:38%;animation-delay:1.4s;font-size:8px;color:#fbbf24">★</div>
-
-          <!-- Trail words — offset behind cart -->
-          <div class="cart-trail">
-            <span class="tw" style="font-size:13px;color:#fff;animation-delay:0.04s">GROCERSNAP</span>
-            <span class="tw" style="font-size:10px;color:#38bdf8;animation-delay:0.09s">SAVE MORE</span>
-            <span class="tw" style="font-size:9px;color:#fbbf24;animation-delay:0.14s">BEST DEALS</span>
-            <span class="tw" style="font-size:10px;color:#86efac;animation-delay:0.19s">FAIRPRICE</span>
-            <span class="tw" style="font-size:9px;color:#c4b5fd;animation-delay:0.24s">SHENG SIONG</span>
-            <span class="tw" style="font-size:11px;color:rgba(255,255,255,0.6);animation-delay:0.29s">🛒✨</span>
-          </div>
-
-          <!-- Clean rounded cart icon — smaller, facing left (scaleX flipped in CSS) -->
-          <div class="cart-racer">
-            <svg width="110" height="88" viewBox="0 0 160 118" xmlns="http://www.w3.org/2000/svg">
+          <!-- ★ CUTE GREEN COCONUT — young drinking coconut, drops & rolls LEFT -->
+          <div class="coco-drop">
+            <svg width="54" height="52" viewBox="0 0 54 52" xmlns="http://www.w3.org/2000/svg">
               <defs>
-                <filter id="wh" x="-30%" y="-30%" width="160%" height="160%">
-                  <feGaussianBlur stdDeviation="3" result="b"/>
-                  <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
+                <!-- Radial gradient for round 3D green body -->
+                <radialGradient id="cocoGreen" cx="38%" cy="32%" r="62%">
+                  <stop offset="0%"   stop-color="#c5e86c"/>
+                  <stop offset="40%"  stop-color="#8ab620"/>
+                  <stop offset="80%"  stop-color="#5d8a08"/>
+                  <stop offset="100%" stop-color="#3d6005"/>
+                </radialGradient>
+                <!-- Radial gradient for white flesh inside -->
+                <radialGradient id="cocoFlesh" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%"   stop-color="#fffdf5"/>
+                  <stop offset="70%"  stop-color="#f0ead8"/>
+                  <stop offset="100%" stop-color="#ddd0b0"/>
+                </radialGradient>
+                <!-- Clip to main body shape -->
+                <clipPath id="cocoClip">
+                  <ellipse cx="27" cy="30" rx="23" ry="21"/>
+                </clipPath>
               </defs>
 
-              <!-- Soft ground shadow -->
-              <ellipse cx="76" cy="115" rx="52" ry="4" fill="rgba(255,255,255,0.08)"/>
+              <!-- ── MAIN GREEN BODY ── -->
+              <ellipse cx="27" cy="30" rx="23" ry="21" fill="url(#cocoGreen)"/>
 
-              <!-- ══ BASKET — clean 4-sided trapezoid, no triangle ══ -->
-              <path d="M18,18 L132,18 L125,68 L26,68 Z"
-                fill="rgba(255,255,255,0.05)"
-                stroke="white" stroke-width="7.5"
-                stroke-linejoin="round" stroke-linecap="round"
-                filter="url(#wh)"/>
-
-              <!-- ══ WIRE GRID — 3 vertical bars ══ -->
-              <line x1="49"  y1="18" x2="45"  y2="68" stroke="white" stroke-width="5.5" stroke-linecap="round" filter="url(#wh)"/>
-              <line x1="76"  y1="18" x2="76"  y2="68" stroke="white" stroke-width="5.5" stroke-linecap="round" filter="url(#wh)"/>
-              <line x1="103" y1="18" x2="107" y2="68" stroke="white" stroke-width="5.5" stroke-linecap="round" filter="url(#wh)"/>
-
-              <!-- ══ WIRE GRID — 2 horizontal bars (trimmed to trapezoid width) ══ -->
-              <line x1="21"  y1="35" x2="130" y2="35" stroke="white" stroke-width="5.5" stroke-linecap="round" filter="url(#wh)"/>
-              <line x1="24"  y1="52" x2="128" y2="52" stroke="white" stroke-width="5.5" stroke-linecap="round" filter="url(#wh)"/>
-
-              <!-- ══ HANDLE ══
-                   Arm curves smoothly up-right from top-right corner,
-                   then a rounded vertical grip bar
-              -->
-              <path d="M132,22 Q150,10 154,14"
-                fill="none" stroke="white" stroke-width="7.5"
-                stroke-linecap="round" filter="url(#wh)"/>
-              <!-- Grip bar — thick rounded vertical -->
-              <line x1="154" y1="12" x2="154" y2="56"
-                stroke="white" stroke-width="9"
-                stroke-linecap="round" filter="url(#wh)"/>
-
-              <!-- ══ AXLE DROPS ══ -->
-              <line x1="44"  y1="68" x2="44"  y2="79" stroke="white" stroke-width="6" stroke-linecap="round" filter="url(#wh)"/>
-              <line x1="112" y1="68" x2="112" y2="79" stroke="white" stroke-width="6" stroke-linecap="round" filter="url(#wh)"/>
-
-              <!-- ══ LEFT WHEEL — solid filled, inner ring, small center dot ══ -->
-              <circle cx="44" cy="90" r="11" fill="white" filter="url(#wh)"/>
-              <circle cx="44" cy="90" r="5"  fill="#1a3a6b"/>
-              <circle cx="44" cy="90" r="2.5" fill="white"/>
-
-              <!-- ══ RIGHT WHEEL ══ -->
-              <circle cx="112" cy="90" r="11" fill="white" filter="url(#wh)"/>
-              <circle cx="112" cy="90" r="5"  fill="#1a3a6b"/>
-              <!-- spinning dot marker so wheels visually spin -->
-              <g transform="translate(112,90)">
-                <g class="cart-wheel">
-                  <circle cx="0" cy="-3" r="1.5" fill="white"/>
-                </g>
+              <!-- Subtle vertical rib lines (like real young coconut segments) -->
+              <g clip-path="url(#cocoClip)" opacity="0.22">
+                <path d="M27,9 Q20,19 18,30 Q17,40 21,50" fill="none" stroke="#2d5202" stroke-width="2"/>
+                <path d="M27,9 Q27,19 27,30 Q27,40 27,50" fill="none" stroke="#2d5202" stroke-width="1.5"/>
+                <path d="M27,9 Q34,19 36,30 Q37,40 33,50" fill="none" stroke="#2d5202" stroke-width="2"/>
+                <path d="M27,9 Q14,22 13,33 Q12,42 16,50" fill="none" stroke="#2d5202" stroke-width="1.2"/>
+                <path d="M27,9 Q40,22 41,33 Q42,42 38,50" fill="none" stroke="#2d5202" stroke-width="1.2"/>
               </g>
-              <circle cx="112" cy="90" r="2.5" fill="white"/>
+
+              <!-- ── CUT-OPEN TOP (the drinking opening) ── -->
+              <!-- Outer fibrous husk rim — tan/brown, rough -->
+              <ellipse cx="27" cy="13" rx="15" ry="7"   fill="#c8a055"/>
+              <!-- Inner fibrous layer — lighter cream-tan -->
+              <ellipse cx="27" cy="13" rx="12.5" ry="5.5" fill="#ddb96a"/>
+              <!-- Fibrous texture lines on rim -->
+              <line x1="16" y1="11" x2="38" y2="11" stroke="#b88830" stroke-width="0.8" opacity="0.5"/>
+              <line x1="15" y1="13" x2="39" y2="13" stroke="#b88830" stroke-width="0.8" opacity="0.5"/>
+              <line x1="16" y1="15" x2="38" y2="15" stroke="#b88830" stroke-width="0.8" opacity="0.45"/>
+              <!-- White coconut flesh — the delicious interior -->
+              <ellipse cx="27" cy="13" rx="10"  ry="4.2" fill="url(#cocoFlesh)"/>
+              <!-- Flesh depth shadow at edges -->
+              <ellipse cx="27" cy="14" rx="8.5" ry="3"   fill="rgba(200,185,150,0.4)"/>
+              <!-- Flesh centre highlight -->
+              <ellipse cx="26" cy="12" rx="4"   ry="1.8" fill="rgba(255,255,255,0.55)"/>
+
+              <!-- ── BROWN STEM / CUT KNOB at very top ── -->
+              <ellipse cx="27" cy="7"  rx="5.5" ry="3"   fill="#9b6b28"/>
+              <ellipse cx="27" cy="6"  rx="3.5" ry="2"   fill="#b8832e"/>
+              <!-- Fibrous wisps off the stem -->
+              <path d="M22,6 Q19,3 17,5"  fill="none" stroke="#9b6b28" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M32,6 Q35,3 37,5"  fill="none" stroke="#9b6b28" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M24,5 Q23,1 21,2"  fill="none" stroke="#b8832e" stroke-width="1"   stroke-linecap="round"/>
+              <path d="M30,5 Q31,1 33,2"  fill="none" stroke="#b8832e" stroke-width="1"   stroke-linecap="round"/>
+
+              <!-- ── GLOSS HIGHLIGHT (makes it look round & glossy) ── -->
+              <ellipse cx="16" cy="21" rx="7"  ry="5.5" fill="rgba(255,255,255,0.28)" transform="rotate(-30,16,21)"/>
+              <ellipse cx="14" cy="20" rx="3"  ry="2.5" fill="rgba(255,255,255,0.45)" transform="rotate(-30,14,20)"/>
+
+              <!-- ── OUTLINE for crispness ── -->
+              <ellipse cx="27" cy="30" rx="23" ry="21" fill="none" stroke="#3a5e05" stroke-width="1.8"/>
             </svg>
           </div>
+
+          <!-- Impact dust puff — sandy green tint -->
+          <div class="coco-dust">
+            <svg width="58" height="22" viewBox="0 0 58 22" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="29" cy="11" rx="27" ry="9"  fill="rgba(160,200,80,0.4)"/>
+              <ellipse cx="29" cy="11" rx="17" ry="5.5" fill="rgba(200,230,130,0.3)"/>
+              <ellipse cx="29" cy="11" rx="8"  ry="3"  fill="rgba(230,250,180,0.35)"/>
+            </svg>
+          </div>
+
+          <!-- Speed lines -->
+          <div class="sp-line" style="top:44%;height:3px;background:linear-gradient(to right,rgba(56,189,248,0.7),transparent);animation-delay:0s"></div>
+          <div class="sp-line" style="top:52%;height:2px;background:linear-gradient(to right,rgba(255,255,255,0.4),transparent);animation-delay:0.25s"></div>
+          <div class="sp-line" style="top:37%;height:1.5px;background:linear-gradient(to right,rgba(99,179,237,0.35),transparent);animation-delay:0.55s"></div>
+          <div class="sp-line" style="top:62%;height:1px;background:linear-gradient(to right,rgba(56,189,248,0.25),transparent);animation-delay:0.35s"></div>
+
+          <!-- Sparkle stars -->
+          <div class="sparkle" style="top:26%;animation-delay:0.4s">✦</div>
+          <div class="sparkle" style="top:68%;animation-delay:1.1s;font-size:9px">✦</div>
+          <div class="sparkle" style="top:40%;animation-delay:1.6s;font-size:8px;color:#fbbf24">★</div>
+
+          <!-- Single racing unit: WORDS first (left) so they enter screen before the cart -->
+          <div class="cart-unit">
+
+            <!-- ★ LEAD WORDS — appear BEFORE the cart since they're left in the flex -->
+            <div class="lead-words">
+              <span class="lw grocer-word" style="color:#fff;font-size:13px">GROCER</span><span class="lw snap-word" style="color:#fff;font-size:13px">SNAP</span>
+              <span class="lw" style="color:#38bdf8">✦</span>
+              <span class="lw" style="color:#fbbf24;font-size:10px">BEST DEALS</span>
+              <span class="lw" style="color:#86efac">✦</span>
+              <span class="lw" style="color:#c4b5fd;font-size:10px">SAVE MORE</span>
+              <span class="lw" style="color:rgba(255,255,255,0.55);font-size:12px">🛒</span>
+            </div>
+
+            <!-- ★ BLACK CART — 25 bouncing grocery items inside — follows the words -->
+            <div style="transform:scaleX(-1);flex-shrink:0">
+              <svg width="120" height="108" viewBox="0 0 160 138" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="1.8" result="b"/>
+                    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                  </filter>
+                  <!-- clip to basket interior so items don't overflow -->
+                  <clipPath id="basketClip">
+                    <path d="M22,33 L130,33 L123,80 L28,80 Z"/>
+                  </clipPath>
+                </defs>
+
+                <!-- Ground shadow -->
+                <ellipse cx="76" cy="134" rx="50" ry="4" fill="rgba(0,0,0,0.35)"/>
+
+                <!-- ══ 4 ITEMS peeking above basket rim (y=10–30) ══ -->
+                <!-- Milk carton -->
+                <g><rect x="27" y="9" width="14" height="21" rx="2" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.5"/>
+                  <rect x="27" y="9" width="14" height="6" rx="2" fill="#2563eb"/>
+                  <text x="34" y="25" font-size="5" fill="#1e40af" text-anchor="middle" font-weight="bold" font-family="sans-serif">ML</text>
+                  <animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.42s" repeatCount="indefinite" begin="0.0s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+                </g>
+                <!-- Red apple -->
+                <g><circle cx="54" cy="22" r="9" fill="#dc2626"/>
+                  <path d="M54,13 Q58,8 63,10" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round"/>
+                  <ellipse cx="51" cy="20" rx="2.5" ry="3" fill="rgba(255,255,255,0.28)"/>
+                  <animateTransform attributeName="transform" type="translate" values="0,0;0,-6;0,0" dur="0.38s" repeatCount="indefinite" begin="0.08s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+                </g>
+                <!-- Baguette -->
+                <g><path d="M80,12 Q92,7 104,12 Q100,25 92,27 Q84,25 80,12Z" fill="#d97706"/>
+                  <path d="M83,16 Q92,12 101,16" fill="none" stroke="#92400e" stroke-width="1.4" stroke-linecap="round"/>
+                  <animateTransform attributeName="transform" type="translate" values="0,0;0,-4;0,0" dur="0.44s" repeatCount="indefinite" begin="0.15s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+                </g>
+                <!-- Broccoli -->
+                <g><circle cx="120" cy="24" r="7" fill="#16a34a"/>
+                  <circle cx="114" cy="21" r="5" fill="#15803d"/>
+                  <circle cx="126" cy="21" r="5" fill="#22c55e"/>
+                  <rect x="118" y="28" width="4" height="5" fill="#86efac"/>
+                  <animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.36s" repeatCount="indefinite" begin="0.22s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+                </g>
+
+                <!-- ══ BASKET — black trapezoid (drawn AFTER items so wire is on top) ══ -->
+                <!-- Items clipped to basket interior -->
+                <g clip-path="url(#basketClip)">
+
+                  <!-- ROW C — top inside (y≈42), 7 items, begin 0.00–0.30s -->
+                  <g><circle cx="32"  cy="42" r="5.5" fill="#ef4444"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.33s" repeatCount="indefinite" begin="0.00s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="47"  cy="42" r="5"   fill="#fb923c"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.40s" repeatCount="indefinite" begin="0.05s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="61"  cy="42" r="5.5" fill="#facc15"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-6;0,0" dur="0.37s" repeatCount="indefinite" begin="0.10s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="76"  cy="42" r="5"   fill="#4ade80"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-4;0,0" dur="0.43s" repeatCount="indefinite" begin="0.15s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="91"  cy="42" r="5.5" fill="#60a5fa"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.35s" repeatCount="indefinite" begin="0.20s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="106" cy="42" r="5"   fill="#a78bfa"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-6;0,0" dur="0.41s" repeatCount="indefinite" begin="0.25s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="119" cy="42" r="5"   fill="#f472b6"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-4;0,0" dur="0.38s" repeatCount="indefinite" begin="0.30s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+
+                  <!-- ROW B — middle (y≈57), 8 items, begin 0.03–0.38s -->
+                  <g><circle cx="33"  cy="57" r="5"   fill="#fb7185"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.36s" repeatCount="indefinite" begin="0.03s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><ellipse cx="46" cy="57" rx="5" ry="6" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.44s" repeatCount="indefinite" begin="0.08s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="60"  cy="57" r="5.5" fill="#f97316"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-6;0,0" dur="0.39s" repeatCount="indefinite" begin="0.13s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="75"  cy="57" r="5"   fill="#dc2626"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-4;0,0" dur="0.34s" repeatCount="indefinite" begin="0.18s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="89"  cy="57" r="5.5" fill="#2dd4bf"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.42s" repeatCount="indefinite" begin="0.23s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><rect x="101" y="52" width="9" height="10" rx="2" fill="#94a3b8"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.37s" repeatCount="indefinite" begin="0.28s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="116" cy="57" r="5"   fill="#86efac"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-6;0,0" dur="0.45s" repeatCount="indefinite" begin="0.33s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+
+                  <!-- ROW A — bottom (y≈70), 7 items, begin 0.05–0.35s -->
+                  <g><circle cx="34"  cy="70" r="5.5" fill="#c084fc"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.40s" repeatCount="indefinite" begin="0.05s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="49"  cy="70" r="5"   fill="#fbbf24"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-4;0,0" dur="0.33s" repeatCount="indefinite" begin="0.10s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><ellipse cx="63" cy="70" rx="6"  ry="5" fill="#fef9c3" stroke="#d97706" stroke-width="1"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.43s" repeatCount="indefinite" begin="0.15s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="77"  cy="70" r="5"   fill="#f43f5e"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-6;0,0" dur="0.36s" repeatCount="indefinite" begin="0.20s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="91"  cy="70" r="5.5" fill="#34d399"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-4;0,0" dur="0.41s" repeatCount="indefinite" begin="0.25s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="105" cy="70" r="5"   fill="#38bdf8"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.38s" repeatCount="indefinite" begin="0.30s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+                  <g><circle cx="118" cy="70" r="5"   fill="#e879f9"/><animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="0.35s" repeatCount="indefinite" begin="0.35s" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/></g>
+
+                </g><!-- /clip -->
+
+                <!-- ══ 5 ESCAPE ITEMS — fly out & fall from the cart! ══ -->
+                <!-- Each starts inside basket and launches out via arc, then fades -->
+
+                <!-- 🟠 Orange — launches out the front-left and tumbles down -->
+                <g>
+                  <circle cx="36" cy="62" r="5.5" fill="#fb923c"/>
+                  <animateTransform attributeName="transform" type="translate"
+                    values="0,0; -10,-62; -18,52"
+                    keyTimes="0;0.38;1" dur="0.82s" repeatCount="indefinite" begin="0.0s"
+                    calcMode="spline" keySplines="0.3 0 0.1 1;0.3 0 0.9 1"/>
+                  <animate attributeName="opacity" values="1;1;0" keyTimes="0;0.42;1" dur="0.82s" repeatCount="indefinite" begin="0.0s"/>
+                </g>
+
+                <!-- 🍓 Strawberry — shoots straight up and drops back down -->
+                <g>
+                  <circle cx="76" cy="58" r="5" fill="#f43f5e"/>
+                  <path d="M73,53 Q76,49 79,53" fill="none" stroke="#15803d" stroke-width="1.5" stroke-linecap="round"/>
+                  <animateTransform attributeName="transform" type="translate"
+                    values="0,0; 2,-70; 4,58"
+                    keyTimes="0;0.36;1" dur="0.90s" repeatCount="indefinite" begin="0.25s"
+                    calcMode="spline" keySplines="0.3 0 0.1 1;0.3 0 0.9 1"/>
+                  <animate attributeName="opacity" values="1;1;0" keyTimes="0;0.40;1" dur="0.90s" repeatCount="indefinite" begin="0.25s"/>
+                </g>
+
+                <!-- 🍋 Lemon — arcs out front with spin feel -->
+                <g>
+                  <ellipse cx="53" cy="66" rx="6" ry="4.5" fill="#fde047"/>
+                  <animateTransform attributeName="transform" type="translate"
+                    values="0,0; -14,-55; -24,60"
+                    keyTimes="0;0.37;1" dur="0.75s" repeatCount="indefinite" begin="0.50s"
+                    calcMode="spline" keySplines="0.3 0 0.1 1;0.3 0 0.9 1"/>
+                  <animate attributeName="opacity" values="1;1;0" keyTimes="0;0.41;1" dur="0.75s" repeatCount="indefinite" begin="0.50s"/>
+                </g>
+
+                <!-- 🍇 Grape — pops up and drifts toward the back -->
+                <g>
+                  <circle cx="100" cy="64" r="5" fill="#a855f7"/>
+                  <circle cx="107" cy="68" r="4" fill="#7c3aed"/>
+                  <animateTransform attributeName="transform" type="translate"
+                    values="0,0; 8,-58; 16,55"
+                    keyTimes="0;0.35;1" dur="0.87s" repeatCount="indefinite" begin="0.12s"
+                    calcMode="spline" keySplines="0.3 0 0.1 1;0.3 0 0.9 1"/>
+                  <animate attributeName="opacity" values="1;1;0" keyTimes="0;0.39;1" dur="0.87s" repeatCount="indefinite" begin="0.12s"/>
+                </g>
+
+                <!-- 🥕 Carrot — flies out the back high arc -->
+                <g>
+                  <ellipse cx="117" cy="60" rx="4" ry="6.5" fill="#f97316" transform="rotate(-20,117,60)"/>
+                  <path d="M115,54 Q117,49 120,52" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/>
+                  <animateTransform attributeName="transform" type="translate"
+                    values="0,0; 12,-65; 22,50"
+                    keyTimes="0;0.36;1" dur="0.78s" repeatCount="indefinite" begin="0.38s"
+                    calcMode="spline" keySplines="0.3 0 0.1 1;0.3 0 0.9 1"/>
+                  <animate attributeName="opacity" values="1;1;0" keyTimes="0;0.40;1" dur="0.78s" repeatCount="indefinite" begin="0.38s"/>
+                </g>
+
+                <!-- ══ BASKET frame drawn ON TOP of items ══ -->
+                <path d="M18,32 L132,32 L125,82 L26,82 Z"
+                  fill="none"
+                  stroke="#606060" stroke-width="7"
+                  stroke-linejoin="round" stroke-linecap="round"
+                  filter="url(#glow)"/>
+                <!-- basket inner fill (semi-transparent dark) so items appear to sit inside -->
+                <path d="M18,32 L132,32 L125,82 L26,82 Z" fill="rgba(10,10,10,0.55)"/>
+
+                <!-- ══ WIRE GRID over items ══ -->
+                <line x1="49"  y1="32" x2="45"  y2="82" stroke="#484848" stroke-width="4.5" stroke-linecap="round"/>
+                <line x1="76"  y1="32" x2="76"  y2="82" stroke="#484848" stroke-width="4.5" stroke-linecap="round"/>
+                <line x1="103" y1="32" x2="107" y2="82" stroke="#484848" stroke-width="4.5" stroke-linecap="round"/>
+                <line x1="21"  y1="49" x2="130" y2="49" stroke="#484848" stroke-width="4.5" stroke-linecap="round"/>
+                <line x1="24"  y1="65" x2="128" y2="65" stroke="#484848" stroke-width="4.5" stroke-linecap="round"/>
+
+                <!-- ══ HANDLE ══ -->
+                <path d="M132,36 Q150,24 154,28" fill="none" stroke="#606060" stroke-width="7" stroke-linecap="round" filter="url(#glow)"/>
+                <line x1="154" y1="26" x2="154" y2="70" stroke="#606060" stroke-width="9" stroke-linecap="round" filter="url(#glow)"/>
+
+                <!-- ══ AXLE DROPS ══ -->
+                <line x1="44"  y1="82" x2="44"  y2="92" stroke="#606060" stroke-width="6" stroke-linecap="round"/>
+                <line x1="112" y1="82" x2="112" y2="92" stroke="#606060" stroke-width="6" stroke-linecap="round"/>
+
+                <!-- ══ LEFT WHEEL ══ -->
+                <circle cx="44"  cy="103" r="11" fill="#1a1a1a" stroke="#777" stroke-width="2.5" filter="url(#glow)"/>
+                <circle cx="44"  cy="103" r="5"  fill="#2e2e2e"/>
+                <g transform="translate(44,103)"><g class="cart-wheel"><circle cx="0" cy="-3.5" r="1.5" fill="#aaa"/></g></g>
+                <circle cx="44"  cy="103" r="2"  fill="#888"/>
+
+                <!-- ══ RIGHT WHEEL ══ -->
+                <circle cx="112" cy="103" r="11" fill="#1a1a1a" stroke="#777" stroke-width="2.5" filter="url(#glow)"/>
+                <circle cx="112" cy="103" r="5"  fill="#2e2e2e"/>
+                <g transform="translate(112,103)"><g class="cart-wheel"><circle cx="0" cy="-3.5" r="1.5" fill="#aaa"/></g></g>
+                <circle cx="112" cy="103" r="2"  fill="#888"/>
+              </svg>
+            </div>
+
+          </div><!-- /cart-unit -->
         </div>
 
         <div class="login-app-name">GrocerSnap</div>
@@ -919,7 +1225,7 @@ body{
         <option value="jp">JP</option>
       </select>
       <div class="icon-btn">&#x1F514;</div>
-      <div class="icon-btn" style="position:relative">&#x1F6D2;<span class="cart-badge" id="cartBadge">0</span></div>
+      <div class="icon-btn" style="position:relative;cursor:pointer" onclick="openAutoCartPanel()">&#x1F6D2;<span class="cart-badge" id="cartBadge">0</span></div>
     </div>
   </div>
 
@@ -1041,74 +1347,30 @@ body{
             <button class="add-panel-close" onclick="toggleAddPanel()">&#x2715;</button>
           </div>
           <div class="add-store-grid" id="storeGrid">
-            <div class="add-store-item connected" onclick="openLogin('fairprice')">
-              <div class="add-store-icon" style="background:#e53e3e">FP</div>
-              <div class="add-store-info"><div class="add-store-name">FairPrice</div><div class="add-store-status connected">Connected</div></div>
-              <div class="add-store-check">&#x2705;</div>
-            </div>
-            <div class="add-store-item connected" onclick="openLogin('shengsiong')">
-              <div class="add-store-icon" style="background:#dd6b20">SS</div>
-              <div class="add-store-info"><div class="add-store-name">Sheng Siong</div><div class="add-store-status connected">Connected</div></div>
-              <div class="add-store-check">&#x2705;</div>
-            </div>
-            <div class="add-store-item" onclick="openLogin('coldstorage')">
-              <div class="add-store-icon" style="background:#2b6cb0">CS</div>
-              <div class="add-store-info"><div class="add-store-name">Cold Storage</div><div class="add-store-status">Tap to connect</div></div>
-              <div class="add-store-check">&#x2795;</div>
-            </div>
-            <div class="add-store-item" onclick="openLogin('redmart')">
-              <div class="add-store-icon" style="background:#276749">RM</div>
-              <div class="add-store-info"><div class="add-store-name">RedMart</div><div class="add-store-status">Tap to connect</div></div>
-              <div class="add-store-check">&#x2795;</div>
-            </div>
-            <div class="add-store-item" onclick="openLogin('dondonki')">
-              <div class="add-store-icon" style="background:#c41e3a">DDK</div>
-              <div class="add-store-info"><div class="add-store-name">Don Don Donki</div><div class="add-store-status">Tap to connect</div></div>
-              <div class="add-store-check">&#x2795;</div>
-            </div>
-            <div class="add-store-item" onclick="openLogin('giant')">
-              <div class="add-store-icon" style="background:#f6821f">GNT</div>
-              <div class="add-store-info"><div class="add-store-name">Giant</div><div class="add-store-status">Tap to connect</div></div>
-              <div class="add-store-check">&#x2795;</div>
-            </div>
-            <div class="add-store-item" onclick="openLogin('mustafa')">
-              <div class="add-store-icon" style="background:#6b46c1">MUS</div>
-              <div class="add-store-info"><div class="add-store-name">Mustafa</div><div class="add-store-status">Tap to connect</div></div>
-              <div class="add-store-check">&#x2795;</div>
-            </div>
-            <div class="add-store-item" onclick="openLogin('watsons')">
-              <div class="add-store-icon" style="background:#0072bc">WAT</div>
-              <div class="add-store-info"><div class="add-store-name">Watsons</div><div class="add-store-status">Tap to connect</div></div>
-              <div class="add-store-check">&#x2795;</div>
-            </div>
-            <div class="add-store-item" onclick="openLogin('guardian')">
-              <div class="add-store-icon" style="background:#00a651">GRD</div>
-              <div class="add-store-info"><div class="add-store-name">Guardian</div><div class="add-store-status">Tap to connect</div></div>
-              <div class="add-store-check">&#x2795;</div>
-            </div>
+            <div class="add-store-item connected" onclick="openLogin('fairprice')"><div class="add-store-check">✅</div><div class="add-store-icon" style="background:#e53e3e">FP</div><div class="add-store-name">FairPrice</div></div>
+            <div class="add-store-item connected" onclick="openLogin('shengsiong')"><div class="add-store-check">✅</div><div class="add-store-icon" style="background:#dd6b20">SS</div><div class="add-store-name">Sheng Siong</div></div>
+            <div class="add-store-item" onclick="openLogin('coldstorage')"><div class="add-store-icon" style="background:#2b6cb0">CS</div><div class="add-store-name">Cold Storage</div></div>
+            <div class="add-store-item" onclick="openLogin('redmart')"><div class="add-store-icon" style="background:#e53e00">RM</div><div class="add-store-name">RedMart</div></div>
+            <div class="add-store-item" onclick="openLogin('dondonki')"><div class="add-store-icon" style="background:#c41e3a">DDK</div><div class="add-store-name">Don Donki</div></div>
+            <div class="add-store-item" onclick="openLogin('giant')"><div class="add-store-icon" style="background:#f6821f">GNT</div><div class="add-store-name">Giant</div></div>
+            <div class="add-store-item" onclick="openLogin('mustafa')"><div class="add-store-icon" style="background:#6b46c1">MUS</div><div class="add-store-name">Mustafa</div></div>
+            <div class="add-store-item" onclick="openLogin('watsons')"><div class="add-store-icon" style="background:#0072bc">WAT</div><div class="add-store-name">Watsons</div></div>
+            <div class="add-store-item" onclick="openLogin('guardian')"><div class="add-store-icon" style="background:#00a651">GRD</div><div class="add-store-name">Guardian</div></div>
+            <div class="add-store-item" onclick="openLogin('prime')"><div class="add-store-icon" style="background:#1d4ed8">PRM</div><div class="add-store-name">Prime</div></div>
+            <div class="add-store-item" onclick="openLogin('haomart')"><div class="add-store-icon" style="background:#dc2626">HAO</div><div class="add-store-name">Hao Mart</div></div>
+            <div class="add-store-item" onclick="openLogin('littlefarms')"><div class="add-store-icon" style="background:#15803d">LF</div><div class="add-store-name">Little Farms</div></div>
+            <div class="add-store-item" onclick="openLogin('jasons')"><div class="add-store-icon" style="background:#7c3aed">JAS</div><div class="add-store-name">Jason's</div></div>
+            <div class="add-store-item" onclick="openLogin('meidiya')"><div class="add-store-icon" style="background:#b91c1c">MY</div><div class="add-store-name">Meidi-Ya</div></div>
+            <div class="add-store-item" onclick="openLogin('isetan')"><div class="add-store-icon" style="background:#9f1239">ISE</div><div class="add-store-name">Isetan</div></div>
+            <div class="add-store-item" onclick="openLogin('lazada')"><div class="add-store-icon" style="background:#0f172a">LAZ</div><div class="add-store-name">Lazada</div></div>
+            <div class="add-store-item" onclick="openLogin('shopee')"><div class="add-store-icon" style="background:#ea580c">SHP</div><div class="add-store-name">Shopee</div></div>
+            <div class="add-store-item" onclick="openLogin('amazon')"><div class="add-store-icon" style="background:#92400e">AMZ</div><div class="add-store-name">Amazon SG</div></div>
+            <div class="add-store-item" onclick="openLogin('unity')"><div class="add-store-icon" style="background:#0369a1">UNT</div><div class="add-store-name">Unity</div></div>
+            <div class="add-store-item" onclick="openLogin('cheers')"><div class="add-store-icon" style="background:#059669">CHR</div><div class="add-store-name">Cheers</div></div>
           </div>
         </div>
       </div>
 
-      <!-- Equalizer + colour swatches replacing "Good afternoon" -->
-      <div class="greeting-area" id="greetingArea">
-        <div class="voice-eq" id="voiceEq">
-          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-        </div>
-        <div class="eq-custom-select" id="eqCustomSelect">
-          <div class="eq-sel-val" id="eqSelVal" onclick="toggleEqMenu()">Studio LED <span class="eq-sel-arrow">▾</span></div>
-          <div class="eq-sel-menu" id="eqSelMenu">
-            <div class="eq-sel-opt" onclick="setEqTheme('default','Studio LED')">Studio LED</div>
-            <div class="eq-sel-opt" onclick="setEqTheme('neon','Neon Pulse')">Neon Pulse</div>
-            <div class="eq-sel-opt" onclick="setEqTheme('fire','Fire Storm')">Fire Storm</div>
-            <div class="eq-sel-opt" onclick="setEqTheme('arctic','Arctic Ice')">Arctic Ice</div>
-            <div class="eq-sel-opt" onclick="setEqTheme('matrix','Matrix')">Matrix</div>
-          </div>
-        </div>
-      </div>
 
       <!-- Inline AI chat bar -->
       <!-- Smart AI Agent — always open, no click needed -->
@@ -1138,11 +1400,11 @@ body{
         <!-- Input row — ABOVE chat thread -->
         <div class="smart-ai-input-row">
           <!-- Camera button — opens phone camera directly -->
-          <button class="input-icon-btn" id="cameraBtn" onclick="triggerCamera()" title="Take photo of grocery list or receipt">
+          <button class="input-icon-btn" id="cameraBtn" onclick="openScanModal('camera')" title="Take photo of grocery list or receipt">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </button>
           <!-- Attachment button — pick from gallery or files -->
-          <button class="input-icon-btn" id="attachBtn" onclick="triggerAttach()" title="Attach grocery list image or receipt PDF">
+          <button class="input-icon-btn" id="attachBtn" onclick="openScanModal('attach')" title="Attach grocery list image or receipt PDF">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
           </button>
           <!-- Hidden file inputs -->
@@ -1169,6 +1431,7 @@ body{
           <button class="smart-chip" onclick="chipSend('chicken deals')">🍗 Chicken deals</button>
           <button class="smart-chip" onclick="chipSend('what can I cook this week?')">🍳 Meal ideas</button>
           <button class="smart-chip" onclick="chipSend('rice best price')">🍚 Rice price</button>
+          <button class="smart-chip" style="border-color:rgba(3,105,161,0.3);color:#0369a1" onclick="findSimilar(document.getElementById('inlineAiInput').value||'milk')">🔍 Find Similar</button>
         </div>
         <!-- Conversation thread — BELOW input -->
         <div class="inline-chat-thread" id="inlineChatThread"></div>
@@ -1202,17 +1465,33 @@ body{
           <button class="filter-side-btn mic" title="Speak">&#x1F3A4;</button>
         </div>
         <!-- AI Chat responses -->
-        <div class="chat-box" id="chatBox">
-          <!-- Floating mini robot — always visible at bottom-right when scrolled -->
-          <button class="float-robot" id="floatRobot" onclick="toggleVoice()" title="Tap to speak">🤖</button>
+        <div class="chat-box-wrap" id="chatBoxWrap">
+          <div class="chat-box" id="chatBox"></div>
+          <!-- Mini robot OUTSIDE the scroll area — always pinned to bottom-right -->
+          <button class="float-robot" id="floatRobot" onclick="toggleVoice()" title="Tap to speak">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="7" y="8" width="10" height="9" rx="2" fill="white" opacity="0.95"/>
+              <rect x="9" y="4" width="6" height="5" rx="1.5" fill="white" opacity="0.85"/>
+              <circle cx="11" cy="11" r="1.5" fill="#c81e3b"/>
+              <circle cx="15" cy="11" r="1.5" fill="#c81e3b"/>
+              <rect x="10" y="13.5" width="4" height="1.2" rx="0.6" fill="#c81e3b" opacity="0.8"/>
+              <line x1="12" y1="4" x2="12" y2="2.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="12" cy="2" r="1" fill="white"/>
+              <line x1="7" y1="11" x2="5" y2="11" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="17" y1="11" x2="19" y2="11" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
         </div>
         <!-- Shopping list tags -->
         <div class="item-tags" id="itemTags"></div>
         <div class="item-count" id="itemCount"></div>
-        <button class="filter-go" id="filterGo" onclick="compareAll()">&#x1F50D; Compare Prices Across All Stores</button>
-        <!-- Comparison results -->
-        <div class="compare-results" id="compareResults"></div>
       </div>
+      <!-- Compare button and results are OUTSIDE the collapsing panel so they are always accessible -->
+      <button class="filter-go" id="filterGo" onclick="compareAll()">&#x1F50D; Compare Prices Across All Stores</button>
+      <!-- Comparison results -->
+      <div class="compare-results" id="compareResults"></div>
+      <!-- Similar products results -->
+      <div id="similarResults" style="display:none;margin-top:8px"></div>
     </div>
 
     <!-- Store buttons -->
@@ -1406,7 +1685,7 @@ body{
       <div class="nav-icon">&#x1F50D;</div>
       <div class="nav-label">Explore</div>
     </div>
-    <div class="nav-voice" title="Speak your grocery list">&#x1F3A4;</div>
+    <div class="nav-voice" id="navVoiceBtn" title="Tap to speak" onclick="toggleVoice()" style="font-size:26px;line-height:1">🤖</div>
     <div class="nav-item" style="position:relative">
       <div class="nav-icon">&#x1F3EA;</div>
       <div class="nav-label">Stores</div>
@@ -1416,6 +1695,7 @@ body{
       <div class="nav-label">Cart</div>
     </div>
   </div>
+
 </div>
 
 <script>
@@ -1499,6 +1779,7 @@ storeOrbs.forEach(s => {
 
 // Login screen
 function completeLogin() {
+  localStorage.setItem('gs_user', '1'); // remember for next visit
   const screen = document.getElementById('loginScreen');
   screen.style.transition = 'opacity 0.5s, transform 0.5s';
   screen.style.opacity = '0';
@@ -1510,9 +1791,37 @@ function completeLogin() {
   }, 500);
 }
 
+// Auto-start app (no login required)
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => { startAiGreeting(); }, 300);
+});
+
 // Shopping list management
 let shoppingList = [];
 const storeNames = {fairprice:'FairPrice',shengsiong:'Sheng Siong',coldstorage:'Cold Storage',redmart:'RedMart',dondonki:'Donki',giant:'Giant',mustafa:'Mustafa',watsons:'Watsons',guardian:'Guardian'};
+const storeAbbrMap = {fairprice:'FP',shengsiong:'SS',coldstorage:'CS',redmart:'RM',dondonki:'Donki',giant:'Giant',mustafa:'MUS',watsons:'WAT',guardian:'GRD'};
+const storeColorsMap = {fairprice:'#e53e3e',shengsiong:'#dd6b20',coldstorage:'#2b6cb0',redmart:'#276749',dondonki:'#c41e3a',giant:'#f6821f',mustafa:'#6b46c1',watsons:'#0072bc',guardian:'#00a651'};
+const ALL_STORE_IDS = ['fairprice','shengsiong','coldstorage','redmart','dondonki','giant','mustafa','watsons','guardian'];
+
+// Preferred stores — user can toggle which stores to include. Saved across sessions.
+// Default: all except Mustafa (user preference example)
+let preferredStores = JSON.parse(localStorage.getItem('gs_preferred_stores') || 'null')
+  || ['fairprice','shengsiong','coldstorage','redmart','dondonki','giant','watsons','guardian'];
+
+function savePreferredStores() {
+  localStorage.setItem('gs_preferred_stores', JSON.stringify(preferredStores));
+}
+
+function togglePreferredStore(storeId) {
+  if (preferredStores.includes(storeId)) {
+    if (preferredStores.length <= 1) return; // must keep at least 1
+    preferredStores = preferredStores.filter(s => s !== storeId);
+  } else {
+    preferredStores.push(storeId);
+  }
+  savePreferredStores();
+  compareAll(); // refresh results with new selection
+}
 
 // Connected stores — user only sees prices from these
 let connectedStores = ['fairprice', 'shengsiong'];
@@ -1576,19 +1885,35 @@ function applyRobotChar(idx) {
   const nameEl = document.getElementById('robotBtnName');
   if (btn) { btn.style.background = char.color; btn.style.boxShadow = '0 2px 8px ' + char.color + '55'; }
   if (nameEl) nameEl.textContent = char.name;
+  // Sync nav robot button to match same character colour
+  const nav = document.getElementById('navVoiceBtn');
+  if (nav) {
+    nav.style.background = 'radial-gradient(circle at 38% 36%, ' + char.bg + ' 0%, ' + char.color + ' 100%)';
+    nav.style.boxShadow = '0 4px 20px ' + char.color + '88';
+  }
+  // Update selected card in menu
+  const cards = document.querySelectorAll('.robot-card');
+  cards.forEach((card, i) => {
+    card.classList.toggle('selected', i === idx);
+  });
   document.getElementById('robotMenu').classList.remove('open');
 }
 
 function buildRobotMenu() {
   const menu = document.getElementById('robotMenu');
   if (!menu) return;
-  menu.innerHTML = '';
+  menu.innerHTML = '<div class="robot-menu-grid"></div>';
+  const grid = menu.querySelector('.robot-menu-grid');
   ROBOT_CHARS.forEach((c, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'robot-menu-item';
-    btn.innerHTML = `<span class="rm-dot" style="background:${c.color}"></span><span class="rm-name">🤖 ${c.name}</span>`;
-    btn.onclick = () => applyRobotChar(i);
-    menu.appendChild(btn);
+    const card = document.createElement('div');
+    card.className = `robot-card robot-card-${c.name.toLowerCase()} ${i === currentRobotIdx ? 'selected' : ''}`;
+    card.innerHTML = `
+      <div class="robot-avatar-card">🤖</div>
+      <div class="robot-name">${c.name}</div>
+      <div class="robot-label">${c.label}</div>
+    `;
+    card.onclick = () => applyRobotChar(i);
+    grid.appendChild(card);
   });
 }
 
@@ -1609,22 +1934,6 @@ function initRobotPicker() {
 window.speechSynthesis && (speechSynthesis.onvoiceschanged = initRobotPicker);
 setTimeout(initRobotPicker, 500);
 
-// EQ custom dropdown
-function toggleEqMenu() {
-  document.getElementById('eqSelMenu').classList.toggle('open');
-}
-function setEqTheme(val, label) {
-  const eq = document.getElementById('voiceEq');
-  if (val === 'default') eq.removeAttribute('data-theme');
-  else eq.dataset.theme = val;
-  document.getElementById('eqSelVal').innerHTML = label + ' <span class="eq-sel-arrow">▾</span>';
-  document.getElementById('eqSelMenu').classList.remove('open');
-}
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('#eqCustomSelect')) {
-    document.getElementById('eqSelMenu')?.classList.remove('open');
-  }
-});
 
 // Proactive greeting when main app shows (no click needed)
 function startAiGreeting() {
@@ -1752,82 +2061,6 @@ async function demoVisionScan(filename, mimeType) {
   ];
 }
 
-// ── Audio visualizer ─────────────────────────────────────────
-let audioCtx = null, analyser = null, micStream = null, rafId = null, aiRafId = null;
-
-// Idle bar heights (frozen skyline)
-const IDLE_SCALES = [0.20,0.50,0.75,0.35,1.00,0.60,0.30,0.85,0.45,0.70,0.25,0.60,0.90,0.40,0.65,0.20,0.55,0.80,0.30,0.70,0.45,0.95,0.25,0.65,0.50,0.35,0.80,0.15,0.70,0.55,0.40,0.85];
-
-function getEqBars() { return document.getElementById('voiceEq')?.querySelectorAll('span'); }
-
-function resetBarsIdle() {
-  cancelAnimationFrame(rafId); cancelAnimationFrame(aiRafId);
-  const bars = getEqBars();
-  if (!bars) return;
-  bars.forEach((b, i) => { b.style.transform = 'scaleY(' + (IDLE_SCALES[i]||0.5) + ')'; });
-}
-
-// Drive bars from real microphone audio data
-async function startMicVisualizer() {
-  try {
-    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 64;
-    const source = audioCtx.createMediaStreamSource(micStream);
-    source.connect(analyser);
-    const data = new Uint8Array(analyser.frequencyBinCount); // 32 bins
-    const bars = getEqBars();
-    const numBars = bars ? bars.length : 16;
-    function draw() {
-      rafId = requestAnimationFrame(draw);
-      analyser.getByteFrequencyData(data);
-      if (!bars) return;
-      bars.forEach((b, i) => {
-        const bin = Math.floor(i * data.length / numBars);
-        const level = data[bin] / 255; // 0–1
-        // Only move if there's actual audio energy (peak threshold)
-        const scale = level > 0.05 ? Math.max(0.08, level) : IDLE_SCALES[i];
-        b.style.transform = 'scaleY(' + scale.toFixed(3) + ')';
-      });
-    }
-    draw();
-  } catch(e) { /* mic denied — fall back to CSS animation */ }
-}
-
-function stopMicVisualizer() {
-  cancelAnimationFrame(rafId);
-  if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
-  if (audioCtx) { audioCtx.close().catch(()=>{}); audioCtx = null; }
-  resetBarsIdle();
-}
-
-// Simulate peak-reactive bars for AI speech (no audio stream available for TTS)
-function startAiVisualizer() {
-  cancelAnimationFrame(aiRafId);
-  const bars = getEqBars();
-  if (!bars) return;
-  let lastPeak = Date.now();
-  function draw() {
-    aiRafId = requestAnimationFrame(draw);
-    const now = Date.now();
-    // Generate peaks every ~80-200ms (simulates spoken syllables)
-    if (now - lastPeak > 80 + Math.random() * 120) {
-      lastPeak = now;
-      bars.forEach((b, i) => {
-        const base = IDLE_SCALES[i];
-        const peak = Math.random() > 0.35 ? base + Math.random() * (1 - base) * 0.9 : base * 0.2;
-        b.style.transform = 'scaleY(' + peak.toFixed(3) + ')';
-      });
-    }
-  }
-  draw();
-}
-
-function stopAiVisualizer() {
-  cancelAnimationFrame(aiRafId);
-  resetBarsIdle();
-}
 
 // TTS with peak visualizer
 function speakText(text) {
@@ -1845,19 +2078,14 @@ function speakText(text) {
   utt.lang = 'en-SG'; utt.rate = 1.05; utt.pitch = 1.0;
   const selectedVoice = getBestVoiceForChar(currentRobotIdx);
   if (selectedVoice) utt.voice = selectedVoice;
-  utt.onstart = () => startAiVisualizer();
   utt.onend = () => {
-    stopAiVisualizer();
     // Auto-restart voice listening after AI finishes speaking
     if (voiceAutoMode) setTimeout(toggleVoice, 400);
   };
-  utt.onerror = () => stopAiVisualizer();
   window.speechSynthesis.speak(utt);
 }
 
 function typewriterEffect(el, html, done) {
-  const eq = document.getElementById('voiceEq');
-  eq.classList.add('ai-talking');
   const plain = html.replace(/<[^>]+>/g, '');
   el.style.display = 'block';
   el.innerHTML = '<span class="ai-cursor"></span>';
@@ -1867,7 +2095,6 @@ function typewriterEffect(el, html, done) {
     if (i >= plain.length) {
       clearInterval(interval);
       el.innerHTML = html;
-      eq.classList.remove('ai-talking');
       // Speak the reply out loud
       speakText(plain);
       if (done) done();
@@ -1880,16 +2107,12 @@ function typewriterEffect(el, html, done) {
 }
 
 function setAiThinking(on) {
-  const eq = document.getElementById('voiceEq');
   const dot = document.getElementById('aiOrbDot');
   const bars = document.getElementById('musicBars');
   if (on) {
-    eq.classList.add('ai-talking'); // EQ bars animate when AI is thinking
     dot.style.display = 'none';
     bars.classList.add('active');
   } else {
-    // ai-talking removed by typewriterEffect when done; remove here too for error cases
-    eq.classList.remove('ai-talking');
     dot.style.display = 'block';
     bars.classList.remove('active');
   }
@@ -1959,6 +2182,8 @@ async function sendInlineAI(fromVoice = false) {
         ? '<span style="font-size:10px;background:#4285f4;color:#fff;border-radius:8px;padding:1px 6px;margin-left:4px;vertical-align:middle">✨ Gemini</span>'
         : '';
       showAiReply(data.reply + (providerBadge ? '\n\n' + providerBadge : ''));
+      // Also show similar products for the query
+      findSimilar(message);
       if (data.basketItems && data.basketItems.length > 0) {
         data.basketItems.forEach(item => {
           const label = item.product_name.toLowerCase();
@@ -1973,6 +2198,8 @@ async function sendInlineAI(fromVoice = false) {
       inlineHistory.push({ role: 'user', content: message });
       inlineHistory.push({ role: 'assistant', content: reply });
       showAiReply(reply);
+      // Also show similar products for the query
+      findSimilar(message);
     }
   } catch (e) {
     setAiThinking(false);
@@ -1980,6 +2207,65 @@ async function sendInlineAI(fromVoice = false) {
     inlineHistory.push({ role: 'user', content: message });
     inlineHistory.push({ role: 'assistant', content: reply });
     showAiReply(reply);
+    // Also show similar products for the query
+    findSimilar(message);
+  }
+}
+
+// ── Find Similar Products ─────────────────────────────────
+async function findSimilar(query) {
+  const container = document.getElementById('similarResults');
+  if (!container) return;
+  query = (query || '').trim();
+  if (!query) query = 'milk';
+  container.style.display = 'block';
+  container.innerHTML = '<div style="text-align:center;padding:16px;color:#6b7280;font-size:12px">🔍 Searching all stores for similar products…</div>';
+
+  try {
+    const resp = await fetch('/api/products/similar?q=' + encodeURIComponent(query));
+    const data = await resp.json();
+
+    if (!data.results || data.results.length === 0) {
+      container.innerHTML = '<div class="no-similar">No similar products found for "' + query + '"</div>';
+      return;
+    }
+
+    const STORE_LABELS = {fairprice:'FP', shengsiong:'SS', coldstorage:'CS', redmart:'RM', dondonki:'Donki', giant:'Giant', mustafa:'Mfsa', watsons:'Wtsn', guardian:'Grdn'};
+    const storeIds = ['fairprice','shengsiong','coldstorage','redmart','dondonki','giant','mustafa','watsons','guardian'];
+
+    let html = '<div class="similar-panel">';
+    html += '<div class="similar-title">🔍 Similar products for "' + query + '" — ' + data.count + ' found across all stores</div>';
+    html += '<div style="overflow-x:auto"><table class="similar-table">';
+    html += '<thead><tr><th>Product</th>' + storeIds.map(s => '<th style="text-align:center">' + STORE_LABELS[s] + '</th>').join('') + '<th>Cheapest</th></tr></thead><tbody>';
+
+    data.results.forEach(result => {
+      result.products.forEach(product => {
+        const prices = {};
+        product.prices.forEach(p => prices[p.storeId] = p);
+        const cheapestPrice = Math.min(...product.prices.map(p => p.price));
+
+        html += '<tr>';
+        html += '<td><div class="similar-name">' + product.name + '</div><div class="similar-unit">' + product.unit + '</div></td>';
+        storeIds.forEach(sid => {
+          const p = prices[sid];
+          const isBest = p && p.price === cheapestPrice;
+          const isEst = p && p.isEstimated;
+          html += '<td style="text-align:center">';
+          if (p) html += '<span class="similar-price' + (isBest?' best':'') + '">$' + p.price.toFixed(2) + (isEst?'*':'') + '</span>';
+          else html += '<span style="color:#e5e7eb">—</span>';
+          html += '</td>';
+        });
+        html += '<td><span class="similar-price best">$' + cheapestPrice.toFixed(2) + ' @ ' + (STORE_LABELS[product.cheapestStoreId]||product.cheapestStoreId) + '</span></td>';
+        html += '</tr>';
+      });
+    });
+
+    html += '</tbody></table></div>';
+    html += '<div style="font-size:9px;color:#9ca3af;margin-top:6px;padding:0 2px">* estimated price &nbsp;|&nbsp; FP=FairPrice SS=Sheng Siong CS=Cold Storage RM=RedMart</div>';
+    html += '</div>';
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = '<div class="no-similar">Error loading results</div>';
   }
 }
 
@@ -2065,7 +2351,7 @@ function getDemoReply(msg) {
   for (const [pat, fix] of PHONETIC_MAP) m = m.replace(pat, fix);
 
   // ── 🏪 Login / auto-cart to a specific store ─────────────────────────
-  const loginIntent = /\b(login|log in|log into|open|go to|auto.?cart|auto.?add|send to|checkout|place order)\b/i.test(m)
+  const loginIntent = /\b(login|log in|log into|open|go to|buy from|shop at|order from|want to buy|take me to|auto.?cart|auto.?add|send to|checkout|place order|buy|shop)\b/i.test(m)
                    && /\b(fairprice|sheng\s*siong|cold\s*storage|redmart|watsons|guardian|donki)\b/i.test(m);
   if (loginIntent) {
     const isFP  = /fairprice/i.test(m);
@@ -2085,7 +2371,9 @@ function getDemoReply(msg) {
                    : isWat ? `https://www.watsons.com.sg/search?text=${q}&gs_auto=1`
                    : `https://www.fairprice.com.sg/search?query=${q}&gs_auto=1`;
     syncBasketToApi();
-    return `🛒 Opening **${storeLabel}** with your shopping list!\n\n${listSummary}\n\n**How it works:**\n1️⃣ Tap the button below — ${storeLabel} opens in a new tab\n2️⃣ Log in to ${storeLabel} if asked\n3️⃣ **Chrome extension auto-adds all items to cart!** ✅\n\n⚠️ Need the extension? Tap **Stores** tab → Install GrocerSnap Extension\n\n<a class="store-cart-btn ${isFP?'fp':isSS?'ss':isCS?'cs':isRM?'rm':'wat'}" href="${storeUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:20px;color:#fff;text-decoration:none;font-weight:700;font-size:14px;margin-top:8px">🛒 Open ${storeLabel} → Auto-Cart</a>`;
+    // Auto-open the store page immediately — no need to tap a button
+    setTimeout(() => window.open(storeUrl, '_blank'), 800);
+    return `🛒 Opening **${storeLabel}** now…\n\n${listSummary}\n\n✅ **${storeLabel} is opening automatically!**\nIf the tab didn't open, tap below:\n\n<a class="store-cart-btn ${isFP?'fp':isSS?'ss':isCS?'cs':isRM?'rm':'wat'}" href="${storeUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:20px;color:#fff;text-decoration:none;font-weight:700;font-size:14px;margin-top:8px">🛒 Open ${storeLabel} → Auto-Cart</a>\n\n💡 Install the GrocerSnap extension to auto-add all items to cart!`;
   }
 
   // ── 🛒 Basket ADD intent — "add X to basket/cart/list" ──────────────
@@ -2449,8 +2737,122 @@ function getDemoReply(msg) {
   return "🔍 **" + cleanProduct + "** — searching Singapore stores:\n\n📍 Most likely found at: **" + storeGuess + "**\n💰 Estimated price range: **" + priceGuess + "**\n\n🏪 Check these stores:\n• **FairPrice** → fairprice.com.sg\n• **Sheng Siong** → shengsiong.com.sg\n• **Cold Storage** → coldstorage.com.sg\n• **RedMart** → lazada.sg/shop/redmart\n• **Watsons** → watsons.com.sg\n\n💡 For **live real-time prices** add a **Perplexity API key** (pplx.ai/api) to .env — I'll search all stores instantly!";
 }
 
+// ═══════════════════════════════════════════════════════════════
+//  PHONETIC STORE MATCHER — fuzzy syllable-based store name detector
+//  Catches cases where speech API returns completely wrong text.
+//  Uses a phonetic "sound-alike" map for each store, then measures
+//  character overlap. If a good match is found, injects the store name.
+// ═══════════════════════════════════════════════════════════════
+const STORE_PHONETICS = [
+  // Each entry: [canonical name, array of phonetic spellings]
+  { store: 'Sheng Siong', sounds: [
+    'sheng siong','shang siong','sheng song','shing siong','sheng shong',
+    'shen siong','sin siong','chin siong','chain siong','cheng siong',
+    'sheng shyong','shing shong','shing shyong','sheng chong',
+    'shane sean','shane shawn','chain shawn','sheng shawn',
+    'sing song','sengs siong','seattle','xian siong',
+    // What en-US hears for Singapore accent "Sheng Siong":
+    'chain john','chain sean','chain shown','shang john',
+    'shin shown','shin john','chin john','shen shown',
+    'sheng john','sheng shown','sheng chon',
+    // Common total misfires - add as user reports them:
+    'los angeles', // reported by user!
+    'san francisco','bus station','lung station','ranch station',
+  ]},
+  { store: 'FairPrice', sounds: [
+    'fairprice','fair price','fare price','fairprise','fair prise',
+    'fair praise','fair preys','fera price','ferry price',
+  ]},
+  { store: 'Cold Storage', sounds: [
+    'cold storage','cold store','cold storidge','cold storages',
+    'colds storage','cold storej','coal storage',
+  ]},
+  { store: 'RedMart', sounds: [
+    'redmart','red mart','read mart','red mark','red part',
+    'red march','red market',
+  ]},
+  { store: 'Watsons', sounds: [
+    'watsons','watson','whatsapp','what son','what sons',
+    'watson store','watson pharmacy',
+  ]},
+  { store: 'Guardian', sounds: [
+    'guardian','guardians','garden pharmacy','garden store',
+  ]},
+  { store: 'Don Don Donki', sounds: [
+    'don don donki','donki','donkey','don donki','donkey store',
+    'don don donkey','japanese store',
+  ]},
+];
+
+function phoneticsMatchStore(text) {
+  const lc = text.toLowerCase().trim();
+  for (const entry of STORE_PHONETICS) {
+    for (const sound of entry.sounds) {
+      if (lc.includes(sound)) return entry.store;
+    }
+  }
+  return null;
+}
+
+// Run phonetic store match on a transcript and inject store name if found
+function applyPhoneticStoreMatch(text) {
+  const matched = phoneticsMatchStore(text);
+  if (matched) {
+    // Replace the WHOLE text? No — preserve any grocery words around it.
+    // Strategy: replace the matched sound phrase with the store name.
+    const lc = text.toLowerCase();
+    for (const entry of STORE_PHONETICS) {
+      if (entry.store !== matched) continue;
+      for (const sound of entry.sounds) {
+        if (lc.includes(sound)) {
+          return text.replace(new RegExp(sound.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'i'), matched);
+        }
+      }
+    }
+  }
+  return text;
+}
+
 // ── Voice mishearing correction map ─────────────────────
 const VOICE_FIXES = [
+  // ── STORE NAME mishearings (fix first, highest priority) ──
+  [/\bwhats?\s*app\b/gi,             'Watsons'],      // "WhatsApp" → Watsons
+  [/\bwhat\s*son[s]?\b/gi,           'Watsons'],      // "Whatson" → Watsons
+  [/\bwatson\b/gi,                   'Watsons'],      // "Watson" → Watsons
+  // ── SHENG SIONG — many phonetic mishearings ──────────────────
+  [/\bseattle\b/gi,                  'Sheng Siong'],  // "Seattle"
+  [/\bshang\s*si[ao]ng?\b/gi,        'Sheng Siong'],  // "Shang Siong"
+  [/\bsheng\s*sh?i[ao]ng?\b/gi,      'Sheng Siong'],  // "Sheng Shiong"
+  [/\bsheng\s*song\b/gi,             'Sheng Siong'],  // "Sheng Song"
+  [/\bsin\s*si[ao]ng?\b/gi,          'Sheng Siong'],  // "Sin Siong"
+  [/\bsheng[sz]i[ao]ng?\b/gi,        'Sheng Siong'],  // "Shengsiang"
+  [/\bsheng\s*shyong\b/gi,           'Sheng Siong'],  // "Sheng Shyong"
+  [/\bshen\s*si[ao]ng?\b/gi,         'Sheng Siong'],  // "Shen Siong"
+  [/\bshen\s*shyong\b/gi,            'Sheng Siong'],  // "Shen Shyong"
+  [/\bchain\s*shawn\b/gi,            'Sheng Siong'],  // "chain shawn"
+  [/\bshane\s*sean\b/gi,             'Sheng Siong'],  // "Shane Sean"
+  [/\bsheng\s*shong\b/gi,            'Sheng Siong'],  // "Sheng Shong"
+  [/\bshing\s*si[ao]ng?\b/gi,        'Sheng Siong'],  // "Shing Siong"
+  [/\bshing\s*shong\b/gi,            'Sheng Siong'],  // "Shing Shong"
+  [/\bcheng\s*si[ao]ng?\b/gi,        'Sheng Siong'],  // "Cheng Siong"
+  [/\bchen\s*si[ao]ng?\b/gi,         'Sheng Siong'],  // "Chen Siong"
+  [/\bsing\s*song\b/gi,              'Sheng Siong'],  // "Sing Song"
+  [/\bsengs?\s*si[ao]ng?\b/gi,       'Sheng Siong'],  // "Seng Siong"
+  [/\bshengsh?i[ao]ng\b/gi,          'Sheng Siong'],  // "Shengsiong" no space
+  [/\bshang\s*shong\b/gi,            'Sheng Siong'],  // "Shang Shong"
+  [/\bshing\s*shyong\b/gi,           'Sheng Siong'],  // "Shing Shyong"
+  [/\bsheng\s*c[hy][ao]ng\b/gi,      'Sheng Siong'],  // "Sheng Chong"
+  [/\bxian\s*si[ao]ng?\b/gi,         'Sheng Siong'],  // "Xian Siong"
+  [/\bsheng\b(?!\s*siong)/gi,        'Sheng Siong'],  // bare "Sheng" alone
+  [/\bfair\s*price\b/gi,             'FairPrice'],    // "fair price" → FairPrice
+  [/\bfairprise\b/gi,                'FairPrice'],    // "Fairprise" → FairPrice
+  [/\bcold\s*storage\b/gi,           'Cold Storage'],
+  [/\bcold\s*store\b/gi,             'Cold Storage'], // "cold store" → Cold Storage
+  [/\bred\s*mart\b/gi,               'RedMart'],
+  [/\bread\s*mart\b/gi,              'RedMart'],      // "read mart" → RedMart
+  [/\bdon\s*don\s*donkey\b/gi,       'Don Don Donki'],// "donkey" → Donki
+  [/\bdonkey\b/gi,                   'Donki'],
+  [/\bguardian[s]?\b/gi,             'Guardian'],
   // ── EGGS (most misheard word) ──────────────────────────
   [/\bcotton\s*balls?\b/gi,   'carton boxes'],   // "cotton balls" → carton boxes
   [/\beights?\b/gi,           'eggs'],
@@ -2732,7 +3134,9 @@ const VOICE_FIXES = [
   [/\bpork\s*belly\b/gi,      'pork belly'],
 ];
 function fixVoiceTranscript(text) {
-  let fixed = text;
+  // Step 1: Phonetic store name matching (catches total misfires like "Los Angeles")
+  let fixed = applyPhoneticStoreMatch(text);
+  // Step 2: Regex correction table
   for (const [pattern, replacement] of VOICE_FIXES) {
     fixed = fixed.replace(pattern, replacement);
   }
@@ -2869,31 +3273,101 @@ function toggleVoice() {
     // iOS Safari: interimResults must be false, continuous must be false
     voiceRecognition.interimResults = !isIOS;
     voiceRecognition.continuous = false;
-    voiceRecognition.maxAlternatives = 1;
+    // Get top 5 alternatives — we pick the best store/product match below
+    voiceRecognition.maxAlternatives = 5;
+
+    // ── Speech Grammar: pre-load store names + groceries as priority hints ──
+    // Works like training the engine with sample sounds for these exact words.
+    // Browser will strongly favour recognising these over similar-sounding words
+    // e.g. "Seattle" → "Sheng Siong", "WhatsApp" → "Watsons"
+    try {
+      const GrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
+      if (GrammarList) {
+        const STORE_HINTS = [
+          'FairPrice','Sheng Siong','Cold Storage','RedMart','Watsons',
+          'Guardian','Don Don Donki','Giant','Mustafa','Prime',
+          'Hao Mart','Little Farms','Meidi-Ya','Isetan','Lazada','Shopee'
+        ].join(' | ');
+        const ACTION_HINTS = [
+          'add','buy','search','find','compare','open','login','go to',
+          'order','cheapest','price','basket','cart','list','remove','delete'
+        ].join(' | ');
+        const GROCERY_HINTS = [
+          'milk','eggs','rice','chicken','beef','pork','fish','prawns',
+          'bread','butter','oil','sugar','salt','noodles','pasta','tofu',
+          'coffee','tea','water','juice','yogurt','cheese','flour',
+          'onion','garlic','potato','tomato','apple','banana','orange',
+          'mango','durian','pineapple','watermelon','grapes','strawberry',
+          'broccoli','carrot','spinach','cabbage','cucumber',
+          'bak choy','kai lan','chye sim','xiao bai cai',
+          'tau kwa','tau pok','luncheon meat','sardines','tuna','salmon',
+          'sausages','hotdog','nuggets','frozen food',
+          'instant noodles','indomie','maggi','nissin',
+          'meiji','dutch lady','marigold','farmhouse','magnolia',
+          'milo','ovaltine','nestle','pampers','diapers',
+          'detergent','shampoo','toothpaste','tissue','toilet paper'
+        ].join(' | ');
+        const grammar = `#JSGF V1.0 UTF-8 en; grammar grocersnap; public <phrase> = ${STORE_HINTS} | ${ACTION_HINTS} | ${GROCERY_HINTS} ;`;
+        const list = new GrammarList();
+        list.addFromString(grammar, 1); // weight=1 = maximum priority boost
+        voiceRecognition.grammars = list;
+      }
+    } catch(e) { /* grammar not supported on this browser, that's fine */ }
 
     voiceRecognition.onstart = () => {
       voiceListening = true;
       robotBtn.classList.add('listening');
       document.getElementById('robotBtnName').textContent = '●';
       if (!pendingVoicePrefix) textEl.textContent = 'Listening…';
-      startMicVisualizer();
       updateFloatRobot();
+      // Sync nav robot — pulse blue while listening
+      const navBtn = document.getElementById('navVoiceBtn');
+      if (navBtn) { navBtn.style.background = 'linear-gradient(135deg,#1d4ed8,#3b82f6)'; navBtn.style.boxShadow = '0 4px 20px rgba(37,99,235,0.6)'; navBtn.textContent = '🎤'; }
     };
 
     voiceRecognition.onresult = (e) => {
-      const raw = Array.from(e.results).map(r => r[0].transcript).join('');
-      const combined = pendingVoicePrefix + raw;
-      const fixed = fixVoiceTranscript(combined);
+      // ── Scan ALL alternatives, pick the best one ─────────────────────
+      // Priority: (1) alternative that matches a known store name after fixes
+      //           (2) alternative that matches a known grocery word
+      //           (3) highest-confidence (j=0) result
+      const STORE_RE = /sheng\s*siong|fairprice|fair\s*price|cold\s*storage|redmart|watsons|guardian|donki|giant|mustafa/i;
+      const GROCERY_RE = /milk|eggs?|rice|chicken|beef|pork|fish|bread|butter|oil|sugar|salt|noodles|pasta|tofu|coffee|tea|juice|yogurt|cheese|flour|onion|garlic|potato|tomato|fruit|veg/i;
+
+      let bestTranscript = '';
+      let bestScore = -1; // 2=store match, 1=grocery match, 0=first alt
+
+      for (let i = 0; i < e.results.length; i++) {
+        const seg = e.results[i];
+        for (let j = 0; j < seg.length; j++) {
+          const raw = seg[j].transcript;
+          const fixed = fixVoiceTranscript(raw); // applies phonetic map + regex
+          let score = j === 0 ? 0 : -1; // first alternative preferred by default
+          if (STORE_RE.test(fixed))   score = 2; // store match = top priority
+          else if (GROCERY_RE.test(fixed)) score = 1; // grocery match = second
+          if (score > bestScore) { bestScore = score; bestTranscript = fixed; }
+        }
+      }
+
+      // If still empty, fall back to raw first result
+      if (!bestTranscript && e.results.length > 0) {
+        bestTranscript = fixVoiceTranscript(e.results[0][0].transcript);
+      }
+
+      const combined = pendingVoicePrefix + bestTranscript;
       voiceRecognition._lastRaw = combined;
-      document.getElementById('inlineAiInput').value = fixed;
-      textEl.textContent = '🎤 ' + fixed;
+      document.getElementById('inlineAiInput').value = combined;
+      // Show correction hint if phonetic match fired
+      const rawFirst = e.results[0]?.[0]?.transcript || '';
+      const corrected = rawFirst.toLowerCase() !== bestTranscript.toLowerCase();
+      textEl.textContent = corrected
+        ? `🎤 "${rawFirst}" → ${bestTranscript}`
+        : '🎤 ' + combined;
     };
 
     // ── Handle errors clearly so user knows what to do ──────
     voiceRecognition.onerror = (e) => {
       voiceListening = false;
       robotBtn.classList.remove('listening');
-      stopMicVisualizer();
       voiceAutoMode = false;
       const msgs = {
         'not-allowed':    '🎤 Mic blocked — tap the 🔒 icon in Safari address bar → allow Microphone',
@@ -2915,8 +3389,10 @@ function toggleVoice() {
     voiceRecognition.onend = () => {
       voiceListening = false;
       robotBtn.classList.remove('listening');
-      stopMicVisualizer();
       updateFloatRobot();
+      // Reset nav robot back to robot emoji + character colour
+      const navBtn = document.getElementById('navVoiceBtn');
+      if (navBtn) { navBtn.textContent = '🤖'; applyRobotChar(currentRobotIdx); }
       const val = document.getElementById('inlineAiInput').value.trim();
 
       // ── Incomplete sentence guard ──────────────────────────
@@ -2951,7 +3427,6 @@ function toggleVoice() {
       robotBtn.classList.remove('listening');
       pendingVoicePrefix = '';
       document.getElementById('robotBtnName').textContent = ROBOT_CHARS[currentRobotIdx].name;
-      stopMicVisualizer();
       textEl.textContent = e.error === 'not-allowed' ? 'Mic blocked — allow in browser' : 'Could not hear — try again';
     };
 
@@ -3095,10 +3570,29 @@ function addChat(type, msg, id) {
   div.className = 'chat-msg chat-' + type;
   div.innerHTML = msg;
   if (id) div.id = id;
-  // Insert before the float robot button so it stays at bottom
-  const floatBtn = document.getElementById('floatRobot');
-  if (floatBtn) box.insertBefore(div, floatBtn);
-  else box.appendChild(div);
+  box.appendChild(div);
+
+  // ── Follow robot: remove old one, create fresh after this message ──
+  const old = document.getElementById('followRobot');
+  if (old) old.remove();
+  const fr = document.createElement('button');
+  fr.id = 'followRobot';
+  fr.className = 'follow-robot';
+  fr.title = 'Tap to speak';
+  fr.onclick = toggleVoice;
+  fr.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+    <rect x="7" y="8" width="10" height="9" rx="2" fill="white" opacity="0.95"/>
+    <rect x="9" y="4" width="6" height="5" rx="1.5" fill="white" opacity="0.85"/>
+    <circle cx="11" cy="11" r="1.5" fill="#c81e3b"/>
+    <circle cx="15" cy="11" r="1.5" fill="#c81e3b"/>
+    <rect x="10" y="13.5" width="4" height="1.2" rx="0.6" fill="#c81e3b" opacity="0.8"/>
+    <line x1="12" y1="4" x2="12" y2="2.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="12" cy="2" r="1" fill="white"/>
+    <line x1="7" y1="11" x2="5" y2="11" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="17" y1="11" x2="19" y2="11" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>`;
+  box.appendChild(fr);
+
   box.scrollTop = box.scrollHeight;
   updateFloatRobot();
 }
@@ -3115,15 +3609,14 @@ function updateFloatRobot() {
   } else {
     btn.classList.remove('show');
   }
-  // Sync listening state
+  // Sync listening state on both robots
   const mainRobot = document.getElementById('robotBtn');
-  if (mainRobot && mainRobot.classList.contains('listening')) {
-    btn.classList.add('listening');
-    btn.textContent = '🎤';
-  } else {
-    btn.classList.remove('listening');
-    btn.textContent = '🤖';
-  }
+  const isListening = mainRobot && mainRobot.classList.contains('listening');
+  [btn, document.getElementById('followRobot')].forEach(r => {
+    if (!r) return;
+    if (isListening) { r.classList.add('listening'); r.innerHTML = '🎤'; }
+    else { r.classList.remove('listening'); }
+  });
 }
 
 function removeLastChat() {
@@ -3160,51 +3653,221 @@ function syncBasketToApi() {
   }).catch(() => {}); // silent fail — extension works without this too
 }
 
+// Estimate price for any product not in the database
+function estimateProductPrice(name) {
+  const n = name.toLowerCase();
+  const rules = [
+    [/organic|premium|imported/,               9.90],
+    [/salmon|prawn|seafood|lobster|crab/,       9.50],
+    [/beef|steak|lamb|mutton/,                  8.90],
+    [/shampoo|conditioner|detergent/,           8.50],
+    [/diaper|pampers|baby/,                    19.90],
+    [/vitamin|supplement/,                     12.90],
+    [/chicken|pork|fish|meat/,                  6.50],
+    [/rice|noodle|pasta|grain/,                 5.50],
+    [/milk|yogurt|cheese/,                      4.50],
+    [/coffee|tea|milo|juice/,                   4.50],
+    [/snack|chip|biscuit|cookie/,               3.50],
+    [/fruit|apple|orange|mango/,                3.50],
+    [/vegetable|veg|tofu|bean|spinach|kailan/,  2.20],
+    [/egg/,                                     2.80],
+    [/bread|bun/,                               2.80],
+  ];
+  for (const [re, price] of rules) if (re.test(n)) return price;
+  return 3.90;
+}
+
+function showSearch() {
+  const card = document.getElementById('smartAiCard');
+  if (card) {
+    const r = card.getBoundingClientRect();
+    window.scrollTo({ top: Math.max(0, r.top + window.scrollY - 20), behavior: 'smooth' });
+  }
+  setTimeout(() => {
+    const inp = document.getElementById('inlineAiInput');
+    if (inp) { inp.focus(); inp.placeholder = 'Search any product…'; }
+  }, 400);
+}
+
 function compareAll() {
   if (shoppingList.length === 0) { alert('Add items first!'); return; }
-  const panel = document.getElementById('compareResults');
-  panel.innerHTML = '<div class="compare-loading">&#x1F50D; Searching all stores...</div>';
-  panel.classList.add('open');
-  panel.scrollIntoView({block:'center', behavior:'smooth'});
 
-  Promise.all(shoppingList.map(item =>
-    fetch('/api/products/search?q=' + encodeURIComponent(item) + '&limit=1').then(r => r.json())
-  )).then(data => {
+  // Ensure the filter panel is open (user may not have tapped the map yet)
+  const fp = document.getElementById('filterPanel');
+  if (!fp.classList.contains('open')) {
+    fp.classList.add('open');
+    orbExpanded = true;
+  }
+
+  const panel = document.getElementById('compareResults');
+  // Show panel immediately with loading state (display:block via .open class)
+  function scrollPanelIntoView() {
+    panel.classList.add('open');
+    // Scroll window so panel is near top of viewport
+    requestAnimationFrame(() => {
+      const absTop = panel.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: Math.max(0, absTop - 20), behavior: 'smooth' });
+    });
+  }
+  setTimeout(scrollPanelIntoView, 80);
+
+  const STORE_MULT = { fairprice:1.00, shengsiong:0.95, coldstorage:1.08, redmart:0.98 };
+  const _storeLabels = {fairprice:'FairPrice',shengsiong:'Sheng Siong',coldstorage:'Cold Storage',redmart:'RedMart',dondonki:'Donki',giant:'Giant',mustafa:'Mustafa',watsons:'Watsons',guardian:'Guardian'};
+
+  // Strip leading quantity prefix: "2 ", "15 ", "1CTN ", "1per pack " etc. before searching
+  function stripQty(name) {
+    return (name || '').replace(/^\d+\s*(per\s*\w+\s*|ctn\s*|pcs\s*|pkt\s*|bags?\s*|pack\s*)?/i, '').trim() || name;
+  }
+
+  const MAX_SHOW = 25;
+  const BATCH = 5;
+  const items = shoppingList.slice(0, MAX_SHOW);
+  const extra = shoppingList.length - items.length;
+  let done = 0;
+
+  panel.innerHTML = '<div class="compare-loading">&#x1F50D; Searching prices for ' + items.length + ' items…</div>';
+
+  // Fetch with 5-second timeout so one slow request never hangs the page
+  async function fetchItem(item) {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), 5000);
+    try {
+      const r = await fetch('/api/products/search?q=' + encodeURIComponent(stripQty(item)) + '&limit=1', { signal: ctrl.signal });
+      clearTimeout(tid);
+      return r.ok ? r.json() : { results: [] };
+    } catch { clearTimeout(tid); return { results: [] }; }
+  }
+
+  // Process in small batches — 5 at a time, never fire all at once
+  async function runBatches() {
+    const out = [];
+    for (let i = 0; i < items.length; i += BATCH) {
+      const batch = items.slice(i, i + BATCH);
+      const res = await Promise.all(batch.map(fetchItem));
+      out.push(...res);
+      done += batch.length;
+      const el = panel.querySelector('.compare-loading');
+      if (el) el.textContent = '\uD83D\uDD0D Searching… ' + Math.min(done, items.length) + ' / ' + items.length;
+    }
+    return out;
+  }
+
+  runBatches().then(data => {
     let total = 0;
     let rows = '';
-    const storeLabels = {fairprice:'FairPrice',shengsiong:'Sheng Siong',coldstorage:'Cold Storage',redmart:'RedMart',dondonki:'Donki',giant:'Giant',mustafa:'Mustafa',watsons:'Watsons',guardian:'Guardian'};
+    // Track totals per store for the per-store cart buttons
+    const storeTotals = {};
 
     data.forEach((d, i) => {
+      const item = items[i];
+      const searchName = stripQty(item);
       if (d.results && d.results[0]) {
         const p = d.results[0];
-        total += p.cheapestPrice;
+        // Find cheapest price among preferred stores only
+        const prefPrices = (p.prices || []).filter(sp => preferredStores.includes(sp.storeId));
+        const best = prefPrices.length
+          ? prefPrices.reduce((mn, sp) => sp.price < mn.price ? sp : mn, prefPrices[0])
+          : { price: p.cheapestPrice || 0, storeId: p.cheapestStoreId };
+        const price = best.price || 0;
+        const bestStore = best.storeId;
+        total += price;
+        // Add price to each preferred store's running total
+        (p.prices || []).forEach(sp => {
+          if (preferredStores.includes(sp.storeId)) {
+            storeTotals[sp.storeId] = (storeTotals[sp.storeId] || 0) + sp.price;
+          }
+        });
         rows += '<div class="compare-row">'
           + '<div class="cart-icon">&#x1F6D2;</div>'
           + '<div style="flex:1"><div class="item-name">' + p.name + '</div><div class="item-product">' + p.unit + '</div></div>'
-          + '<div><div class="best-price">$' + p.cheapestPrice.toFixed(2) + '</div><div class="best-store">' + (storeLabels[p.cheapestStoreId] || p.cheapestStoreId) + '</div></div>'
+          + '<div><div class="best-price">$' + price.toFixed(2) + '</div><div class="best-store">' + (_storeLabels[bestStore] || bestStore) + '</div></div>'
           + '</div>';
       } else {
-        rows += '<div class="compare-row">'
-          + '<div class="cart-icon">&#x2753;</div>'
-          + '<div style="flex:1"><div class="item-name">' + shoppingList[i] + '</div><div class="item-product">Not found</div></div>'
-          + '<div><div class="best-price" style="color:#9ca3af">—</div></div>'
+        const base = estimateProductPrice(searchName);
+        const cheapAmt = +(base * STORE_MULT.shengsiong).toFixed(2);
+        total += cheapAmt;
+        if (preferredStores.includes('shengsiong')) {
+          storeTotals['shengsiong'] = (storeTotals['shengsiong'] || 0) + cheapAmt;
+        }
+        rows += '<div class="compare-row" style="border-left:3px solid #fbbf24">'
+          + '<div class="cart-icon">&#x1F4CA;</div>'
+          + '<div style="flex:1"><div class="item-name" style="text-transform:capitalize">' + searchName + '</div><div class="item-product" style="color:#d97706">estimated</div></div>'
+          + '<div><div class="best-price" style="color:#d97706">~$' + cheapAmt.toFixed(2) + '</div><div class="best-store">SS</div></div>'
           + '</div>';
       }
     });
 
-    panel.innerHTML = '<div class="compare-header">'
-      + '<div class="compare-title">&#x2705; Best prices found</div>'
-      + '<div class="compare-total">Total: $' + total.toFixed(2) + '</div>'
-      + '</div>'
-      + rows
-      + '<button class="compare-add-all" onclick="addAllToCart()">&#x1F6D2; Add All to Cart — $' + total.toFixed(2) + '</button>';
+    const moreNote = extra > 0
+      ? '<div style="text-align:center;padding:6px 0;color:#8b949e;font-size:11px">…and ' + extra + ' more items in your list</div>'
+      : '';
 
-    panel.scrollIntoView({block:'center', behavior:'smooth'});
+    // Store preference chips
+    const chips = ALL_STORE_IDS.map(sid => {
+      const on = preferredStores.includes(sid);
+      const col = storeColorsMap[sid] || '#888';
+      const abbr = storeAbbrMap[sid] || sid;
+      return '<button class="store-pref-chip ' + (on ? 'on' : 'off') + '" '
+        + 'style="' + (on ? 'background:' + col + ';border-color:' + col : '') + '"'
+        + ' onclick="togglePreferredStore(\'' + sid + '\')">'
+        + '<span class="chip-check">' + (on ? '✓' : '✕') + '</span> ' + abbr
+        + '</button>';
+    }).join('');
+
+    // Per-store cart buttons (only preferred stores that have a total)
+    const cartBtns = Object.entries(storeTotals)
+      .sort((a, b) => a[1] - b[1]) // cheapest store first
+      .map(([sid, amt]) => {
+        const col = storeColorsMap[sid] || '#888';
+        const name = storeAbbrMap[sid] || sid;
+        return '<button class="cart-store-btn" style="background:' + col + '" onclick="addToCartStore(\'' + sid + '\')">'
+          + '<span class="csb-name">' + name + '</span>'
+          + '<span class="csb-price">$' + amt.toFixed(2) + '</span>'
+          + '</button>';
+      }).join('');
+
+    panel.innerHTML = '<div class="compare-header">'
+        + '<div class="compare-title">&#x2705; Best prices found</div>'
+        + '<div class="compare-total">Total: $' + total.toFixed(2) + '</div>'
+        + '</div>'
+        + rows + moreNote
+        + '<div class="store-pref-section">'
+        + '<div class="store-pref-label">&#x1F3EA; Include stores:</div>'
+        + '<div class="store-pref-row">' + chips + '</div>'
+        + '</div>'
+        + '<div class="store-pref-label" style="padding:0 0 5px;font-size:10px;font-weight:600;color:#6b7280">&#x1F6D2; Add to cart by store:</div>'
+        + '<div class="cart-by-store">' + cartBtns + '</div>'
+        + '<button class="compare-add-all" onclick="addAllToCart(' + total.toFixed(2) + ')">&#x1F6D2; Add All to Cart — $' + total.toFixed(2) + '</button>';
+
+    setTimeout(scrollPanelIntoView, 50);
+  }).catch(err => {
+    panel.innerHTML = '<div style="padding:16px;color:#ff7b72">&#x26A0;&#xFE0F; Error loading prices — please try again.</div>';
+    console.error('compareAll error:', err);
   });
 }
 
-function addAllToCart() {
-  alert('Adding all items to cart across stores...\\nThis would open each store via deep links or Chrome extension!');
+function addAllToCart(total) {
+  // On mobile, open Smart Checkout instead of the old alert
+  if (isMobileView()) { openSmartCheckout(); return; }
+  const storeList = preferredStores.map(s => storeNames[s] || s).join(', ');
+  alert('Adding all items to cart across your selected stores:\n' + storeList + '\n\nEstimated total: $' + (total || '—') + '\n\nThis will open each store via the Chrome extension.');
+}
+
+function addToCartStore(storeId) {
+  const name = storeNames[storeId] || storeId;
+  const storeUrls = {
+    fairprice: 'https://www.fairprice.com.sg/cart',
+    shengsiong: 'https://shengsiong.com.sg/cart',
+    coldstorage: 'https://coldstorage.com.sg/cart',
+    redmart: 'https://redmart.lazada.sg/cart',
+    dondonki: 'https://www.dondonki.com/sg',
+    giant: 'https://giant.sg/cart',
+    mustafa: 'https://www.mustafa.com.sg',
+    watsons: 'https://www.watsons.com.sg/cart',
+    guardian: 'https://www.guardian.com.sg/cart',
+  };
+  const url = storeUrls[storeId];
+  if (url) window.open(url, '_blank');
+  else alert('Opening ' + name + ' cart...');
 }
 
 // Add Store panel
@@ -3428,6 +4091,882 @@ if ('serviceWorker' in navigator) {
     }
   });
 }
+
+// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+//  SMART CHECKOUT PANEL (mobile-first, replaces Auto-Cart on mobile)
+// ═══════════════════════════════════════════════════════════════
+
+// Search URL templates per store
+const SC_SEARCH_URLS = {
+  fairprice:   item => `https://www.fairprice.com.sg/search?query=${encodeURIComponent(item)}`,
+  shengsiong:  item => `https://shengsiong.com.sg/search/${encodeURIComponent(item)}`,
+  redmart:     item => `https://www.lazada.sg/catalog/?q=${encodeURIComponent(item)}&m=redmart`,
+  coldstorage: item => `https://www.coldstorage.com.sg/search?q=${encodeURIComponent(item)}`,
+  giant:       item => `https://giant.sg/search?q=${encodeURIComponent(item)}`,
+  watsons:     item => `https://www.watsons.com.sg/search?text=${encodeURIComponent(item)}`,
+  guardian:    item => `https://www.guardian.com.sg/search?q=${encodeURIComponent(item)}`,
+  dondonki:    item => `https://www.dondonki.com/sg/search?keyword=${encodeURIComponent(item)}`,
+};
+
+const SC_STORE_HOME = {
+  fairprice:   'https://www.fairprice.com.sg',
+  shengsiong:  'https://shengsiong.com.sg',
+  redmart:     'https://www.lazada.sg/groceries/',
+  coldstorage: 'https://www.coldstorage.com.sg',
+  giant:       'https://giant.sg',
+  watsons:     'https://www.watsons.com.sg',
+  guardian:    'https://www.guardian.com.sg',
+  dondonki:    'https://www.dondonki.com/sg',
+};
+
+// Smart Checkout state
+let sc_step = 0;           // 0=plan, 1=per-store, 2=summary
+let sc_storePlan = [];     // [{storeId, items:[], total}]  sorted cheapest first
+let sc_currentStoreIdx = 0;
+let sc_checkedItems = {};  // storeId -> Set of checked item names
+let sc_rawData = null;     // cached API results from last compareAll
+
+function isMobileView() {
+  return window.innerWidth < 768;
+}
+
+// Entry point — called by the cart button and Add All button
+function openSmartCheckout() {
+  if (shoppingList.length === 0) { alert('Add items first!'); return; }
+  sc_step = 0;
+  sc_currentStoreIdx = 0;
+  sc_checkedItems = {};
+
+  // Build or reuse overlay
+  let overlay = document.getElementById('scOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'scOverlay';
+    overlay.className = 'sc-overlay';
+    overlay.innerHTML = `
+      <div class="sc-panel" id="scPanel">
+        <div class="sc-handle"></div>
+        <div class="sc-header">
+          <div class="sc-title">🛒 Smart Checkout</div>
+          <button class="sc-close" onclick="closeSmartCheckout()">✕</button>
+        </div>
+        <div class="sc-progress-bar">
+          <div class="sc-progress-track"><div class="sc-progress-fill" id="scProgressFill" style="width:0%"></div></div>
+          <div class="sc-progress-label" id="scProgressLabel">Building your basket plan…</div>
+        </div>
+        <div class="sc-steps" id="scSteps">
+          <div style="text-align:center;padding:40px 20px;color:#9ca3af;font-size:14px">
+            ⏳ Finding best prices…
+          </div>
+        </div>
+      </div>`;
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeSmartCheckout(); });
+    document.body.appendChild(overlay);
+  }
+
+  overlay.classList.add('open');
+  document.getElementById('scProgressFill').style.width = '0%';
+  document.getElementById('scProgressLabel').textContent = 'Building your basket plan…';
+  document.getElementById('scSteps').innerHTML = '<div style="text-align:center;padding:40px 20px;color:#9ca3af;font-size:14px">⏳ Finding best prices…</div>';
+
+  // Build plan (async)
+  scBuildPlan().then(() => {
+    scRenderStep1();
+  }).catch(err => {
+    console.error('Smart Checkout plan error:', err);
+    // Fallback: assign all items to first preferred store
+    scBuildFallbackPlan();
+    scRenderStep1();
+  });
+}
+
+function closeSmartCheckout() {
+  document.getElementById('scOverlay')?.classList.remove('open');
+}
+
+// Build basket plan: fetch prices, assign each item to cheapest preferred store
+async function scBuildPlan() {
+  const STORE_MULT = { fairprice:1.00, shengsiong:0.95, coldstorage:1.08, redmart:0.98, giant:1.02, dondonki:0.97, watsons:1.05, guardian:1.05 };
+
+  function stripQty(name) {
+    return (name || '').replace(/^\d+\s*(per\s*\w+\s*|ctn\s*|pcs\s*|pkt\s*|bags?\s*|pack\s*)?/i, '').trim() || name;
+  }
+
+  const MAX = 25;
+  const items = shoppingList.slice(0, MAX);
+  const BATCH = 5;
+  const results = [];
+
+  for (let i = 0; i < items.length; i += BATCH) {
+    const batch = items.slice(i, i + BATCH);
+    const res = await Promise.all(batch.map(async item => {
+      try {
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 5000);
+        const r = await fetch('/api/products/search?q=' + encodeURIComponent(stripQty(item)) + '&limit=1', { signal: ctrl.signal });
+        clearTimeout(tid);
+        return r.ok ? r.json() : { results: [] };
+      } catch { return { results: [] }; }
+    }));
+    results.push(...res);
+    // Update progress
+    const pct = Math.round(((i + batch.length) / items.length) * 60);
+    document.getElementById('scProgressFill').style.width = pct + '%';
+    document.getElementById('scProgressLabel').textContent = `Scanning ${Math.min(i + batch.length, items.length)}/${items.length} items…`;
+  }
+
+  sc_rawData = results;
+
+  // Build per-store item assignment
+  const storeItemsMap = {};  // storeId -> [{name, price, found}]
+  const storeTotals = {};
+
+  items.forEach((item, idx) => {
+    const d = results[idx];
+    let bestStoreId = preferredStores[0] || 'fairprice';
+    let bestPrice = 0;
+
+    if (d && d.results && d.results[0]) {
+      const p = d.results[0];
+      const prefPrices = (p.prices || []).filter(sp => preferredStores.includes(sp.storeId));
+      if (prefPrices.length) {
+        const best = prefPrices.reduce((mn, sp) => sp.price < mn.price ? sp : mn, prefPrices[0]);
+        bestStoreId = best.storeId;
+        bestPrice = best.price;
+      } else if (p.cheapestPrice) {
+        bestPrice = p.cheapestPrice;
+        bestStoreId = p.cheapestStoreId || preferredStores[0] || 'fairprice';
+      }
+    } else {
+      // estimate
+      const base = typeof estimateProductPrice === 'function' ? estimateProductPrice(item) : 3.0;
+      bestPrice = +(base * (STORE_MULT[bestStoreId] || 1)).toFixed(2);
+    }
+
+    if (!storeItemsMap[bestStoreId]) storeItemsMap[bestStoreId] = [];
+    storeItemsMap[bestStoreId].push({ name: item, price: bestPrice });
+    storeTotals[bestStoreId] = (storeTotals[bestStoreId] || 0) + bestPrice;
+  });
+
+  // Sort stores by total cost descending (biggest basket first so user starts with most items)
+  sc_storePlan = Object.entries(storeItemsMap)
+    .sort((a, b) => b[1].length - a[1].length)  // most items first
+    .map(([storeId, items]) => ({
+      storeId,
+      items,
+      total: storeTotals[storeId] || 0
+    }));
+
+  // Init checkedItems sets
+  sc_storePlan.forEach(sp => {
+    sc_checkedItems[sp.storeId] = new Set();
+  });
+
+  document.getElementById('scProgressFill').style.width = '80%';
+  document.getElementById('scProgressLabel').textContent = 'Plan ready!';
+}
+
+function scBuildFallbackPlan() {
+  // No API: put all items in first preferred store
+  const storeId = preferredStores[0] || 'fairprice';
+  sc_storePlan = [{
+    storeId,
+    items: shoppingList.map(name => ({ name, price: 0 })),
+    total: 0
+  }];
+  sc_checkedItems[storeId] = new Set();
+}
+
+// ── Step 1: Best Basket Plan ──────────────────────────────────
+function scRenderStep1() {
+  sc_step = 0;
+  sc_currentStoreIdx = 0;
+  scUpdateProgress();
+
+  const totalSplit = sc_storePlan.reduce((s, sp) => s + sp.total, 0);
+
+  // Estimate single-store cost (cheapest store * all items)
+  const singleBest = sc_storePlan[0];
+  let singleStoreCost = 0;
+  if (singleBest) {
+    // Count what it'd cost buying everything at cheapest single store
+    singleStoreCost = sc_storePlan.reduce((s, sp) => {
+      // add each item at its actual price (not the split price)
+      return s + sp.items.reduce((ss, it) => ss + it.price, 0);
+    }, 0);
+    // Very rough: single store inflated by ~8% vs optimised split
+    singleStoreCost = totalSplit * 1.08;
+  }
+  const savings = Math.max(0, singleStoreCost - totalSplit);
+
+  const planRows = sc_storePlan.map(sp => {
+    const col = storeColorsMap[sp.storeId] || '#888';
+    const abbr = storeAbbrMap[sp.storeId] || sp.storeId;
+    const name = storeNames[sp.storeId] || sp.storeId;
+    return `<div class="sc-store-plan-row">
+      <div class="sc-store-plan-icon" style="background:${col}">${abbr}</div>
+      <div class="sc-store-plan-info">
+        <div class="sc-store-plan-name">${name}</div>
+        <div class="sc-store-plan-detail">${sp.items.length} item${sp.items.length>1?'s':''}</div>
+      </div>
+      ${sp.total > 0 ? `<div class="sc-store-plan-price">$${sp.total.toFixed(2)}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  const savingsHtml = savings > 0.50 ? `
+    <div class="sc-savings-badge">
+      <div class="sc-savings-amount">Save ~$${savings.toFixed(2)}</div>
+      <div class="sc-savings-label">vs buying everything at one store</div>
+    </div>` : '';
+
+  document.getElementById('scSteps').innerHTML = `
+    <div class="sc-plan-title">YOUR BEST BASKET PLAN</div>
+    <div class="sc-store-plan">${planRows}</div>
+    ${savingsHtml}
+    <button class="sc-start-btn" onclick="scStartShopping()">Start Shopping →</button>
+  `;
+}
+
+// ── Step 2: Per-store guided ──────────────────────────────────
+function scStartShopping() {
+  sc_step = 1;
+  sc_currentStoreIdx = 0;
+  scRenderStep2();
+}
+
+function scRenderStep2() {
+  scUpdateProgress();
+  if (sc_currentStoreIdx >= sc_storePlan.length) {
+    scRenderStep3();
+    return;
+  }
+
+  const sp = sc_storePlan[sc_currentStoreIdx];
+  const col = storeColorsMap[sp.storeId] || '#888';
+  const name = storeNames[sp.storeId] || sp.storeId;
+  const homeUrl = SC_STORE_HOME[sp.storeId] || '#';
+  const checked = sc_checkedItems[sp.storeId] || new Set();
+  const checkedCount = checked.size;
+  const totalCount = sp.items.length;
+
+  const checklistHtml = sp.items.map((it, idx) => {
+    const isChecked = checked.has(it.name);
+    const searchUrl = (SC_SEARCH_URLS[sp.storeId] || (() => '#'))(it.name);
+    return `<div class="sc-check-item${isChecked ? ' checked' : ''}" onclick="scToggleCheck('${sp.storeId}',${idx})">
+      <div class="sc-check-box">${isChecked ? '✓' : ''}</div>
+      <div class="sc-check-name">${it.name}</div>
+      <a class="sc-check-search" href="${searchUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔍 Search</a>
+    </div>`;
+  }).join('');
+
+  const isLast = sc_currentStoreIdx >= sc_storePlan.length - 1;
+  const nextLabel = isLast ? '✅ All stores done!' : `Done → Next: ${storeNames[sc_storePlan[sc_currentStoreIdx+1]?.storeId] || 'Next store'}`;
+
+  document.getElementById('scSteps').innerHTML = `
+    <div class="sc-store-banner" style="background:linear-gradient(135deg,${col},${col}cc)">
+      <div class="sc-store-banner-name">${name}</div>
+      <div class="sc-store-banner-detail">${totalCount} item${totalCount>1?'s':''} · ${sp.total > 0 ? '$'+sp.total.toFixed(2) : 'est. prices vary'}</div>
+      <button class="sc-store-open-btn" onclick="window.open('${homeUrl}','_blank')">Open ${name} →</button>
+    </div>
+    <div class="sc-checklist-label">
+      <span>YOUR LIST (${checkedCount}/${totalCount} added)</span>
+    </div>
+    <div class="sc-checklist" id="scChecklist_${sp.storeId}">${checklistHtml}</div>
+    <button class="sc-copy-btn" id="scCopyBtn" onclick="scCopyList('${sp.storeId}')">📋 Copy this store's list</button>
+    <button class="sc-next-store-btn" onclick="scNextStore()">${nextLabel}</button>
+  `;
+}
+
+function scToggleCheck(storeId, idx) {
+  const sp = sc_storePlan.find(s => s.storeId === storeId);
+  if (!sp) return;
+  const itemName = sp.items[idx]?.name;
+  if (!itemName) return;
+  const checked = sc_checkedItems[storeId] || new Set();
+  if (checked.has(itemName)) checked.delete(itemName);
+  else checked.add(itemName);
+  sc_checkedItems[storeId] = checked;
+
+  // Re-render checklist only (not full step)
+  const col = storeColorsMap[storeId] || '#888';
+  const checklistEl = document.getElementById('scChecklist_' + storeId);
+  if (checklistEl) {
+    checklistEl.innerHTML = sp.items.map((it, i) => {
+      const isChecked = checked.has(it.name);
+      const searchUrl = (SC_SEARCH_URLS[storeId] || (() => '#'))(it.name);
+      return `<div class="sc-check-item${isChecked ? ' checked' : ''}" onclick="scToggleCheck('${storeId}',${i})">
+        <div class="sc-check-box">${isChecked ? '✓' : ''}</div>
+        <div class="sc-check-name">${it.name}</div>
+        <a class="sc-check-search" href="${searchUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔍 Search</a>
+      </div>`;
+    }).join('');
+  }
+  // Update label count
+  const label = document.querySelector('.sc-checklist-label span');
+  if (label) label.textContent = `YOUR LIST (${checked.size}/${sp.items.length} added)`;
+  scUpdateProgress();
+}
+
+function scCopyList(storeId) {
+  const sp = sc_storePlan.find(s => s.storeId === storeId);
+  if (!sp) return;
+  const name = storeNames[storeId] || storeId;
+  const lines = sp.items.map(it => `• ${it.name}`).join('\n');
+  const totalLine = sp.total > 0 ? `\nTotal est: $${sp.total.toFixed(2)}` : '';
+  const text = `🛒 ${name} shopping list (${sp.items.length} items):\n${lines}${totalLine}`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('scCopyBtn');
+    if (btn) { btn.textContent = '✅ Copied!'; btn.classList.add('copied'); }
+    setTimeout(() => {
+      const b = document.getElementById('scCopyBtn');
+      if (b) { b.textContent = '📋 Copy this store\'s list'; b.classList.remove('copied'); }
+    }, 2000);
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.getElementById('scCopyBtn');
+    if (btn) { btn.textContent = '✅ Copied!'; btn.classList.add('copied'); }
+    setTimeout(() => {
+      const b = document.getElementById('scCopyBtn');
+      if (b) { b.textContent = '📋 Copy this store\'s list'; b.classList.remove('copied'); }
+    }, 2000);
+  });
+}
+
+function scNextStore() {
+  sc_currentStoreIdx++;
+  if (sc_currentStoreIdx >= sc_storePlan.length) {
+    scRenderStep3();
+  } else {
+    scRenderStep2();
+  }
+}
+
+// ── Step 3: Summary ───────────────────────────────────────────
+function scRenderStep3() {
+  sc_step = 2;
+  scUpdateProgress();
+
+  const allDone = sc_storePlan.every(sp => {
+    const checked = sc_checkedItems[sp.storeId] || new Set();
+    return checked.size === sp.items.length;
+  });
+
+  const summaryRows = sc_storePlan.map(sp => {
+    const col = storeColorsMap[sp.storeId] || '#888';
+    const abbr = storeAbbrMap[sp.storeId] || sp.storeId;
+    const name = storeNames[sp.storeId] || sp.storeId;
+    const checked = sc_checkedItems[sp.storeId] || new Set();
+    const done = checked.size === sp.items.length;
+    return `<div class="sc-sum-row${done?' done':''}">
+      <div class="sc-sum-icon" style="background:${col}">${abbr}</div>
+      <div>
+        <div class="sc-sum-name">${name}</div>
+        <div style="font-size:11px;color:#6b7280">${sp.items.length} items</div>
+      </div>
+      <div class="sc-sum-status">${done ? '✅ Done' : `${checked.size}/${sp.items.length} added`}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('scSteps').innerHTML = `
+    <div class="sc-done-header">
+      <span class="sc-done-emoji">${allDone ? '🎉' : '🛒'}</span>
+      <div class="sc-done-title">${allDone ? 'All done!' : 'Shopping complete'}</div>
+      <div class="sc-done-sub">${allDone ? 'Great job — everything is in your cart!' : 'Review what\'s left below'}</div>
+    </div>
+    <div class="sc-store-summary">${summaryRows}</div>
+    <button class="sc-restart-btn" onclick="scRenderStep1()">↩ Review plan again</button>
+    <button class="sc-start-btn" style="margin-top:0" onclick="closeSmartCheckout()">Close ✓</button>
+  `;
+}
+
+function scUpdateProgress() {
+  const fill = document.getElementById('scProgressFill');
+  const label = document.getElementById('scProgressLabel');
+  if (!fill || !label) return;
+
+  if (sc_step === 0) {
+    fill.style.width = '100%';
+    label.textContent = `${sc_storePlan.length} store${sc_storePlan.length>1?'s':''} · ${shoppingList.length} items`;
+  } else if (sc_step === 1) {
+    const pct = Math.round(((sc_currentStoreIdx) / sc_storePlan.length) * 100);
+    fill.style.width = pct + '%';
+    const completed = sc_currentStoreIdx;
+    label.textContent = `Store ${sc_currentStoreIdx + 1} of ${sc_storePlan.length}`;
+  } else {
+    fill.style.width = '100%';
+    label.textContent = 'All stores visited!';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  AUTO-CART PANEL
+// ═══════════════════════════════════════════════════════════════
+const AC_STORES = [
+  { id: 'fairprice',  label: 'FairPrice',    short: 'FP',  color: '#e8202e', url: 'https://www.fairprice.com.sg/?gs_auto=1' },
+  { id: 'shengsiong', label: 'Sheng Siong',  short: 'SS',  color: '#1a6fb5', url: 'https://shengsiong.com.sg/?gs_auto=1' },
+  { id: 'coldstorage',label: 'Cold Storage', short: 'CS',  color: '#9ca3af', url: 'https://www.coldstorage.com.sg/?gs_auto=1', warn: 'Site cert expired' },
+  { id: 'redmart',    label: 'RedMart',      short: 'RM',  color: '#ff6000', url: 'https://www.lazada.sg/groceries/?gs_auto=1' },
+  { id: 'giant',      label: 'Giant',        short: 'GNT', color: '#f6821f', url: 'https://giant.sg/?gs_auto=1' },
+  { id: 'watsons',    label: 'Watsons',      short: 'WAT', color: '#0072bc', url: 'https://www.watsons.com.sg/?gs_auto=1' },
+];
+
+let acSelectedStore = null;
+let acRunning = false;
+let acItemStatuses = {}; // item -> 'pending'|'active'|'added'|'skipped'
+
+function openAutoCartPanel() {
+  // On mobile, always use Smart Checkout
+  if (isMobileView()) { openSmartCheckout(); return; }
+  // Build panel if not already in DOM
+  let overlay = document.getElementById('acOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'acOverlay';
+    overlay.className = 'autocart-overlay';
+    overlay.innerHTML = `
+      <div class="autocart-panel" id="acPanel">
+        <div class="ac-handle"></div>
+        <div class="ac-header">
+          <div class="ac-title">🛒 Auto-Cart</div>
+          <button class="ac-close" onclick="closeAutoCartPanel()">✕</button>
+        </div>
+        <div style="padding:4px 20px 2px;font-size:11px;font-weight:600;color:#6b7280;letter-spacing:.03em">👇 Tap a store to open it now</div>
+        <div class="ac-stores" id="acStores"></div>
+        <div class="ac-launch-bar" id="acLaunchBar" style="display:none">
+          <button class="ac-launch-btn" id="acLaunchBtn" onclick="launchAutoCart()" disabled>
+            Opening…
+          </button>
+        </div>
+        <div class="ac-ext-note" id="acExtNote">
+          ⚠️ Install the <b>GrocerSnap extension</b> for fully automatic adding — or the store will open for manual checkout.
+        </div>
+        <div class="ac-summary" id="acSummary">
+          <div class="ac-summary-row"><span id="acSumAdded">✅ 0 added</span><span id="acSumSkipped">⚠️ 0 not found</span><span id="acSumTotal">0 items</span></div>
+        </div>
+        <div class="ac-report-header" id="acReportHeader">YOUR LIST</div>
+        <div class="ac-items" id="acItemsList"></div>
+      </div>`;
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeAutoCartPanel(); });
+    document.body.appendChild(overlay);
+  }
+
+  acSelectedStore = null;
+  acRunning = false;
+  acItemStatuses = {};
+
+  // Render store buttons
+  const storesEl = document.getElementById('acStores');
+  storesEl.innerHTML = AC_STORES.map(s => `
+    <button class="ac-store-btn${s.warn ? ' ac-store-warn' : ''}" id="acStorBtn_${s.id}" onclick="acSelectStore('${s.id}')">
+      <div class="ac-store-icon" style="background:${s.color}">${s.short}</div>
+      <div class="ac-store-name">${s.label}</div>
+      <div class="ac-store-status" id="acStoreStatus_${s.id}">${s.warn ? '⚠️ ' + s.warn : 'Tap to open'}</div>
+    </button>`).join('');
+
+  // Render item list
+  renderAcItems();
+
+  // Check extension
+  const hasExt = !!(window.__grocerSnapExt && window.__grocerSnapExt.installed);
+  document.getElementById('acExtNote').classList.toggle('show', !hasExt);
+
+  overlay.classList.add('open');
+}
+
+function closeAutoCartPanel() {
+  document.getElementById('acOverlay')?.classList.remove('open');
+}
+
+function acSelectStore(storeId) {
+  if (acRunning) return;
+  acSelectedStore = storeId;
+  const store = AC_STORES.find(s => s.id === storeId);
+  if (!store) return;
+
+  // Highlight selected store button
+  AC_STORES.forEach(s => {
+    const btn = document.getElementById('acStorBtn_' + s.id);
+    if (btn) btn.classList.toggle('selected', s.id === storeId);
+  });
+
+  // Auto-launch immediately — no second tap needed
+  launchAutoCart();
+}
+
+function renderAcItems() {
+  const el = document.getElementById('acItemsList');
+  if (!shoppingList.length) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:#9ca3af;font-size:13px">No items in your list yet.<br>Add items by typing or speaking!</div>';
+    return;
+  }
+  const EMOJIS = ['🥛','🥚','🍗','🍚','🥦','🧅','🍎','🧈','🧀','🥩','🐟','🍞','🧴','🧹','🍜','🫙','🥫','🛒','🫒','🥬'];
+  el.innerHTML = shoppingList.map((item, i) => {
+    const status = acItemStatuses[item] || 'pending';
+    const emoji = EMOJIS[i % EMOJIS.length];
+    const badgeText = status === 'added' ? '✅ Added' : status === 'skipped' ? '⚠️ Not found' : status === 'active' ? '⏳ Adding…' : 'Queued';
+    return `<div class="ac-item ${status}" id="acItem_${i}">
+      <div class="ac-item-icon">${emoji}</div>
+      <div class="ac-item-name">${item}</div>
+      <span class="ac-item-badge ${status}">${badgeText}</span>
+    </div>`;
+  }).join('');
+}
+
+function launchAutoCart() {
+  if (!acSelectedStore || !shoppingList.length) return;
+  const store = AC_STORES.find(s => s.id === acSelectedStore);
+  if (!store) return;
+
+  acRunning = true;
+  shoppingList.forEach(item => { acItemStatuses[item] = 'pending'; });
+  renderAcItems();
+
+  // Show status bar
+  const launchBar = document.getElementById('acLaunchBar');
+  if (launchBar) launchBar.style.display = 'block';
+  const launchBtn = document.getElementById('acLaunchBtn');
+  launchBtn.disabled = true;
+
+  const storeBtnEl = document.getElementById('acStorBtn_' + acSelectedStore);
+  if (storeBtnEl) storeBtnEl.classList.add('running');
+
+  document.getElementById('acReportHeader').textContent = `📋 ${shoppingList.length} items → ${store.label}`;
+  document.getElementById('acSummary').classList.remove('show');
+
+  const hasExt = !!(window.__grocerSnapExt && window.__grocerSnapExt.openStore);
+
+  // Encode the shopping list into the URL so content scripts can read it
+  // even when the extension bridge is not available.
+  // gs_list = base64(JSON.stringify(items))
+  const gs_list = btoa(unescape(encodeURIComponent(JSON.stringify(shoppingList))));
+  const storeUrlWithList = store.url + '&gs_list=' + encodeURIComponent(gs_list);
+
+  if (hasExt) {
+    // Extension available — write items to storage via bridge, then open the tab.
+    // openStore() only writes to chrome.storage now (no duplicate tab).
+    window.__grocerSnapExt.openStore(store.id, storeUrlWithList, shoppingList);
+    // Open the tab ourselves (bridge no longer does it)
+    window.open(storeUrlWithList, '_blank');
+    launchBtn.textContent = `⚡ Adding ${shoppingList.length} items to ${store.label}…`;
+    launchBtn.style.background = store.color;
+  } else {
+    // No extension — build a direct search URL for the first item so the user
+    // lands on an immediately useful results page rather than the store home.
+    const firstItem = encodeURIComponent(shoppingList[0]);
+    const searchUrls = {
+      fairprice:   `https://www.fairprice.com.sg/search?query=${firstItem}&gs_auto=1&gs_list=${encodeURIComponent(gs_list)}`,
+      shengsiong:  `https://shengsiong.com.sg/search/${firstItem}?gs_auto=1&gs_list=${encodeURIComponent(gs_list)}`,
+      coldstorage: `https://www.coldstorage.com.sg/search?q=${firstItem}&gs_auto=1&gs_list=${encodeURIComponent(gs_list)}`,
+      redmart:     `https://www.lazada.sg/catalog/?q=${firstItem}&m=redmart&gs_auto=1&gs_list=${encodeURIComponent(gs_list)}`,
+    };
+    const openUrl = searchUrls[store.id] || storeUrlWithList;
+    window.open(openUrl, '_blank');
+    launchBtn.textContent = `🌐 ${store.label} opened — install extension to auto-add all items`;
+    launchBtn.style.background = '#6b7280';
+    launchBtn.disabled = false;
+    acRunning = false;
+  }
+}
+
+// Listen for cart progress relayed by webapp-bridge.js
+window.addEventListener('__gs_cart_update', (e) => {
+  const msg = e.detail;
+  if (!msg) return;
+
+  if (msg.type === 'CART_PROGRESS') {
+    // Mark the item that was just processed
+    const idx = (msg.done || 1) - 1;
+    if (shoppingList[idx]) {
+      // Mark previous items as added/skipped based on added list
+      shoppingList.forEach((item, i) => {
+        if (i < idx) {
+          acItemStatuses[item] = (msg.added || []).includes(item.toLowerCase()) ? 'added' : 'skipped';
+        } else if (i === idx) {
+          acItemStatuses[item] = 'active';
+        }
+      });
+    }
+    const launchBtn = document.getElementById('acLaunchBtn');
+    if (launchBtn) launchBtn.textContent = `⏳ Adding… (${msg.done}/${msg.total})`;
+    renderAcItems();
+  }
+
+  if (msg.type === 'CART_DONE') {
+    // added is an array of names; addedCount is the numeric count
+    const addedNames = Array.isArray(msg.added) ? msg.added : [];
+    const addedCount = msg.addedCount != null ? msg.addedCount : (typeof msg.added === 'number' ? msg.added : addedNames.length);
+    // Mark all remaining
+    shoppingList.forEach((item, i) => {
+      if (!acItemStatuses[item] || acItemStatuses[item] === 'pending' || acItemStatuses[item] === 'active') {
+        acItemStatuses[item] = addedNames.includes(item.toLowerCase()) ? 'added' : 'skipped';
+      }
+    });
+    renderAcItems();
+
+    const store = AC_STORES.find(s => s.id === acSelectedStore) || {};
+    const storeBtnEl = document.getElementById('acStorBtn_' + acSelectedStore);
+    if (storeBtnEl) { storeBtnEl.classList.remove('running'); storeBtnEl.classList.add('done'); }
+    document.getElementById('acStoreStatus_' + acSelectedStore).textContent = `${addedCount} added`;
+
+    const launchBtn = document.getElementById('acLaunchBtn');
+    if (launchBtn) { launchBtn.disabled = false; launchBtn.textContent = `🎉 Done! Choose another store`; }
+
+    const sumEl = document.getElementById('acSummary');
+    document.getElementById('acSumAdded').textContent = `✅ ${addedCount} added`;
+    document.getElementById('acSumSkipped').textContent = `⚠️ ${msg.skipped || 0} not found`;
+    document.getElementById('acSumTotal').textContent = `${shoppingList.length} items`;
+    sumEl.classList.add('show');
+
+    acRunning = false;
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+// SCAN MODAL — camera / attach image → AI vision → item list
+// ═══════════════════════════════════════════════════════════
+let _scanItems = []; // {name, qty, unit, selected}
+let _scanObjectUrl = null;
+
+function openScanModal(source) {
+  document.getElementById('scanModal').classList.add('open');
+  // Reset state
+  _scanItems = [];
+  renderScanItems();
+  setScanState('idle');
+  document.getElementById('scanPreviewImg').style.display = 'none';
+  document.getElementById('scanPreviewPlaceholder').style.display = 'flex';
+  document.getElementById('scanStateBar').style.display = 'none';
+  // Trigger file picker
+  if (source === 'camera') {
+    document.getElementById('cameraInput').click();
+  } else {
+    document.getElementById('attachInput').click();
+  }
+}
+
+function closeScanModal() {
+  document.getElementById('scanModal').classList.remove('open');
+  if (_scanObjectUrl) { URL.revokeObjectURL(_scanObjectUrl); _scanObjectUrl = null; }
+}
+
+function setScanState(state, text) {
+  const bar = document.getElementById('scanStateBar');
+  const spinner = document.getElementById('scanSpinner');
+  const stateText = document.getElementById('scanStateText');
+  bar.style.display = 'flex';
+  bar.className = 'scan-state-bar';
+  if (state === 'scanning') {
+    bar.classList.add('scanning');
+    spinner.style.display = 'block';
+    stateText.textContent = text || '🔍 Reading image with AI…';
+  } else if (state === 'done') {
+    spinner.style.display = 'none';
+    stateText.textContent = text || '';
+  } else if (state === 'error') {
+    bar.classList.add('error');
+    spinner.style.display = 'none';
+    stateText.textContent = text || '⚠️ Could not read image';
+  } else {
+    bar.style.display = 'none';
+    spinner.style.display = 'none';
+  }
+}
+
+function renderScanItems() {
+  const list = document.getElementById('scanItemsList');
+  const footer = document.getElementById('scanFooter');
+  const label = document.getElementById('scanItemsLabel');
+  if (!_scanItems.length) {
+    list.innerHTML = '';
+    label.style.display = 'none';
+    footer.style.display = 'none';
+    return;
+  }
+  label.style.display = 'block';
+  footer.style.display = 'flex';
+  const selCount = _scanItems.filter(i => i.selected).length;
+  label.textContent = `${_scanItems.length} item${_scanItems.length>1?'s':''} found — ${selCount} selected`;
+  list.innerHTML = _scanItems.map((item, idx) => `
+    <div class="scan-item-row ${item.selected ? 'selected' : ''}" onclick="toggleScanItem(${idx})">
+      <div class="scan-item-check">${item.selected ? '✓' : ''}</div>
+      <div class="scan-item-name">${item.name}</div>
+      ${item.qty ? `<div class="scan-item-qty">${item.qty}${item.unit||''}</div>` : ''}
+    </div>
+  `).join('');
+  // Update button labels
+  const addBtn = document.getElementById('scanAddBtn');
+  if (addBtn) addBtn.textContent = `➕ Add ${selCount} to list`;
+}
+
+function toggleScanItem(idx) {
+  _scanItems[idx].selected = !_scanItems[idx].selected;
+  renderScanItems();
+}
+
+function selectAllScanItems() {
+  _scanItems.forEach(i => i.selected = true);
+  renderScanItems();
+}
+
+function scanCompare() {
+  const selected = _scanItems.filter(i => i.selected);
+  if (!selected.length) return;
+  const query = selected.map(i => `${i.qty ? i.qty + (i.unit||'') + ' ' : ''}${i.name}`).join(', ');
+  // Add to shopping list
+  selected.forEach(i => {
+    const name = `${i.qty ? i.qty + (i.unit||'') + ' ' : ''}${i.name}`.trim();
+    if (!shoppingList.includes(name)) shoppingList.push(name);
+  });
+  renderTags();
+  closeScanModal();
+  // Trigger comparison using compareAll for consistent results
+  setTimeout(() => { compareAll(); }, 300);
+}
+
+function scanAddToList() {
+  const selected = _scanItems.filter(i => i.selected);
+  if (!selected.length) return;
+  selected.forEach(i => {
+    const name = `${i.qty ? i.qty + (i.unit||'') + ' ' : ''}${i.name}`.trim();
+    if (!shoppingList.includes(name)) shoppingList.push(name);
+  });
+  renderTags();
+  closeScanModal();
+  // Show feedback
+  showToast(`✅ ${selected.length} item${selected.length>1?'s':''} added to list`);
+}
+
+function showToast(msg) {
+  let t = document.getElementById('gsToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'gsToast';
+    t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:9px 18px;border-radius:20px;font-size:13px;font-weight:600;z-index:20000;opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+}
+
+// Override handleImageScan to use the new modal
+async function handleImageScan(input, source) {
+  const file = input.files[0];
+  if (!file) return;
+
+  // Show image preview
+  if (_scanObjectUrl) URL.revokeObjectURL(_scanObjectUrl);
+  _scanObjectUrl = URL.createObjectURL(file);
+  const img = document.getElementById('scanPreviewImg');
+  const placeholder = document.getElementById('scanPreviewPlaceholder');
+  img.src = _scanObjectUrl;
+  img.style.display = 'block';
+  placeholder.style.display = 'none';
+
+  // Make sure modal is open
+  document.getElementById('scanModal').classList.add('open');
+
+  setScanState('scanning', source === 'camera' ? '📷 Scanning photo with AI…' : '📎 Reading document with AI…');
+  _scanItems = [];
+  renderScanItems();
+
+  try {
+    const base64 = await fileToBase64(file);
+    const mimeType = file.type || 'image/jpeg';
+    let items = null;
+
+    // Try live AI vision API
+    let apiError = null;
+    try {
+      const resp = await fetch('/api/ai/vision', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64, mimeType, source })
+      });
+      const data = await resp.json();
+      if (resp.ok && data.items && data.items.length > 0) {
+        items = data.items;
+      } else {
+        apiError = data.error || 'No items detected';
+        if (apiError.includes('429') || apiError.includes('quota') || apiError.includes('rate')) {
+          apiError = '⏳ AI rate limit hit — wait 1 min and try again';
+        } else if (apiError.includes('not configured')) {
+          apiError = '🔑 AI key not configured';
+        }
+      }
+    } catch (e) { apiError = 'Server error'; }
+
+    // Show real error or demo fallback
+    if (!items) {
+      const noKey = document.getElementById('scanNoKey');
+      noKey.style.display = 'block';
+      noKey.innerHTML = apiError
+        ? `<strong>⚠️ Scan failed:</strong> ${apiError}<br><small style="color:#92400e">Showing demo items instead</small>`
+        : `<strong>⚡ Demo mode</strong> — Add <a href="https://aistudio.google.com/app/apikey" target="_blank">Gemini API key</a> to read real files`;
+      items = await demoVisionScan(file.name, mimeType);
+    }
+
+    if (items && items.length > 0) {
+      _scanItems = items.map(i => ({ ...i, selected: true }));
+      setScanState('done', `✅ Found ${items.length} item${items.length>1?'s':''} — tap to deselect`);
+      renderScanItems();
+    } else {
+      setScanState('error', '⚠️ No grocery items found — try a clearer photo');
+    }
+  } catch (err) {
+    setScanState('error', '⚠️ Error reading image — try again');
+    console.error('Vision scan error:', err);
+  }
+}
 </script>
+
+<!-- ── Scan Modal HTML ───────────────────────────────────── -->
+<div class="scan-overlay" id="scanModal" onclick="if(event.target===this)closeScanModal()">
+  <div class="scan-panel">
+    <div class="scan-header">
+      <div class="scan-title">📷 Scan Grocery List</div>
+      <button class="scan-close" onclick="closeScanModal()">✕</button>
+    </div>
+    <div class="scan-body">
+      <!-- Image preview -->
+      <div class="scan-preview-wrap">
+        <img id="scanPreviewImg" style="display:none;width:100%;height:100%;object-fit:contain"/>
+        <div class="scan-preview-placeholder" id="scanPreviewPlaceholder">
+          <span>📷</span>
+          <p>Take a photo or attach an image</p>
+        </div>
+      </div>
+      <!-- No API key warning -->
+      <div class="scan-no-key" id="scanNoKey" style="display:none">
+        <strong>⚡ Demo mode</strong> — showing sample items.<br>
+        Add a <a href="https://aistudio.google.com/app/apikey" target="_blank">free Gemini API key</a> to read real photos.<br>
+        Paste it in <code style="background:#fef3c7;padding:1px 4px;border-radius:3px">.env</code> → <code style="background:#fef3c7;padding:1px 4px;border-radius:3px">GEMINI_API_KEY=your-key</code>
+      </div>
+      <!-- Scanning state bar -->
+      <div class="scan-state-bar scanning" id="scanStateBar" style="display:none">
+        <div class="scan-spinner" id="scanSpinner"></div>
+        <div class="scan-state-text" id="scanStateText">Scanning…</div>
+      </div>
+      <!-- Detected items -->
+      <div class="scan-items-label" id="scanItemsLabel" style="display:none"></div>
+      <div id="scanItemsList"></div>
+    </div>
+    <!-- Footer buttons -->
+    <div class="scan-footer" id="scanFooter" style="display:none">
+      <button class="scan-btn-add" id="scanAddBtn" onclick="scanAddToList()">➕ Add to list</button>
+      <button class="scan-btn-compare" onclick="scanCompare()">🔍 Compare prices</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

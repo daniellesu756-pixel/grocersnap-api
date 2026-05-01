@@ -1,0 +1,20 @@
+{
+  "scannedAt": "2026-04-23T11:09:45.993Z",
+  "packages": [
+    "@google/generative-ai",
+    "@types/compression",
+    "compression",
+    "cors",
+    "dotenv",
+    "express",
+    "express-rate-limit",
+    "helmet",
+    "minisearch",
+    "@types/cors",
+    "@types/express",
+    "@types/node",
+    "sharp",
+    "tsx",
+    "typescript"
+  ]
+}

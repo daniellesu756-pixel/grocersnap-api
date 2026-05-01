@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GrocerSnap — Architecture Framework</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f0f2f5;
+  padding: 28px 16px 56px;
+  color: #1a1a2e;
+}
+
+/* ── Page wrapper ── */
+.page {
+  max-width: 1020px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 28px rgba(0,0,0,.12);
+  padding: 36px 40px 44px;
+}
+
+/* ── Header ── */
+.header { margin-bottom: 8px; }
+.header h1 {
+  font-size: 1.55rem; font-weight: 800;
+  color: #0f2340; letter-spacing: .4px;
+}
+.header p { font-size: .92rem; color: #666; margin-top: 3px; }
+.nav-links { margin-top: 10px; font-size: .85rem; }
+.nav-links a {
+  color: #17a05d; text-decoration: none; margin-right: 16px;
+  font-weight: 600; border-bottom: 1px solid transparent;
+}
+.nav-links a:hover { border-bottom-color: #17a05d; }
+
+/* ── Legend ── */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin: 22px 0 28px;
+  padding: 14px 18px;
+  background: #f7f9fc;
+  border: 1px solid #dde3ec;
+  border-radius: 8px;
+}
+.legend-title { width: 100%; font-size: .78rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .8px; }
+.legend-item {
+  display: flex; align-items: center; gap: 7px;
+  font-size: .82rem; color: #444;
+}
+.legend-dot {
+  width: 13px; height: 13px;
+  border-radius: 3px; flex-shrink: 0;
+}
+
+/* ── Plan-mode badge ── */
+.plan-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #0f2340; color: #fff;
+  font-size: .78rem; font-weight: 700;
+  padding: 5px 12px; border-radius: 20px;
+  margin-bottom: 26px;
+}
+.plan-badge span { opacity: .75; font-weight: 400; }
+
+/* ── Diagram ── */
+.diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── LAYER CARD ── */
+.layer {
+  border-radius: 8px;
+  border: 2px solid transparent;
+  padding: 14px 18px 16px;
+  margin-bottom: 2px;
+  position: relative;
+  transition: box-shadow .15s;
+}
+.layer:hover { box-shadow: 0 4px 18px rgba(0,0,0,.10); }
+
+.layer-label {
+  font-size: .68rem; font-weight: 800;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  opacity: .7; margin-bottom: 6px;
+}
+.layer-title {
+  font-size: .98rem; font-weight: 700;
+  margin-bottom: 4px;
+}
+.layer-file {
+  font-size: .75rem; font-family: 'Cascadia Code', 'Consolas', monospace;
+  opacity: .7; margin-bottom: 10px;
+}
+
+/* ── Step grid ── */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 7px;
+}
+.step {
+  background: rgba(255,255,255,.7);
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 6px;
+  padding: 9px 11px;
+  cursor: default;
+  transition: transform .12s, box-shadow .12s;
+  position: relative;
+}
+.step:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+  z-index: 2;
+}
+.step-num {
+  font-size: .68rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .8px;
+  opacity: .6; margin-bottom: 3px;
+}
+.step-name {
+  font-size: .85rem; font-weight: 700;
+  line-height: 1.2; margin-bottom: 4px;
+}
+.step-desc {
+  font-size: .75rem; opacity: .75; line-height: 1.4;
+}
+.step-file {
+  font-size: .68rem; font-family: 'Cascadia Code', 'Consolas', monospace;
+  opacity: .55; margin-top: 5px; display: block;
+}
+
+/* ── Tooltip ── */
+.step[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px); left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a2e; color: #fff;
+  font-size: .72rem; padding: 5px 9px;
+  border-radius: 5px; white-space: nowrap;
+  pointer-events: none; z-index: 99;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+
+/* ── Arrow connector ── */
+.arrow {
+  text-align: center; font-size: 1.4rem;
+  color: #94a3b8; padding: 4px 0; line-height: 1;
+  user-select: none;
+}
+
+/* ── Branch split ── */
+.branch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+.branch-label {
+  text-align: center; font-size: .72rem; font-weight: 700;
+  letter-spacing: .8px; text-transform: uppercase;
+  opacity: .65; padding: 6px 0 2px;
+}
+
+/* ── COLOUR SCHEMES ── */
+.layer-client    { background: #e8f0fe; border-color: #4285f4; }
+.layer-client .layer-label  { color: #1a5ccc; }
+.layer-client .step-num     { color: #1a5ccc; }
+
+.layer-security  { background: #fdecea; border-color: #e8524a; }
+.layer-security .layer-label { color: #b71c1c; }
+.layer-security .step-num    { color: #b71c1c; }
+
+.layer-ai        { background: #fff4dc; border-color: #f5a623; }
+.layer-ai .layer-label  { color: #9a6200; }
+.layer-ai .step-num     { color: #9a6200; }
+
+.layer-data      { background: #e6f7ef; border-color: #17a05d; }
+.layer-data .layer-label { color: #0d7a45; }
+.layer-data .step-num    { color: #0d7a45; }
+
+.layer-response  { background: #f0e8ff; border-color: #7b2d8b; }
+.layer-response .layer-label { color: #6a0dad; }
+.layer-response .step-num    { color: #6a0dad; }
+
+/* ── Section divider ── */
+.section-title {
+  font-size: .82rem; font-weight: 700;
+  color: #888; letter-spacing: .8px;
+  text-transform: uppercase;
+  margin: 28px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* ── File map table ── */
+.file-table {
+  width: 100%; border-collapse: collapse;
+  font-size: .82rem; margin-top: 10px;
+}
+.file-table th {
+  text-align: left; padding: 8px 12px;
+  background: #0f2340; color: #fff;
+  font-weight: 700; font-size: .78rem;
+  letter-spacing: .5px;
+}
+.file-table td {
+  padding: 7px 12px; border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+.file-table tr:nth-child(even) td { background: #f9fafb; }
+.file-table tr:hover td { background: #e8f0fe; }
+.file-table code {
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: .78rem; background: #f0f2f5;
+  padding: 1px 5px; border-radius: 3px; color: #0f2340;
+}
+.badge {
+  display: inline-block; font-size: .68rem; font-weight: 700;
+  padding: 2px 7px; border-radius: 10px;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.badge-blue   { background: #dbeafe; color: #1a5ccc; }
+.badge-red    { background: #fee2e2; color: #b91c1c; }
+.badge-yellow { background: #fef3c7; color: #92400e; }
+.badge-green  { background: #d1fae5; color: #065f46; }
+.badge-purple { background: #ede9fe; color: #5b21b6; }
+
+/* ── Responsive ── */
+@media (max-width: 680px) {
+  .page { padding: 20px 16px 32px; }
+  .steps { grid-template-columns: 1fr 1fr; }
+  .branch { grid-template-columns: 1fr; }
+  .header h1 { font-size: 1.2rem; }
+}
+@media (max-width: 420px) {
+  .steps { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>GrocerSnap — Architecture Framework</h1>
+    <p>Actual request lifecycle and current technologies used in this GrocerSnap workspace</p>
+    <div class="nav-links">
+      <a href="/">← Back to App</a>
+      <a href="/techstack-cards.html">Card View</a>
+      <a href="/api/health">Health Check</a>
+      <a href="/api/costs">Cost Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Plan-mode badge -->
+  <div style="margin-top:18px;">
+    <div class="plan-badge">
+      📋 Plan Mode Active
+      <span>· Every change is planned &amp; approved before implementation</span>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-title">Layer Legend</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4285f4"></div> Client Layer — Web / iOS / Android / Extension</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e8524a"></div> Security Layer — runs on every request</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f5a623"></div> AI Security Layer — AI routes only</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#17a05d"></div> Data / Route Layer — business logic</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#7b2d8b"></div> Response — JSON + headers out</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- DIAGRAM                                        -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="diagram">
+
+    <!-- CLIENTS -->
+    <div class="layer layer-client">
+      <div class="layer-label">🔵 Client Layer</div>
+      <div class="layer-title">4 Surfaces — all talk to the same backend</div>
+      <div class="layer-file">public/app.js · GrocerSnap-iOS/src/services/api.ts · grocersnap-extension/popup.js</div>
+      <div class="steps">
+        <div class="step" data-tip="public/index.html + public/app.js">
+          <div class="step-num">Client 1</div>
+          <div class="step-name">🌐 Web PWA</div>
+          <div class="step-desc">Vanilla JS · PWA manifest · service worker</div>
+          <code class="step-file">public/app.js</code>
+        </div>
+        <div class="step" data-tip="GrocerSnap-iOS/src/services/api.ts">
+          <div class="step-num">Client 2</div>
+          <div class="step-name">📱 iOS App</div>
+          <div class="step-desc">Expo SDK 54 · React Native 0.81 · TypeScript</div>
+          <code class="step-file">GrocerSnap-iOS/src/services/api.ts</code>
+        </div>
+        <div class="step" data-tip="Android — shared Expo / React Native app">
+          <div class="step-num">Client 3</div>
+          <div class="step-name">🤖 Android App</div>
+          <div class="step-desc">Same shared Expo codebase · React Navigation · native modules</div>
+          <code class="step-file">GrocerSnap-iOS/ (shared)</code>
+        </div>
+        <div class="step" data-tip="grocersnap-extension/popup.js + content scripts">
+          <div class="step-num">Client 4</div>
+          <div class="step-name">🔌 Chrome Extension</div>
+          <div class="step-desc">Manifest V3 · background worker · 6 store scripts</div>
+          <code class="step-file">grocersnap-extension/popup.js</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow">↓ HTTPS request to localhost:4000 (dev) or grocersnap-api.onrender.com (deploy)</div>
+
+    <!-- SECURITY LAYER -->
+    <div class="layer layer-security">
+      <div class="layer-label">🔴 Security Layer — runs on EVERY request, in this exact order</div>
+      <div class="layer-title">10-Step Hardening Chain</div>
+      <div class="layer-file">src/index.ts · src/middleware/security.ts</div>
+      <div class="steps">
+        <div class="step" data-tip="src/index.ts — app.use(helmet(...))">
+          <div class="step-num">Step 1</div>
+          <div class="step-name">🪖 Helmet</div>
+          <div class="step-desc">14 HTTP security headers: CSP, HSTS 1yr, X-Frame-Options, X-Content-Type</div>
+          <code class="step-file">src/index.ts</code>
+        </div>
+        <div class="step" data-tip="src/index.ts — app.use(cors(...))">
+          <div class="step-num">Step 2</div>
+          <div class="step-name">🌐 CORS</div>
+          <div class="step-desc">Origin allowlist — only approved domains can call the API</div>
+          <code class="step-file">src/index.ts</code>
+        </div>
+        <div class="step" data-tip="src/index.ts — app.use('/api/', generalLimiter)">
+          <div class="step-num">Step 3</div>
+          <div class="step-name">⏱ Rate Limit</div>
+          <div class="step-desc">200 req / 15 min per IP — 429 on exceed</div>
+          <code class="step-file">src/index.ts</code>
+        </div>
+        <div class="step" data-tip="src/middleware/security.ts — malwareGuard()">
+          <div class="step-num">Step 4</div>
+          <div class="step-name">🦠 Malware Guard</div>
+          <div class="step-desc">Bot UA detection · Honeypot paths · IP strike/auto-block (10 strikes)</div>
+          <code class="step-file">src/middleware/security.ts</code>
+        </div>
+        <div class="step" data-tip="src/middleware/security.ts — sanitizeInputs()">
+          <div class="step-num">Step 5</div>
+          <div class="step-name">🧹 Sanitize Inputs</div>
+          <div class="step-desc">Strip XSS/HTML · max 500 chars per field · all body/query/params</div>
+          <code class="step-file">src/middleware/security.ts</code>
+        </div>
+        <div class="step" data-tip="src/middleware/security.ts — queryLengthGuard()">
+          <div class="step-num">Step 6</div>
+          <div class="step-name">📏 Query Guard</div>
+          <div class="step-desc">Max 300 chars per query param — blocks fuzzing attempts</div>
+          <code class="step-file">src/middleware/security.ts</code>
+        </div>
+        <div class="step" data-tip="src/middleware/security.ts — suspiciousPatternGuard()">
+          <div class="step-num">Step 7</div>
+          <div class="step-name">🚫 Pattern Guard</div>
+          <div class="step-desc">Blocks: ../ · &lt;script · union select · exec() · ${} · /etc/passwd</div>
+          <code class="step-file">src/middleware/security.ts</code>
+        </div>
+        <div class="step" data-tip="src/index.ts — app.use(compression())">
+          <div class="step-num">Step 8</div>
+          <div class="step-name">🗜 Compression</div>
+          <div class="step-desc">Gzip all responses — 60–70% smaller on the wire</div>
+          <code class="step-file">src/index.ts</code>
+        </div>
+        <div class="step" data-tip="src/index.ts — app.use(express.json({ limit: '10mb' }))">
+          <div class="step-num">Step 9</div>
+          <div class="step-name">📦 JSON Parser</div>
+          <div class="step-desc">Parse request body — 10 MB limit (enough for receipt photos)</div>
+          <code class="step-file">src/index.ts</code>
+        </div>
+        <div class="step" data-tip="src/index.ts — app.use(express.static(..., { maxAge: '1h' }))">
+          <div class="step-num">Step 10</div>
+          <div class="step-name">📁 Static Files</div>
+          <div class="step-desc">Serve public/ web app — 1h browser cache with ETag</div>
+          <code class="step-file">src/index.ts</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow">↓ Request reaches route handler — now splits by endpoint type</div>
+
+    <!-- BRANCH SPLIT -->
+    <div class="branch">
+
+      <!-- AI BRANCH -->
+      <div>
+        <div class="branch-label" style="color:#9a6200;">🟡 AI Endpoints — POST /api/ai/* · POST /api/search/live</div>
+        <div class="layer layer-ai" style="margin-bottom:0;">
+          <div class="layer-label">🟡 AI Security Layer</div>
+          <div class="layer-title">Extra checks before any AI call</div>
+          <div class="layer-file">src/index.ts · src/services/budget-guard.ts · src/services/notifier.ts</div>
+          <div class="steps" style="grid-template-columns:1fr;">
+            <div class="step" data-tip="src/index.ts — aiLimiter (20 req/min)">
+              <div class="step-num">AI Step 1</div>
+              <div class="step-name">⚡ AI Rate Limit</div>
+              <div class="step-desc">20 req / min — tighter cap than general limiter</div>
+              <code class="step-file">src/index.ts</code>
+            </div>
+            <div class="step" data-tip="src/middleware/security.ts — requireApiKey()">
+              <div class="step-num">AI Step 2</div>
+              <div class="step-name">🔑 Bearer Token Auth</div>
+              <div class="step-desc">Authorization: Bearer {APP_API_KEY} required · trackAuthFailure() on bad key</div>
+              <code class="step-file">src/middleware/security.ts</code>
+            </div>
+            <div class="step" data-tip="src/services/budget-guard.ts — checkBudget()">
+              <div class="step-num">AI Step 3</div>
+              <div class="step-name">💰 Budget Guard</div>
+              <div class="step-desc">Daily cap check: Gemini 1,400/day · Perplexity 200/day · alerts at 80% + 95%</div>
+              <code class="step-file">src/services/budget-guard.ts</code>
+            </div>
+            <div class="step" data-tip="src/middleware/security.ts — noCache()">
+              <div class="step-num">AI Step 4</div>
+              <div class="step-name">🚫 No-Cache</div>
+              <div class="step-desc">Cache-Control: no-store — AI responses must never be cached</div>
+              <code class="step-file">src/middleware/security.ts</code>
+            </div>
+            <div class="step" data-tip="src/services/gemini-agent.ts or perplexity-agent.ts">
+              <div class="step-num">AI Step 5</div>
+              <div class="step-name">🤖 AI Service Call</div>
+              <div class="step-desc">Perplexity Sonar for live search → Gemini 2.0 Flash for fast grocery chat</div>
+              <code class="step-file">src/services/gemini-agent.ts · perplexity-agent.ts</code>
+            </div>
+            <div class="step" data-tip="src/services/budget-guard.ts — recordCall() · src/services/notifier.ts — sendAlert()">
+              <div class="step-num">AI Step 6</div>
+              <div class="step-name">📊 Record + Alert</div>
+              <div class="step-desc">recordCall() increments daily counter · sendAlert() fires Telegram on anomalies</div>
+              <code class="step-file">src/services/budget-guard.ts · notifier.ts</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATA BRANCH -->
+      <div>
+        <div class="branch-label" style="color:#0d7a45;">🟢 Data Endpoints — GET /api/products/* · GET /api/stores · /api/basket/*</div>
+        <div class="layer layer-data" style="margin-bottom:0;">
+          <div class="layer-label">🟢 Route Handler — Data Layer</div>
+          <div class="layer-title">Business logic — no AI, no extra auth</div>
+          <div class="layer-file">src/index.ts · src/services/product-service.ts · src/models/</div>
+          <div class="steps" style="grid-template-columns:1fr;">
+            <div class="step" data-tip="src/services/product-service.ts — searchProducts()">
+              <div class="step-num">Data Step 1</div>
+              <div class="step-name">🔍 Product Search</div>
+              <div class="step-desc">4-stage: exact → category → all-words → fuzzy match across 500+ products</div>
+              <code class="step-file">src/services/product-service.ts</code>
+            </div>
+            <div class="step" data-tip="src/models/store.ts — STORES array">
+              <div class="step-num">Data Step 2</div>
+              <div class="step-name">🏪 Store Data</div>
+              <div class="step-desc">9 stores · delivery thresholds · deep-link URLs</div>
+              <code class="step-file">src/models/store.ts</code>
+            </div>
+            <div class="step" data-tip="src/services/product-service.ts — optimizeBasket()">
+              <div class="step-num">Data Step 3</div>
+              <div class="step-name">🛒 Basket Optimizer</div>
+              <div class="step-desc">Splits basket across stores to minimise total spend + delivery fees</div>
+              <code class="step-file">src/services/product-service.ts</code>
+            </div>
+            <div class="step" data-tip="src/index.ts — /api/basket/sync — in-memory list">
+              <div class="step-num">Data Step 4</div>
+              <div class="step-name">🔄 Basket Sync</div>
+              <div class="step-desc">In-memory list synced between web app and Chrome Extension</div>
+              <code class="step-file">src/index.ts</code>
+            </div>
+            <div class="step" data-tip="COUNTRY_PATHS_CACHE — loaded once at startup">
+              <div class="step-num">Data Step 5</div>
+              <div class="step-name">🗺 Country Paths</div>
+              <div class="step-desc">Map data — loaded once at startup into memory (no disk I/O per request)</div>
+              <code class="step-file">src/index.ts</code>
+            </div>
+            <div class="step" data-tip="src/services/budget-guard.ts — getUsageReport()">
+              <div class="step-num">Data Step 6</div>
+              <div class="step-name">💹 Cost Report</div>
+              <div class="step-desc">GET /api/costs — live daily/monthly AI spend + projections</div>
+              <code class="step-file">src/services/budget-guard.ts</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end branch -->
+
+    <div class="arrow">↓ Route handler returns result</div>
+
+    <!-- RESPONSE -->
+    <div class="layer layer-response">
+      <div class="layer-label">🟣 Response</div>
+      <div class="layer-title">JSON out — compressed, with security headers already set</div>
+      <div class="layer-file">src/index.ts · src/middleware/security.ts</div>
+      <div class="steps">
+        <div class="step" data-tip="Helmet sets all security headers at the top of the chain">
+          <div class="step-num">Out 1</div>
+          <div class="step-name">🪖 Security Headers</div>
+          <div class="step-desc">HSTS · CSP · X-Frame-Options already set by Helmet at Step 1</div>
+        </div>
+        <div class="step" data-tip="compression() middleware wraps response body">
+          <div class="step-num">Out 2</div>
+          <div class="step-name">🗜 Gzip Body</div>
+          <div class="step-desc">Response body compressed 60–70% before sending</div>
+        </div>
+        <div class="step" data-tip="noCache() sets Cache-Control: no-store on AI routes">
+          <div class="step-num">Out 3</div>
+          <div class="step-name">📄 JSON Payload</div>
+          <div class="step-desc">Structured JSON · no internal error messages · no stack traces</div>
+        </div>
+        <div class="step" data-tip="src/middleware/security.ts — securityLog()">
+          <div class="step-num">Out 4</div>
+          <div class="step-name">📋 Security Log</div>
+          <div class="step-desc">All suspicious events logged: timestamp · event · IP · path · UA</div>
+          <code class="step-file">src/middleware/security.ts</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow">↓ Client receives response and renders UI</div>
+
+    <!-- CLIENT RENDER -->
+    <div class="layer layer-client">
+      <div class="layer-label">🔵 Client Rendering</div>
+      <div class="layer-title">Each surface renders the response differently</div>
+      <div class="steps">
+        <div class="step" data-tip="public/app.js — renderProducts(), renderChat()">
+          <div class="step-num">Render 1</div>
+          <div class="step-name">🌐 Web App</div>
+          <div class="step-desc">Board/store view · AI chat bubbles · basket panel · localStorage persist</div>
+          <code class="step-file">public/app.js</code>
+        </div>
+        <div class="step" data-tip="GrocerSnap-iOS/src/store/useShoppingList.ts">
+          <div class="step-num">Render 2</div>
+          <div class="step-name">📱 iOS / Android</div>
+          <div class="step-desc">Native tabs · AsyncStorage · deep-links to store apps</div>
+          <code class="step-file">GrocerSnap-iOS/src/store/useShoppingList.ts</code>
+        </div>
+        <div class="step" data-tip="grocersnap-extension/popup.js + content scripts">
+          <div class="step-num">Render 3</div>
+          <div class="step-name">🔌 Extension</div>
+          <div class="step-desc">Popup progress bar · content scripts auto-fill store carts</div>
+          <code class="step-file">grocersnap-extension/popup.js</code>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end diagram -->
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- FILE → LAYER MAP                              -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="section-title">File → Layer Map — what changes where</div>
+  <table class="file-table">
+    <thead>
+      <tr>
+        <th>File</th>
+        <th>Layer</th>
+        <th>Affects</th>
+        <th>Change Impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>src/index.ts</code></td>
+        <td><span class="badge badge-red">Security</span> + <span class="badge badge-green">Routing</span></td>
+        <td>ALL requests</td>
+        <td>Middleware order, all routes, CORS, rate limits</td>
+      </tr>
+      <tr>
+        <td><code>src/middleware/security.ts</code></td>
+        <td><span class="badge badge-red">Security</span></td>
+        <td>ALL requests</td>
+        <td>Sanitization, auth, malware guard, logging</td>
+      </tr>
+      <tr>
+        <td><code>src/services/budget-guard.ts</code></td>
+        <td><span class="badge badge-yellow">AI Security</span></td>
+        <td>AI endpoints only</td>
+        <td>Daily caps, spend alerts, usage reports</td>
+      </tr>
+      <tr>
+        <td><code>src/services/notifier.ts</code></td>
+        <td><span class="badge badge-yellow">AI Security</span></td>
+        <td>AI endpoints only</td>
+        <td>Telegram + webhook alerts on events</td>
+      </tr>
+      <tr>
+        <td><code>src/services/gemini-agent.ts</code></td>
+        <td><span class="badge badge-yellow">AI Service</span></td>
+        <td>/api/ai/chat · /api/ai/vision</td>
+        <td>Gemini 2.0 Flash chat, streaming tokens, and receipt scanning</td>
+      </tr>
+      <tr>
+        <td><code>src/services/perplexity-agent.ts</code></td>
+        <td><span class="badge badge-yellow">AI Service</span></td>
+        <td>/api/ai/chat · /api/search/live</td>
+        <td>Live grocery lookup via Perplexity Sonar</td>
+      </tr>
+      <tr>
+        <td><code>scripts/audit-product-catalog.js</code></td>
+        <td><span class="badge badge-green">Automation</span></td>
+        <td>Catalog tools</td>
+        <td>Playwright-powered audit and product data QA checks</td>
+      </tr>
+      <tr>
+        <td><code>src/services/product-service.ts</code></td>
+        <td><span class="badge badge-green">Data</span></td>
+        <td>/api/products/*</td>
+        <td>Search logic, basket optimizer, category lookup</td>
+      </tr>
+      <tr>
+        <td><code>src/models/store.ts</code></td>
+        <td><span class="badge badge-green">Data</span></td>
+        <td>/api/stores</td>
+        <td>Store list, delivery info, search URLs</td>
+      </tr>
+      <tr>
+        <td><code>src/models/product.ts</code></td>
+        <td><span class="badge badge-green">Data</span></td>
+        <td>/api/products/*</td>
+        <td>Product schema, categories, price data</td>
+      </tr>
+      <tr>
+        <td><code>public/index.html</code></td>
+        <td><span class="badge badge-blue">Web Client</span></td>
+        <td>Browser only</td>
+        <td>Page structure, modals, layout</td>
+      </tr>
+      <tr>
+        <td><code>public/app.js</code></td>
+        <td><span class="badge badge-blue">Web Client</span></td>
+        <td>Browser only</td>
+        <td>All UI interactions, search, basket, AI chat, OCR</td>
+      </tr>
+      <tr>
+        <td><code>GrocerSnap-iOS/src/services/api.ts</code></td>
+        <td><span class="badge badge-blue">iOS Client</span></td>
+        <td>iOS / Android only</td>
+        <td>All API calls, batch fetch, basket grouping</td>
+      </tr>
+      <tr>
+        <td><code>GrocerSnap-iOS/src/store/useShoppingList.ts</code></td>
+        <td><span class="badge badge-blue">iOS Client</span></td>
+        <td>iOS / Android only</td>
+        <td>Persistent shopping list (AsyncStorage)</td>
+      </tr>
+      <tr>
+        <td><code>grocersnap-extension/popup.js</code></td>
+        <td><span class="badge badge-purple">Extension</span></td>
+        <td>Chrome Extension</td>
+        <td>Extension popup UI, list sync, store triggers</td>
+      </tr>
+      <tr>
+        <td><code>grocersnap-extension/content/fairprice.js</code></td>
+        <td><span class="badge badge-purple">Extension</span></td>
+        <td>FairPrice website only</td>
+        <td>Auto-fill cart on fairprice.com.sg</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- PLAN-MODE WORKFLOW                            -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="section-title">Plan-Mode Workflow — applied before every change</div>
+  <div class="steps" style="grid-template-columns: repeat(auto-fill, minmax(200px,1fr));">
+    <div class="step" style="background:#f0f2f5; border:1.5px solid #4285f4;">
+      <div class="step-num" style="color:#1a5ccc;">Step 1</div>
+      <div class="step-name">📋 Enter Plan Mode</div>
+      <div class="step-desc">Explore affected files. Identify which layer(s) change. Draw the flow diagram showing before → after.</div>
+    </div>
+    <div class="step" style="background:#f0f2f5; border:1.5px solid #17a05d;">
+      <div class="step-num" style="color:#0d7a45;">Step 2</div>
+      <div class="step-name">✅ User Approves</div>
+      <div class="step-desc">Plan shown with exact file paths and line numbers. No code written until you say yes.</div>
+    </div>
+    <div class="step" style="background:#f0f2f5; border:1.5px solid #f5a623;">
+      <div class="step-num" style="color:#9a6200;">Step 3</div>
+      <div class="step-name">⚙️ Implement</div>
+      <div class="step-desc">Only the files listed in the plan are touched. Nothing extra added without approval.</div>
+    </div>
+    <div class="step" style="background:#f0f2f5; border:1.5px solid #7b2d8b;">
+      <div class="step-num" style="color:#6a0dad;">Step 4</div>
+      <div class="step-name">🔍 Verify</div>
+      <div class="step-desc">Proof shown: curl output, health check, or screenshot. Changes confirmed working before closing.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:32px; padding-top:18px; border-top:1px solid #eee; font-size:.78rem; color:#aaa; text-align:center;">
+    GrocerSnap Architecture Framework · Generated April 2026 · <a href="/api/health" style="color:#17a05d;">Security Score: check /api/health</a>
+  </div>
+
+</div>
+</body>
+</html>

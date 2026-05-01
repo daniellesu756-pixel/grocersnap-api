@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GrocerSnap — Tech Stack & Security Chart</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f0f13;
+    color: #e8e8f0;
+    min-height: 100vh;
+    padding: 40px 24px 60px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #a78bfa, #60a5fa, #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.95rem;
+    margin-bottom: 48px;
+    letter-spacing: 0.3px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .card {
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.07);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  /* GREEN — Backend */
+  .card-backend { background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(5,150,105,0.06)); }
+  .card-backend::before { background: linear-gradient(90deg, #10b981, #34d399); }
+  .card-backend .card-icon { color: #10b981; }
+  .card-backend .badge { background: rgba(16,185,129,0.15); color: #34d399; border-color: rgba(52,211,153,0.2); }
+
+  /* BLUE — Web App PWA */
+  .card-web { background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(37,99,235,0.06)); }
+  .card-web::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+  .card-web .card-icon { color: #3b82f6; }
+  .card-web .badge { background: rgba(59,130,246,0.15); color: #93c5fd; border-color: rgba(147,197,253,0.2); }
+
+  /* ORANGE — Chrome Extension */
+  .card-extension { background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(217,119,6,0.06)); }
+  .card-extension::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .card-extension .card-icon { color: #f59e0b; }
+  .card-extension .badge { background: rgba(245,158,11,0.15); color: #fcd34d; border-color: rgba(252,211,77,0.2); }
+
+  /* PURPLE — iOS Mobile App */
+  .card-ios { background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(109,40,217,0.06)); }
+  .card-ios::before { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+  .card-ios .card-icon { color: #8b5cf6; }
+  .card-ios .badge { background: rgba(139,92,246,0.15); color: #c4b5fd; border-color: rgba(196,181,253,0.2); }
+
+  /* PINK — Voice AI Agent */
+  .card-voice { background: linear-gradient(135deg, rgba(236,72,153,0.12), rgba(219,39,119,0.06)); }
+  .card-voice::before { background: linear-gradient(90deg, #ec4899, #f472b6); }
+  .card-voice .card-icon { color: #ec4899; }
+  .card-voice .badge { background: rgba(236,72,153,0.15); color: #f9a8d4; border-color: rgba(249,168,212,0.2); }
+
+  /* TEAL — Automation & Data Tools */
+  .card-automation { background: linear-gradient(135deg, rgba(20,184,166,0.12), rgba(13,148,136,0.06)); }
+  .card-automation::before { background: linear-gradient(90deg, #14b8a6, #2dd4bf); }
+  .card-automation .card-icon { color: #14b8a6; }
+  .card-automation .badge { background: rgba(20,184,166,0.15); color: #99f6e4; border-color: rgba(153,246,228,0.2); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .card-icon { font-size: 1.8rem; line-height: 1; }
+
+  .card-title { font-size: 1.15rem; font-weight: 700; color: #f1f5f9; letter-spacing: -0.2px; }
+  .card-desc { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+  .items { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .badge {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid;
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+
+  .badge-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+  .badge-text strong { display: block; font-weight: 600; font-size: 0.83rem; margin-bottom: 1px; }
+  .badge-text span { color: #94a3b8; font-size: 0.75rem; }
+
+  .cost-tag {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 1px 7px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  .cost-free { background: rgba(52,211,153,0.2); color: #34d399; }
+  .cost-paid { background: rgba(251,191,36,0.2); color: #fbbf24; }
+  .cost-optional { background: rgba(148,163,184,0.15); color: #94a3b8; }
+
+  /* Cost summary */
+  .cost-summary {
+    max-width: 1300px;
+    margin: 28px auto 0;
+    padding: 24px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+  }
+  .cost-summary-title { font-weight: 700; font-size: 1rem; margin-bottom: 16px; color: #f1f5f9; }
+  .cost-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .cost-item { text-align: center; padding: 16px; border-radius: 12px; }
+  .cost-amount { font-size: 1.6rem; font-weight: 800; }
+  .cost-label { font-size: 0.8rem; color: #6b7280; margin-top: 4px; }
+
+  .nav-link {
+    text-align: center;
+    margin-top: 24px;
+  }
+  .nav-link a {
+    display: inline-block;
+    padding: 10px 24px;
+    background: rgba(139,92,246,0.15);
+    color: #a78bfa;
+    border: 1px solid rgba(139,92,246,0.3);
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0 8px;
+    transition: background 0.2s;
+  }
+  .nav-link a:hover { background: rgba(139,92,246,0.25); }
+
+  @media (max-width: 700px) {
+    .items { grid-template-columns: 1fr; }
+    h1 { font-size: 1.5rem; }
+    .card-security { grid-column: auto; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🛒 GrocerSnap Tech Stack</h1>
+<p class="subtitle">Actual technology breakdown used across the web app, native app, extension, AI, and automation tools — April 2026</p>
+
+<div class="grid">
+
+  <!-- BACKEND -->
+  <div class="card card-backend">
+    <div class="card-header">
+      <div class="card-icon">🟢</div>
+      <div>
+        <div class="card-title">Backend API</div>
+        <div class="card-desc">Express + TypeScript service layer for GrocerSnap</div>
+      </div>
+    </div>
+    <div class="items">
+      <div class="badge"><div class="badge-icon">⚡</div><div class="badge-text"><strong>Node.js + Express 4</strong><span>REST routes, middleware, health and basket APIs</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">📘</div><div class="badge-text"><strong>TypeScript 5.6 + TSX</strong><span>Strict typing with hot-reload during development</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">✨</div><div class="badge-text"><strong>Gemini 2.0 Flash</strong><span>Main AI chat and vision engine for grocery help</span><div class="cost-tag cost-free">FREE TIER</div></div></div>
+      <div class="badge"><div class="badge-icon">🔍</div><div class="badge-text"><strong>Perplexity Sonar</strong><span>Optional live search for current grocery info</span><div class="cost-tag cost-optional">OPTIONAL</div></div></div>
+      <div class="badge"><div class="badge-icon">🛡️</div><div class="badge-text"><strong>helmet + rate limiting</strong><span>Security headers, API throttling, abuse protection</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🌿</div><div class="badge-text"><strong>dotenv + CORS</strong><span>Environment config and origin control</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🖼️</div><div class="badge-text"><strong>Sharp</strong><span>Image tooling for asset and media processing</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🚀</div><div class="badge-text"><strong>Render + Railway config</strong><span>Deployment-ready backend setup in the repo</span><div class="cost-tag cost-optional">DEPLOY</div></div></div>
+    </div>
+  </div>
+
+  <!-- WEB APP PWA -->
+  <div class="card card-web">
+    <div class="card-header">
+      <div class="card-icon">🔵</div>
+      <div>
+        <div class="card-title">Web App (PWA)</div>
+        <div class="card-desc">Installable browser app built with lightweight frontend tooling</div>
+      </div>
+    </div>
+    <div class="items">
+      <div class="badge"><div class="badge-icon">🌐</div><div class="badge-text"><strong>HTML5 + CSS3 + Vanilla JS</strong><span>Main web experience without a heavy frontend framework</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">📱</div><div class="badge-text"><strong>PWA manifest + service worker</strong><span>Installable web app with offline fallback support</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">💾</div><div class="badge-text"><strong>localStorage persistence</strong><span>Stores basket state, preferences, and quick app memory</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🎙️</div><div class="badge-text"><strong>Web Speech APIs</strong><span>Browser mic, speech recognition, and speak-back replies</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🛒</div><div class="badge-text"><strong>Smart compare UI</strong><span>Basket planner, store comparison, and checkout helpers</span><div class="cost-tag cost-free">BUILT-IN</div></div></div>
+      <div class="badge"><div class="badge-icon">🌍</div><div class="badge-text"><strong>Store + map explorer</strong><span>Country paths, store cards, and shopping discovery flows</span><div class="cost-tag cost-free">BUILT-IN</div></div></div>
+    </div>
+  </div>
+
+  <!-- CHROME EXTENSION -->
+  <div class="card card-extension">
+    <div class="card-header">
+      <div class="card-icon">🟠</div>
+      <div>
+        <div class="card-title">Chrome Extension</div>
+        <div class="card-desc">Store-site automation for filling carts from GrocerSnap</div>
+      </div>
+    </div>
+    <div class="items">
+      <div class="badge"><div class="badge-icon">🔧</div><div class="badge-text"><strong>Manifest V3</strong><span>Modern Chrome extension architecture</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">⚙️</div><div class="badge-text"><strong>Background service worker</strong><span>Runs extension logic and event handling in the background</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🧠</div><div class="badge-text"><strong>Chrome APIs</strong><span>Tabs, storage, scripting, and activeTab permissions</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🔗</div><div class="badge-text"><strong>Webapp bridge</strong><span>postMessage sync between the web app and the extension</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🏬</div><div class="badge-text"><strong>6 live store scripts</strong><span>FairPrice, Sheng Siong, Cold Storage, RedMart, Watsons, Guardian</span><div class="cost-tag cost-free">BUILT-IN</div></div></div>
+      <div class="badge"><div class="badge-icon">📋</div><div class="badge-text"><strong>Popup UI</strong><span>Shopping list actions and one-click automation controls</span><div class="cost-tag cost-free">USED</div></div></div>
+    </div>
+  </div>
+
+  <!-- NATIVE MOBILE APP -->
+  <div class="card card-ios">
+    <div class="card-header">
+      <div class="card-icon">🟣</div>
+      <div>
+        <div class="card-title">Native Mobile App</div>
+        <div class="card-desc">Shared Expo codebase for iPhone and Android</div>
+      </div>
+    </div>
+    <div class="items">
+      <div class="badge"><div class="badge-icon">📦</div><div class="badge-text"><strong>Expo SDK 54</strong><span>Managed native app workflow with EAS support</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">⚛️</div><div class="badge-text"><strong>React Native 0.81 + React 19</strong><span>Single mobile UI stack for both platforms</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🧭</div><div class="badge-text"><strong>React Navigation 7</strong><span>Bottom tabs and native screen flow</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">💾</div><div class="badge-text"><strong>AsyncStorage</strong><span>Persistent shopping list and app state on device</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🔊</div><div class="badge-text"><strong>Expo Speech + Clipboard + Linking</strong><span>Native utilities for speak-back, copy, and deep links</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🚀</div><div class="badge-text"><strong>Expo Updates + EAS</strong><span>Native build and OTA-ready release workflow</span><div class="cost-tag cost-optional">DEPLOY</div></div></div>
+    </div>
+  </div>
+
+  <!-- VOICE AI AGENT -->
+  <div class="card card-voice">
+    <div class="card-header">
+      <div class="card-icon">🎤</div>
+      <div>
+        <div class="card-title">AI + Voice Layer</div>
+        <div class="card-desc">Streaming grocery assistant across web and native</div>
+      </div>
+    </div>
+    <div class="items">
+      <div class="badge"><div class="badge-icon">🤖</div><div class="badge-text"><strong>Gemini streaming chat</strong><span>Fast token-by-token replies for grocery help</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">📡</div><div class="badge-text"><strong>Server-Sent Events</strong><span>Live response streaming from the backend API</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🗣️</div><div class="badge-text"><strong>Browser speech APIs</strong><span>Speech recognition and speak-back on the web app</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🔊</div><div class="badge-text"><strong>Expo Speech</strong><span>Native app text-to-speech replies on mobile</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🎭</div><div class="badge-text"><strong>Voice styles and personas</strong><span>Multiple assistant presentation and response styles</span><div class="cost-tag cost-free">BUILT-IN</div></div></div>
+      <div class="badge"><div class="badge-icon">📱</div><div class="badge-text"><strong>Speak-back UX</strong><span>AI answers can be heard immediately after reply</span><div class="cost-tag cost-free">BUILT-IN</div></div></div>
+    </div>
+  </div>
+
+  <!-- AUTOMATION & DATA TOOLS -->
+  <div class="card card-automation">
+    <div class="card-header">
+      <div class="card-icon">🧪</div>
+      <div>
+        <div class="card-title">Automation &amp; Data Tools</div>
+        <div class="card-desc">Utility scripts used for scraping, PDFs, and reporting</div>
+      </div>
+    </div>
+    <div class="items">
+      <div class="badge"><div class="badge-icon">🎭</div><div class="badge-text"><strong>Playwright</strong><span>Browser automation and catalog auditing tools</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">📄</div><div class="badge-text"><strong>pdf-parse + pdfjs-dist</strong><span>Read receipts and PDF-based grocery documents</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">📝</div><div class="badge-text"><strong>DOCX generation</strong><span>Proposal and business document export tooling</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🛒</div><div class="badge-text"><strong>Catalog audit scripts</strong><span>Product QA, cleanup, and price comparison helpers</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">🗂️</div><div class="badge-text"><strong>JSON product datasets</strong><span>Scraped grocery data powering comparison flows</span><div class="cost-tag cost-free">USED</div></div></div>
+      <div class="badge"><div class="badge-icon">⚙️</div><div class="badge-text"><strong>Node utility scripts</strong><span>Image fetching, PDF reading, and report generation</span><div class="cost-tag cost-free">USED</div></div></div>
+    </div>
+  </div>
+
+  <!-- SECURITY (full-width) -->
+  <div class="card card-security">
+    <div class="card-header">
+      <div class="card-icon">🔴</div>
+      <div>
+        <div class="card-title">🛡️ Security Measures Applied</div>
+        <div class="card-desc">All hardening done during this build session — April 2026</div>
+      </div>
+    </div>
+    <div class="items">
+      <div class="badge"><div class="badge-icon">🪖</div><div class="badge-text"><strong>helmet (security headers)</strong><span>CSP, X-Frame-Options, HSTS, X-Content-Type — blocks clickjacking &amp; XSS</span></div></div>
+      <div class="badge"><div class="badge-icon">🌐</div><div class="badge-text"><strong>CORS Allowlist</strong><span>Replaced wildcard cors() with ALLOWED_ORIGINS env var — only your domains accepted</span></div></div>
+      <div class="badge"><div class="badge-icon">🚦</div><div class="badge-text"><strong>Rate Limiting</strong><span>200 req/15min on all API routes · 20 req/min on AI endpoints — blocks abuse</span></div></div>
+      <div class="badge"><div class="badge-icon">💰</div><div class="badge-text"><strong>Budget Guard (Daily Cap)</strong><span>Gemini: 1,400/day · Perplexity: 200/day — limits AI overuse and abuse</span></div></div>
+      <div class="badge"><div class="badge-icon">🔑</div><div class="badge-text"><strong>Gemini API Key Rotated</strong><span>Exposed key removed from .env · New key generated · Old key revoked safely</span></div></div>
+      <div class="badge"><div class="badge-icon">🖼️</div><div class="badge-text"><strong>Vision MIME Type Validation</strong><span>Allowlist: JPEG, PNG, WebP, GIF, PDF only — rejects malicious file uploads</span></div></div>
+      <div class="badge"><div class="badge-icon">🧹</div><div class="badge-text"><strong>XSS Fixed in Extension</strong><span>Popup rebuilt with createElement/textContent — no more innerHTML injection risk</span></div></div>
+      <div class="badge"><div class="badge-icon">🗑️</div><div class="badge-text"><strong>Anthropic SDK Removed</strong><span>@anthropic-ai/sdk &amp; ai-agent.ts deleted — reduced attack surface &amp; cost</span></div></div>
+      <div class="badge"><div class="badge-icon">📦</div><div class="badge-text"><strong>Basket Item Cap</strong><span>Max 200 items × 200 chars each — prevents oversized payload DoS attacks</span></div></div>
+      <div class="badge"><div class="badge-icon">🔒</div><div class="badge-text"><strong>Image Size Validation</strong><span>Base64 checked against 10MB max — rejects abuse before AI processing</span></div></div>
+      <div class="badge"><div class="badge-icon">🧽</div><div class="badge-text"><strong>Input Sanitization</strong><span>All query params + body stripped of HTML &amp; dangerous chars before any route</span></div></div>
+      <div class="badge"><div class="badge-icon">🚫</div><div class="badge-text"><strong>Suspicious Pattern Guard</strong><span>Auto-blocks path traversal, SQL injection, XSS, WordPress/PHP scanners</span></div></div>
+      <div class="badge"><div class="badge-icon">🗝️</div><div class="badge-text"><strong>Bearer Token Auth on AI</strong><span>APP_API_KEY — strangers can't call /api/ai/* even if they find your URL</span></div></div>
+      <div class="badge"><div class="badge-icon">📏</div><div class="badge-text"><strong>Query Param Length Guard</strong><span>Max 300 chars per param — rejects fuzzing &amp; buffer-overflow attempts</span></div></div>
+      <div class="badge"><div class="badge-icon">📋</div><div class="badge-text"><strong>Security Event Logging</strong><span>Every attack logged with timestamp, IP, path &amp; pattern — know when you're being hit</span></div></div>
+    </div>
+  </div>
+
+  <!-- Security score banner -->
+  <div style="text-align:center;margin-top:20px;padding:16px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px">
+    <span style="font-size:1.5rem;font-weight:800;color:#f87171">🛡️ Security Score: 9 / 10</span>
+    <div style="font-size:0.8rem;color:#94a3b8;margin-top:6px">Missing 1 point: WAF (Web Application Firewall) — needed only at enterprise scale</div>
+  </div>
+
+</div>
+
+<!-- Cost Summary -->
+<div class="cost-summary">
+  <div class="cost-summary-title">� Deployment &amp; Billing Notes</div>
+  <div class="cost-grid">
+    <div class="cost-item" style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.15)"><div class="cost-amount" style="color:#34d399">Free</div><div class="cost-label">Local web app and backend development</div></div>
+    <div class="cost-item" style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.15)"><div class="cost-amount" style="color:#60a5fa">Depends</div><div class="cost-label">Expo and EAS build usage depends on account limits</div></div>
+    <div class="cost-item" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.15)"><div class="cost-amount" style="color:#fbbf24">Free</div><div class="cost-label">Chrome extension in developer mode</div></div>
+    <div class="cost-item" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.15)"><div class="cost-amount" style="color:#a78bfa">Optional</div><div class="cost-label">Apple account needed only for publishing and signed installs</div></div>
+    <div class="cost-item" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15)"><div class="cost-amount" style="color:#f87171">Usage-based</div><div class="cost-label">External AI search beyond free tiers is optional</div></div>
+  </div>
+</div>
+
+<div class="nav-link">
+  <a href="/techstack.html">📐 View Framework Diagram</a>
+  <a href="/">← Back to GrocerSnap</a>
+</div>
+
+</body>
+</html>

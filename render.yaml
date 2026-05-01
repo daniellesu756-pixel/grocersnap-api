@@ -5,13 +5,26 @@ services:
     plan: free
     buildCommand: npm install && npm run build
     startCommand: npm start
+    healthCheckPath: /api/health
     envVars:
-      - key: PERPLEXITY_API_KEY
-        sync: false
-      - key: GEMINI_API_KEY
-        sync: false
-      - key: ANTHROPIC_API_KEY
-        sync: false
       - key: PORT
         value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: GEMINI_API_KEY
+        sync: false                     # paste in Render dashboard — never commit
+      - key: PERPLEXITY_API_KEY
+        sync: false
+      - key: APP_API_KEY
+        generateValue: true             # Render auto-generates a secure random key
+      - key: ALLOWED_ORIGINS
+        value: https://grocersnap-api.onrender.com
+      - key: DAILY_CAP_GEMINI
+        value: "1400"
+      - key: DAILY_CAP_PERPLEXITY
+        value: "200"
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
     autoDeploy: true

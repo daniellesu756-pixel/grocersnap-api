@@ -81,6 +81,13 @@ export const STORES: Store[] = [
     color: '#00a651',
     delivery: { fee: 4.99, freeAbove: 40, slots: ['9am-1pm','1pm-5pm','5pm-9pm'], sameDay: 'Next-day standard', note: 'Pharmacy, health & beauty essentials', thirdParty: false },
   },
+  {
+    id: 'shopee', label: 'Shopee', abbreviation: 'SHP',
+    websiteUrl: 'https://shopee.sg',
+    searchUrlTemplate: 'https://shopee.sg/search?keyword={q}',
+    color: '#ee4d2d',
+    delivery: { fee: 0, freeAbove: 0, slots: [], sameDay: 'Varies by seller', note: 'Marketplace — many sellers, prices vary', thirdParty: true },
+  },
 ];
 
 export function getStoreSearchUrl(storeId: string, productName: string): string {

@@ -1,6 +1,11 @@
 node_modules/
 dist/
+# Never commit ANY .env variant
 .env
+.env.*
+.env*.local
+.env*.production
+.env*.staging
 *.log
 .DS_Store
 Thumbs.db

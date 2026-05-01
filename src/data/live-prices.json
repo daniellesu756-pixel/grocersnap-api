@@ -1,0 +1,221 @@
+{
+  "generatedAt": "2026-04-22T08:34:10.459Z",
+  "categories": {
+    "rice": {
+      "unsized": {
+        "fairprice": 1.22
+      },
+      "2kg": {
+        "fairprice": 8.08
+      },
+      "5kg": {
+        "fairprice": 11.95
+      },
+      "25kg": {
+        "fairprice": 75.5
+      },
+      "1kg": {
+        "fairprice": 4.35
+      },
+      "10kg": {
+        "fairprice": 33
+      },
+      "1.5kg": {
+        "fairprice": 19.88
+      },
+      "20kg": {
+        "fairprice": 78.22
+      },
+      "3kg": {
+        "fairprice": 29.76
+      }
+    },
+    "milk": {
+      "unsized": {
+        "fairprice": 3.31
+      }
+    },
+    "eggs": {
+      "unsized": {
+        "fairprice": 1.3
+      }
+    },
+    "bread": {
+      "unsized": {
+        "fairprice": 1.55
+      }
+    },
+    "chicken": {
+      "unsized": {
+        "fairprice": 1.85
+      },
+      "2pc": {
+        "fairprice": 4.95
+      },
+      "500g": {
+        "fairprice": 4.95
+      },
+      "350g": {
+        "fairprice": 4.95
+      },
+      "250g": {
+        "fairprice": 4.95
+      },
+      "300g": {
+        "fairprice": 4.95
+      },
+      "1pc": {
+        "fairprice": 4.95
+      },
+      "2.5kg": {
+        "fairprice": 26.95
+      },
+      "400g": {
+        "fairprice": 11.2
+      },
+      "1kg": {
+        "fairprice": 45.7
+      },
+      "1.5kg": {
+        "fairprice": 41.4
+      }
+    },
+    "yogurt": {
+      "unsized": {
+        "fairprice": 1
+      },
+      "500ml": {
+        "fairprice": 4.2
+      },
+      "1l": {
+        "fairprice": 3.46
+      },
+      "140g": {
+        "fairprice": 3.99
+      }
+    },
+    "cheese": {
+      "unsized": {
+        "fairprice": 3.55
+      },
+      "200g": {
+        "fairprice": 5.6
+      },
+      "400g": {
+        "fairprice": 7.58
+      },
+      "500g": {
+        "fairprice": 37.14
+      },
+      "1kg": {
+        "fairprice": 13.74
+      }
+    },
+    "noodles": {
+      "unsized": {
+        "fairprice": 1.1
+      },
+      "111g": {
+        "fairprice": 4
+      },
+      "80g": {
+        "fairprice": 10.2
+      },
+      "450g": {
+        "fairprice": 20.9
+      },
+      "500g": {
+        "fairprice": 20.9
+      },
+      "440g": {
+        "fairprice": 6.2
+      },
+      "105g": {
+        "fairprice": 3.85
+      }
+    },
+    "oil": {
+      "unsized": {
+        "fairprice": 6.2
+      },
+      "600g": {
+        "fairprice": 17.5
+      }
+    },
+    "coffee": {
+      "6": {
+        "fairprice": 23.94
+      },
+      "12": {
+        "fairprice": 12.15
+      },
+      "unsized": {
+        "fairprice": 1.31
+      },
+      "1kg": {
+        "fairprice": 15.14
+      },
+      "285g": {
+        "fairprice": 4.5
+      },
+      "260g": {
+        "fairprice": 4.5
+      },
+      "18g": {
+        "fairprice": 42.08
+      },
+      "250g": {
+        "fairprice": 19.8
+      },
+      "13g": {
+        "fairprice": 10.6
+      },
+      "185g": {
+        "fairprice": 3.45
+      },
+      "8pcs": {
+        "fairprice": 14.5
+      }
+    },
+    "tea": {
+      "20": {
+        "fairprice": 7.01
+      },
+      "100": {
+        "fairprice": 6.44
+      },
+      "unsized": {
+        "fairprice": 1.31
+      },
+      "500g": {
+        "fairprice": 10.05
+      },
+      "2.5g": {
+        "fairprice": 7.95
+      },
+      "200g": {
+        "fairprice": 4.75
+      },
+      "10pcs": {
+        "fairprice": 8.02
+      }
+    },
+    "water": {
+      "unsized": {
+        "fairprice": 1.4
+      },
+      "500ml": {
+        "fairprice": 8.02
+      },
+      "1.5l": {
+        "fairprice": 8.02
+      },
+      "330ml": {
+        "fairprice": 15.2
+      },
+      "7l": {
+        "fairprice": 34.5
+      }
+    }
+  }
+}
